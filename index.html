@@ -1,9 +1,32 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Project</title>
+    <title>Unpacking Happiness</title>
+    <link rel="icon" href="data:;base64,iVBORwOKGO=" />
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
+    <div class="container">
+        <h1>Unpacking Happiness</h1>
+
+        Filter Attribute:
+        <select id="scatter-plot-selector">
+            <option value="Life Ladder">Happiness Score</option>
+            <option value="Log GDP per capita">Log GDP per capita</option>
+            <option value="Social support">Social support</option>
+            <option value="Healthy life expectancy at birth">Healthy life expectancy at birth</option>
+            <option value="Freedom to make life choices">Freedom to make life choices</option>
+            <option value="Generosity">Generosity</option>
+            <option value="Perceptions of corruption">Perceptions of corruption</option>
+        </select>
+
+        <svg id="scatterplot"></svg>
+        <svg id="line_chart"></svg>
+
+    </div>
     <script src="js/d3.v6.min.js"></script>
+    <script src="js/scatterplot.js"></script>
+    <script src="js/lineChart.js"></script>
+    <script src="js/main.js"></script>
 </body>
 </html>
