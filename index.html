@@ -19,22 +19,36 @@
             <option value="Generosity">Generosity</option>
             <option value="Perceptions of corruption">Perceptions of corruption</option>
         </select>
+        Select Projection:
+        <select id="projection-selector">
+            <option value="geoNaturalEarth">Natural Earth</option>
+            <option value="geoEquirectangular">Equirectangular</option>
+            <option value="geoConicEqualArea">Conic Equal Area</option>
+        </select>
 
-        <svg id="radarplot"></svg>
+        <div>
+            <label for="year-slider">Select year <span id="year-value">2020</span></label>
+            <input type="range" min="2011" value="2020" max="2020" id="year-slider">
+        </div>
 
-        <svg id="scatterplot"></svg>
-        <svg id="line_chart_gdp"></svg>
-        <svg id="line_chart_social"></svg>
-        <svg id="line_chart_life"></svg>
-        <svg id="line_chart_freedom"></svg>
-        <svg id="line_chart_generosity"></svg>
-        <svg id="line_chart_corruption"></svg>
+
+        <div id="vis-map"></div>
+        <div id="radarplot"></div>
+        <div id="scatterplot"></div>
+        <div id="line_chart_gdp"></div>
+        <div id="line_chart_social"></div>
+        <div id="line_chart_life"></div>
+        <div id="line_chart_freedom"></div>
+        <div id="line_chart_generosity"></div>
+        <div id="line_chart_corruption"></div>
 
     </div>
 
     <div id="tooltip"></div>
 
     <script src="js/d3.v6.min.js"></script>
+    <script src="js/topojson.min.js"></script>
+    <script src="js/map.js"></script>
     <script src="js/scatterplot.js"></script>
     <script src="js/lineChart.js"></script>
     <script src="js/radarPlot.js"></script>

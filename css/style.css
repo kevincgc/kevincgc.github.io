@@ -102,6 +102,12 @@ body {
     font-weight: 300;
 }
 
+
+.country:hover {
+    stroke: #000000;
+    stroke-width: 2;
+}
+
 /* Tooltip */
 #tooltip {
     position: absolute;

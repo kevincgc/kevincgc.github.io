@@ -1,17 +1,33 @@
 let scatterplot, lineplotGdp, lineplotSocial, lineplotLife, lineplotFreedom, lineplotGenerosity, lineplotCorruption, radarplot;
-let data;
+let data, geojson;
 let scatterplot_attribute = 'Log GDP per capita'
 let country_selected = "Canada"
+let map;
+let selectedProjection = "geoNaturalEarth";
+let selectedYear = 2020;
+let selectedCountries = [0,0,0];
 
-const colors = ['#a217dc', '#01c5a9', '#fd440c'];
+const colors = ['#a217dc', '#01c5a9', '#1437FF'];
 
 //Load data from CSV file asynchronously and render chart
-d3.csv('data/happiness_data_with_percentile.csv').then(_data => {
-    data = _data
-    _data.forEach(d => {
-        d['Life Ladder'] = +d['Life Ladder'];
-        d['Log GDP per capita'] = +d['Log GDP per capita']
+Promise.all([
+    d3.csv('data/happiness_data_with_percentile.csv'),
+    d3.json('data/map.json')
+]).then(_data => {
+    data = _data[0];
+    geojson = _data[1];
+    data.forEach(d => {
+        Object.keys(d).forEach(attr => {
+            if (attr !== 'Country name' && attr !== 'id') {
+                d[attr] = +d[attr];
+            }
+        });
     });
+
+    map = new Map({
+        parentElement: '#vis-map'
+    }, data, geojson);
+    map.updateVis();
 
     // Radar plot
     radarplot = showRadarPlot(data);
@@ -169,4 +185,30 @@ debugRadarPlot = () => {
             current = 0;
         }
     }, 2000)
+}
+
+
+d3.select('#projection-selector').on('change', function () {
+    selectedProjection = d3.select(this).property('value');
+    map.updateVis();
+});
+
+// Event slider for input slider
+d3.select('#year-slider').on('input', function() {
+    // Update visualization
+    selectedYear = parseInt(this.value);
+
+    // Update label
+    d3.select('#year-value').text(this.value);
+    map.updateVis();
+});
+
+function updateSelection(d) {
+    // Update filter with value
+    if (selectedCountries.includes(d)) {
+        selectedCountries[selectedCountries.indexOf(d)] = 0;
+    } else if (selectedCountries.includes(0)) {
+        selectedCountries[selectedCountries.indexOf(0)] = d;
+    }
+    map.updateVis();
 }
