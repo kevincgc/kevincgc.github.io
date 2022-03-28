@@ -72,7 +72,7 @@ class LineChart {
             .attr('x', vis.width + 10)
             .attr('dy', '.71em')
             .style('text-anchor', 'end')
-            .text('Life Ladder');
+            .text('Happiness Score');
 
         vis.svg.append('text')
             .attr('class', 'axis-title')
@@ -88,13 +88,9 @@ class LineChart {
     updateVis() {
         let vis = this;
 
-        vis.xValue = d => {
-            console.log(vis.parseDate(d['year']))
-            return vis.parseDate(d['year'])}
+        vis.xValue = d => vis.parseDate(d['year'])
 
-        vis.yValue = d => {
-            console.log(d[vis.config.attribute])
-            return d[vis.config.attribute]}
+        vis.yValue = d => d[vis.config.attribute]
 
         // Set the scale input domains
         vis.yScale.domain([d3.min(vis.data, vis.yValue), d3.max(vis.data, vis.yValue)]);

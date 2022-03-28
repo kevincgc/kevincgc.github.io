@@ -1,4 +1,4 @@
-class Map {
+class GeoMap {
     pathGenerator;
 
     /**
@@ -86,7 +86,7 @@ class Map {
         vis.geoPath = d3.geoPath().projection(vis.projection);
         vis.pathGenerator = d3.geoPath().projection(vis.projection);
         vis.filteredData = vis.data.filter(d => d.year === selectedYear);
-        vis.happinessValue = d => d["Life Ladder"];
+        vis.happinessValue = d => d["Happiness Score"];
         vis.colorScale.domain(d3.extent(vis.filteredData, vis.happinessValue));
 
         vis.renderVis();
@@ -126,7 +126,7 @@ class Map {
                     //     console.log("canada");
                     //     console.log(country);
                     // }
-                    return vis.colorScale(country[0]["Life Ladder"]);
+                    return vis.colorScale(country[0]["Happiness Score"]);
                 } else {
                     return "#777777";
                 }
@@ -142,7 +142,7 @@ class Map {
                         .style("left", event.pageX + vis.config.tooltipPadding + "px")
                         .style("top", event.pageY + vis.config.tooltipPadding + "px").html(`
               <div class="tooltip-title">${country[0]["Country name"]}</div>
-              <div>Happiness Score: <strong>${country[0]["Life Ladder"]}</strong></div>
+              <div>Happiness Score: <strong>${country[0]["Happiness Score"]}</strong></div>
             `);
                 }
             })

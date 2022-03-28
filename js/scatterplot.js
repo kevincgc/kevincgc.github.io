@@ -5,7 +5,7 @@ class Scatterplot {
      * @param {Object}
      * @param {Array}
      */
-    constructor(_config, _data) {
+    constructor(_config, _data, _selectedCountries, _colors) {
         this.config = {
             parentElement: _config.parentElement,
             attribute_selected: _config.attribute_selected,
@@ -15,6 +15,8 @@ class Scatterplot {
             tooltipPadding: _config.tooltipPadding || 15
         }
         this.data = _data;
+        this.selectedCountries = _selectedCountries;
+        this.colors = _colors;
         this.initVis();
     }
 
@@ -75,7 +77,7 @@ class Scatterplot {
             .attr('x', vis.width + 10)
             .attr('dy', '.71em')
             .style('text-anchor', 'end')
-            .text('Life Ladder');
+            .text('Happiness Score');
 
         vis.svg.append('text')
             .attr('class', 'axis-title')
@@ -91,8 +93,24 @@ class Scatterplot {
     updateVis() {
         let vis = this;
 
-        vis.xValue = d => d['Life Ladder']
+        vis.xValue = d => d['Happiness Score']
         vis.yValue = d => d[vis.config.attribute_selected]
+
+        vis.fillColor = d => {
+            if (!vis.selectedCountries[0] && !vis.selectedCountries[1] && !vis.selectedCountries[2]) {
+                return '#000';
+            } else {
+                return vis.colors[vis.selectedCountries.indexOf(d.id)];
+            }
+        }
+
+        vis.opacity = d => {
+            if (vis.selectedCountries.includes(d.id)) {
+                return 1;
+            } else {
+                return 0.15;
+            }
+        }
 
         // Set the scale input domains
         vis.xScale.domain([0, d3.max(vis.data, vis.xValue)]);
@@ -115,8 +133,8 @@ class Scatterplot {
             .attr('r', 4)
             .attr('cy', d => vis.yScale(vis.yValue(d)))
             .attr('cx', d => vis.xScale(vis.xValue(d)))
-            .attr('fill', '#000')
-            .attr("opacity", 0.15);
+            .attr('fill', d => vis.fillColor(d))
+            .attr("opacity", d => vis.opacity(d));
 
 
         // Update the axes/gridlines

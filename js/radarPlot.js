@@ -33,8 +33,8 @@ class RadarPlot {
         vis.axes = [
             {
                 // TODO update with Life Ladder percentile
-                name: 'Life Ladder',
-                label: 'Life Ladder'
+                name: 'Happiness Score',
+                label: 'Happiness Score'
             },
             {
                 name: 'Log GDP per capita pecentile',

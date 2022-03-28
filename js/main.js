@@ -1,11 +1,13 @@
-let scatterplot, lineplotGdp, lineplotSocial, lineplotLife, lineplotFreedom, lineplotGenerosity, lineplotCorruption, radarplot;
+let scatterplot, lineplotGdp, lineplotSocial, lineplotLife, lineplotFreedom, lineplotGenerosity, lineplotCorruption,
+    radarplot;
 let data, geojson;
 let scatterplot_attribute = 'Log GDP per capita'
 let country_selected = "Canada"
 let map;
 let selectedProjection = "geoNaturalEarth";
 let selectedYear = 2020;
-let selectedCountries = [0,0,0];
+let selectedCountries = [0, 0, 0];
+let yearFilteredData;
 
 const colors = ['#a217dc', '#01c5a9', '#1437FF'];
 
@@ -24,7 +26,7 @@ Promise.all([
         });
     });
 
-    map = new Map({
+    map = new GeoMap({
         parentElement: '#vis-map'
     }, data, geojson);
     map.updateVis();
@@ -37,12 +39,13 @@ Promise.all([
     // TODO delete this when map click calls radar plot
     debugRadarPlot();
 
+    yearFilteredData = data.filter(d => d.year === selectedYear)
 
     scatterplot = new Scatterplot({
         parentElement: '#scatterplot',
         attribute_selected: scatterplot_attribute
         // Optional: other configurations
-    }, data);
+    }, yearFilteredData, selectedCountries, colors);
 
     scatterplot.updateVis();
 
@@ -109,13 +112,12 @@ d3.selectAll('#scatter-plot-selector').on('change', e => {
 })
 
 updateScatterPlot = () => {
-
     // Remove the old chart and create a new one
     scatterplot = new Scatterplot({
         parentElement: '#scatterplot',
         attribute_selected: scatterplot_attribute
         // Optional: other configurations
-    }, data);
+    }, yearFilteredData, selectedCountries, colors);
     scatterplot.updateVis();
 }
 
@@ -194,12 +196,18 @@ d3.select('#projection-selector').on('change', function () {
 });
 
 // Event slider for input slider
-d3.select('#year-slider').on('input', function() {
+d3.select('#year-slider').on('input', function () {
     // Update visualization
     selectedYear = parseInt(this.value);
 
     // Update label
     d3.select('#year-value').text(this.value);
+
+    yearFilteredData = data.filter(d => d.year === selectedYear)
+
+    scatterplot.data = yearFilteredData;
+    scatterplot.updateVis();
+
     map.updateVis();
 });
 
@@ -210,5 +218,8 @@ function updateSelection(d) {
     } else if (selectedCountries.includes(0)) {
         selectedCountries[selectedCountries.indexOf(0)] = d;
     }
+
+    scatterplot.selectedCountries = selectedCountries;
+    scatterplot.updateVis();
     map.updateVis();
 }
