@@ -7,7 +7,6 @@ let map;
 let selectedProjection = "geoNaturalEarth";
 let selectedYear = 2020;
 let selectedCountries = [0, 0, 0];
-let yearFilteredData;
 let selectedRegion, regionColumn = '';
 
 const colors = ['#a217dc', '#01c5a9', '#1437FF'];
@@ -169,14 +168,17 @@ d3.select('#year-slider').on('input', function () {
 function updateSelection(d) {
     // Update filter with value
     if (selectedCountries.includes(d)) {
-        selectedCountries[selectedCountries.indexOf(d)] = 0;
-    } else if (selectedCountries.includes(0)) {
-        selectedCountries[selectedCountries.indexOf(0)] = d;
-    }
+    selectedCountries[selectedCountries.indexOf(d)] = 0;
+} else if (selectedCountries.includes(0)) {
+    selectedCountries[selectedCountries.indexOf(0)] = d;
+}
 
     updateRadarPlot(selectedCountries, selectedYear);
     scatterplot.selectedCountries = selectedCountries;
     scatterplot.updateVis();
+
+    updateRadarPlot(selectedCountries, selectedYear);
+
     map.updateVis();
 }
 
