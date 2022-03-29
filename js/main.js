@@ -35,9 +35,6 @@ Promise.all([
     radarplot = showRadarPlot(data);
     radarplot.updateVis();
 
-    // updateRadarPlot(['Canada', 'Afghanistan'], '2011');
-    // TODO delete this when map click calls radar plot
-    debugRadarPlot();
 
     yearFilteredData = data.filter(d => d.year === selectedYear)
 
@@ -158,36 +155,6 @@ onRadarPlotPointClicked = (event, d, metric) => {
     // TODO update other graphs based on d (data)
 }
 
-// Rotate through pre-selected country and year combos
-// TODO delete this after map click calls updateRadarPlot()
-debugRadarPlot = () => {
-    const maxCount = 4;
-    let current = 0;
-
-    setInterval(() => {
-        switch (current) {
-            case 0:
-                updateRadarPlot(['Canada', 'Afghanistan'], '2011');
-                break;
-            case 1:
-                updateRadarPlot(['Canada'], '2011');
-                break;
-            case 2:
-                updateRadarPlot(['Canada', 'Afghanistan'], '2013');
-                break;
-            case 3:
-                updateRadarPlot(['Afghanistan'], '2012');
-                break;
-
-            default:
-                break;
-        }
-        current += 1;
-        if (current >= maxCount) {
-            current = 0;
-        }
-    }, 2000)
-}
 
 
 d3.select('#projection-selector').on('change', function () {
@@ -208,6 +175,8 @@ d3.select('#year-slider').on('input', function () {
     scatterplot.data = yearFilteredData;
     scatterplot.updateVis();
 
+    updateRadarPlot(selectedCountries, selectedYear);
+
     map.updateVis();
 });
 
@@ -221,5 +190,8 @@ function updateSelection(d) {
 
     scatterplot.selectedCountries = selectedCountries;
     scatterplot.updateVis();
+
+    updateRadarPlot(selectedCountries, selectedYear);
+
     map.updateVis();
 }
