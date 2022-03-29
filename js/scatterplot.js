@@ -5,7 +5,7 @@ class Scatterplot {
      * @param {Object}
      * @param {Array}
      */
-    constructor(_config, _data, _selectedCountries, _colors) {
+    constructor(_config, _data, _regions) {
         this.config = {
             parentElement: _config.parentElement,
             attribute_selected: _config.attribute_selected,
@@ -15,8 +15,7 @@ class Scatterplot {
             tooltipPadding: _config.tooltipPadding || 15
         }
         this.data = _data;
-        this.selectedCountries = _selectedCountries;
-        this.colors = _colors;
+        this.regions = _regions;
         this.initVis();
     }
 
@@ -79,12 +78,18 @@ class Scatterplot {
             .style('text-anchor', 'end')
             .text('Happiness Score');
 
-        vis.svg.append('text')
+        vis.yLabel = vis.chart.append('text')
             .attr('class', 'axis-title')
             .attr('x', 0)
             .attr('y', 0)
             .attr('dy', '.71em')
-            .text(vis.config.attribute_selected);
+            .text(scatterplot_attribute);
+
+        vis.regression = vis.chart
+            .append('path')
+            .attr('class', 'reg')
+            .attr('stroke', 'black')
+            .attr('fill', 'none');
     }
 
     /**
@@ -93,20 +98,28 @@ class Scatterplot {
     updateVis() {
         let vis = this;
 
-        vis.xValue = d => d['Happiness Score']
-        vis.yValue = d => d[vis.config.attribute_selected]
+        vis.yearFilteredData = data.filter(d => d.year === selectedYear);
+        vis.filteredRegions = regions.filter(d => d[regionColumn] === selectedRegion);
+        vis.filteredRegionIds = vis.filteredRegions.map(d => d['country-code']);
+
+        vis.xValue = d => d['Happiness Score'];
+        vis.yValue = d => d[scatterplot_attribute];
 
         vis.fillColor = d => {
-            if (!vis.selectedCountries[0] && !vis.selectedCountries[1] && !vis.selectedCountries[2]) {
-                return '#000';
+            if (selectedCountries.includes(d.id)) {
+                return colors[selectedCountries.indexOf(d.id)];
+            } else if (this.filteredRegionIds.includes(d.id)) {
+                return '#004488';
             } else {
-                return vis.colors[vis.selectedCountries.indexOf(d.id)];
+                return '#000';
             }
         }
 
         vis.opacity = d => {
-            if (vis.selectedCountries.includes(d.id)) {
+            if (selectedCountries.includes(d.id)) {
                 return 1;
+            }  else if (this.filteredRegionIds.includes(d.id)) {
+                return 0.6;
             } else {
                 return 0.15;
             }
@@ -114,7 +127,20 @@ class Scatterplot {
 
         // Set the scale input domains
         vis.xScale.domain([0, d3.max(vis.data, vis.xValue)]);
-        vis.yScale.domain([0, d3.max(vis.data, vis.yValue)]);
+        vis.yScale.domain([d3.min(vis.yearFilteredData, vis.yValue), d3.max(vis.yearFilteredData, vis.yValue)]);
+
+        vis.linearRegression = ss.linearRegression(vis.yearFilteredData.map(d => [vis.xValue(d), vis.yValue(d)]));
+        vis.linearRegressionLine = ss.linearRegressionLine(vis.linearRegression);
+        vis.regressionPoints = vis.xScale.domain().map(d => {
+            return {
+                x: d,
+                y: vis.linearRegressionLine(d)
+            };
+        });
+
+        vis.line = d3.line()
+            .x(d => vis.xScale(d.x))
+            .y(d => vis.yScale(d.y));
 
         vis.renderVis();
     }
@@ -127,7 +153,7 @@ class Scatterplot {
 
         // Add circles
         vis.chart.selectAll('.point')
-            .data(vis.data)
+            .data(vis.yearFilteredData)
             .join('circle')
             .attr('class', 'point')
             .attr('r', 4)
@@ -136,6 +162,9 @@ class Scatterplot {
             .attr('fill', d => vis.fillColor(d))
             .attr("opacity", d => vis.opacity(d));
 
+        vis.yLabel.text(scatterplot_attribute);
+
+        vis.regression.datum(vis.regressionPoints).attr('d', vis.line);
 
         // Update the axes/gridlines
         // We use the second .call() to remove the axis and just show gridlines

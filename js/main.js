@@ -1,6 +1,6 @@
 let scatterplot, lineplotGdp, lineplotSocial, lineplotLife, lineplotFreedom, lineplotGenerosity, lineplotCorruption,
     radarplot;
-let data, geojson;
+let data, geojson, regions;
 let scatterplot_attribute = 'Log GDP per capita'
 let country_selected = "Canada"
 let map;
@@ -8,16 +8,19 @@ let selectedProjection = "geoNaturalEarth";
 let selectedYear = 2020;
 let selectedCountries = [0, 0, 0];
 let yearFilteredData;
+let selectedRegion, regionColumn = '';
 
 const colors = ['#a217dc', '#01c5a9', '#1437FF'];
 
 //Load data from CSV file asynchronously and render chart
 Promise.all([
     d3.csv('data/happiness_data_with_percentile.csv'),
-    d3.json('data/map.json')
+    d3.json('data/map.json'),
+    d3.csv('data/regions.csv')
 ]).then(_data => {
     data = _data[0];
     geojson = _data[1];
+    regions = _data[2];
     data.forEach(d => {
         Object.keys(d).forEach(attr => {
             if (attr !== 'Country name' && attr !== 'id') {
@@ -35,19 +38,14 @@ Promise.all([
     radarplot = showRadarPlot(data);
     radarplot.updateVis();
 
-    // updateRadarPlot(['Canada', 'Afghanistan'], '2011');
-    // TODO delete this when map click calls radar plot
-    debugRadarPlot();
-
-    yearFilteredData = data.filter(d => d.year === selectedYear)
-
     scatterplot = new Scatterplot({
         parentElement: '#scatterplot',
         attribute_selected: scatterplot_attribute
         // Optional: other configurations
-    }, yearFilteredData, selectedCountries, colors);
+    }, data, regions);
 
     scatterplot.updateVis();
+    selectRegion('', '');
 
 
     const filteredData = data.filter(d => d["Country name"] === country_selected).sort((a, b) => a.year - b.year);
@@ -108,18 +106,8 @@ Promise.all([
 
 d3.selectAll('#scatter-plot-selector').on('change', e => {
     scatterplot_attribute = e.target.value;
-    updateScatterPlot();
-})
-
-updateScatterPlot = () => {
-    // Remove the old chart and create a new one
-    scatterplot = new Scatterplot({
-        parentElement: '#scatterplot',
-        attribute_selected: scatterplot_attribute
-        // Optional: other configurations
-    }, yearFilteredData, selectedCountries, colors);
     scatterplot.updateVis();
-}
+})
 
 // Draw the radar plot
 function showRadarPlot(data) {
@@ -158,38 +146,6 @@ onRadarPlotPointClicked = (event, d, metric) => {
     // TODO update other graphs based on d (data)
 }
 
-// Rotate through pre-selected country and year combos
-// TODO delete this after map click calls updateRadarPlot()
-debugRadarPlot = () => {
-    const maxCount = 4;
-    let current = 0;
-
-    setInterval(() => {
-        switch (current) {
-            case 0:
-                updateRadarPlot(['Canada', 'Afghanistan'], '2011');
-                break;
-            case 1:
-                updateRadarPlot(['Canada'], '2011');
-                break;
-            case 2:
-                updateRadarPlot(['Canada', 'Afghanistan'], '2013');
-                break;
-            case 3:
-                updateRadarPlot(['Afghanistan'], '2012');
-                break;
-
-            default:
-                break;
-        }
-        current += 1;
-        if (current >= maxCount) {
-            current = 0;
-        }
-    }, 2000)
-}
-
-
 d3.select('#projection-selector').on('change', function () {
     selectedProjection = d3.select(this).property('value');
     map.updateVis();
@@ -200,13 +156,12 @@ d3.select('#year-slider').on('input', function () {
     // Update visualization
     selectedYear = parseInt(this.value);
 
-    // Update label
-    d3.select('#year-value').text(this.value);
-
     yearFilteredData = data.filter(d => d.year === selectedYear)
 
     scatterplot.data = yearFilteredData;
     scatterplot.updateVis();
+
+    updateRadarPlot(selectedCountries, selectedYear);
 
     map.updateVis();
 });
@@ -219,7 +174,14 @@ function updateSelection(d) {
         selectedCountries[selectedCountries.indexOf(0)] = d;
     }
 
+    updateRadarPlot(selectedCountries, selectedYear);
     scatterplot.selectedCountries = selectedCountries;
     scatterplot.updateVis();
     map.updateVis();
+}
+
+function selectRegion(region, column) {
+    selectedRegion = region;
+    regionColumn = column;
+    scatterplot.updateVis();
 }

@@ -51,7 +51,7 @@ class GeoMap {
         vis.background = vis.svg.append("g");
         vis.background.append('path')
             .attr('class', 'background')
-            .attr('fill', '#ADD8E6')
+            .attr('fill', '#ffffff')
             .attr('transform', `translate(${vis.config.margin.left},${vis.config.margin.top})`);
 
         // Append group element that will contain our actual chart
@@ -112,13 +112,7 @@ class GeoMap {
             .attr("d", vis.geoPath)
             .attr("fill", (d) => {
                 if (selectedCountries.includes(d.id)) {
-                    if (selectedCountries.indexOf(d.id) === 0) {
-                        return colors[0];
-                    } else if (selectedCountries.indexOf(d.id) === 1) {
-                        return colors[1];
-                    } else {
-                        return colors[2];
-                    }
+                    return colors[selectedCountries.indexOf(d.id)];
                 }
                 let country = vis.filteredData.filter(e => e.id === d.id);
                 if (country.length > 0) {

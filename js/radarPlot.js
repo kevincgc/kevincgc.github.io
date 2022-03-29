@@ -32,8 +32,7 @@ class RadarPlot {
 
         vis.axes = [
             {
-                // TODO update with Life Ladder percentile
-                name: 'Happiness Score',
+                name: 'Happiness Score pecentile',
                 label: 'Happiness Score'
             },
             {
@@ -80,9 +79,9 @@ class RadarPlot {
         let vis = this;
 
         vis.countriesSelected = countriesSelected;
-        vis.yearSelected = yearSelected;
+        vis.yearSelected = yearSelected != null ? yearSelected.toString() : null;
 
-        vis.filteredData = vis.data.filter(d => countriesSelected.includes(d['Country name']) && d['year'] == yearSelected)
+        vis.filteredData = vis.data.filter(d => countriesSelected.includes(d.id) && d['year'] == yearSelected)
 
         vis.radialValue = (d, name) => d[name];
 
@@ -197,6 +196,18 @@ class RadarPlot {
             return pathCoordinates;
         }
 
+        const getColorFromSelectedCountry = (d) => {
+            if (vis.countriesSelected.includes(d.id)) {
+                if (vis.countriesSelected.indexOf(d.id) === 0) {
+                    return colors[0];
+                } else if (vis.countriesSelected.indexOf(d.id) === 1) {
+                    return colors[1];
+                } else {
+                    return colors[2];
+                }
+            }
+        }
+
         // Area
         const radarAreas = vis.chart.selectAll('.area')
             .data(vis.filteredData);
@@ -204,19 +215,19 @@ class RadarPlot {
         radarAreas.join(
             enter => enter.append('path')
                 .attr('class', 'area')
+                .attr('fill', d => getColorFromSelectedCountry(d))
                 .datum(d => createPathForRow(d))
                 .attr('d', d3.line()
                     .x(d => d.x)
                     .y(d => d.y))
-                .attr('fill', (d, i) => vis.config.colors[i])
                 .attr('stroke', '#00ff00')
                 .attr('opacity', 0.35),
             update => update
+            .attr('fill', d => getColorFromSelectedCountry(d))
                 .datum(d => createPathForRow(d))
                 .attr('d', d3.line()
                     .x(d => d.x)
                     .y(d => d.y))
-                .attr('fill', (d, i) => vis.config.colors[i])
         );
 
         const radarAreaOutlines = vis.chart.selectAll('.area-outline')
@@ -246,7 +257,7 @@ class RadarPlot {
             const d = vis.filteredData[i];
             for (const axis of vis.axes) {
                 points.push({
-                    index: i,
+                    color: getColorFromSelectedCountry(d),
                     label: axis.label,
                     name: axis.name,
                     value: vis.radialScale(vis.radialValue(d, axis.name)),
@@ -267,7 +278,7 @@ class RadarPlot {
                 .attr('cy', (d, i) => yValue(i, d.value) + (vis.height / 2))
                 .attr('stroke', 'black')
                 .attr('stroke-width', '0')
-                .attr('fill', d => vis.config.colors[d.index])
+                .attr('fill', d => d.color)
                 .attr('stroke', d => vis.config.colors[d.index])
                 .attr('z-index', 99999)
 
@@ -299,7 +310,7 @@ class RadarPlot {
             update => update
                 .attr('cx', (d, i) => xValue(i, d.value) + (vis.width / 2))
                 .attr('cy', (d, i) => yValue(i, d.value) + (vis.height / 2))
-                .attr('fill', d => vis.config.colors[d.index]),
+                .attr('fill', d => d.color),
         );
 
     }

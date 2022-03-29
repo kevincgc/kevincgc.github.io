@@ -8,17 +8,6 @@
 <body>
     <div class="container">
         <h1>Unpacking Happiness</h1>
-
-        Filter Attribute:
-        <select id="scatter-plot-selector">
-            <option value="Happiness Score">Happiness Score</option>
-            <option value="Log GDP per capita">Log GDP per capita</option>
-            <option value="Social support">Social support</option>
-            <option value="Healthy life expectancy at birth">Healthy life expectancy at birth</option>
-            <option value="Freedom to make life choices">Freedom to make life choices</option>
-            <option value="Generosity">Generosity</option>
-            <option value="Perceptions of corruption">Perceptions of corruption</option>
-        </select>
         Select Projection:
         <select id="projection-selector">
             <option value="geoNaturalEarth">Natural Earth</option>
@@ -34,6 +23,30 @@
 
         <div id="vis-map"></div>
         <div id="radarplot"></div>
+        Filter Attribute:
+        <select id="scatter-plot-selector">
+            <option value="Happiness Score">Happiness Score</option>
+            <option value="Log GDP per capita">Log GDP per capita</option>
+            <option value="Social support">Social support</option>
+            <option value="Healthy life expectancy at birth">Healthy life expectancy at birth</option>
+            <option value="Freedom to make life choices">Freedom to make life choices</option>
+            <option value="Generosity">Generosity</option>
+            <option value="Perceptions of corruption">Perceptions of corruption</option>
+        </select>
+        <div id="region-buttons">
+            Select region:
+            <button onclick="selectRegion('', '')">None</button>
+            <button onclick="selectRegion('Europe', 'region')">EU</button>
+            <button onclick="selectRegion('Northern America', 'sub-region')">NA</button>
+            <button onclick="selectRegion('South America', 'intermediate-region')">SA</button>
+            <button onclick="selectRegion('Asia', 'region')">Asia</button>
+            <button onclick="selectRegion('Europe', 'region')">Africa</button>
+            <button onclick="selectRegion('Africa', 'region')">Eurasia</button>
+            <button onclick="selectRegion('Americas', 'region')">Americas</button>
+            <button onclick="selectRegion('South-eastern Asia', 'sub-region')">SEA</button>
+            <button onclick="selectRegion('Western Europe', 'sub-region')">Western Europe</button>
+            <button onclick="selectRegion('Oceania', 'region')">Oceania</button>
+        </div>
         <div id="scatterplot"></div>
         <div id="line_chart_gdp"></div>
         <div id="line_chart_social"></div>
@@ -47,6 +60,7 @@
     <div id="tooltip"></div>
 
     <script src="js/d3.v6.min.js"></script>
+    <script src="js/simple-statistics.min.js"></script>
     <script src="js/topojson.min.js"></script>
     <script src="js/map.js"></script>
     <script src="js/scatterplot.js"></script>
