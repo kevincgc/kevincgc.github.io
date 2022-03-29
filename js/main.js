@@ -1,7 +1,7 @@
 let scatterplot, lineplotGdp, lineplotSocial, lineplotLife, lineplotFreedom, lineplotGenerosity, lineplotCorruption,
     radarplot;
 let data, geojson, regions;
-let scatterplot_attribute = 'Log GDP per capita'
+let scatterplot_attribute = 'Happiness Score'
 let country_selected = "Canada"
 let map;
 let selectedProjection = "geoNaturalEarth";
@@ -9,6 +9,8 @@ let selectedYear = 2020;
 let selectedCountries = [0, 0, 0];
 let selectedRegion, regionColumn = '';
 let filteredRegionIds = [];
+let yearFilteredData;
+let happinessDist, attributeDist;
 
 const colors = ['#a217dc', '#01c5a9', '#1437FF'];
 
@@ -38,13 +40,32 @@ Promise.all([
     radarplot = showRadarPlot(data);
     radarplot.updateVis();
 
+    yearFilteredData = data.filter(d => d.year === selectedYear)
+
+    happinessDist = new HappinessDistribution({
+        parentElement: '#scatterplot',
+        attribute_selected: scatterplot_attribute
+        // Optional: other configurations
+    }, yearFilteredData, colors);
+
+    happinessDist.updateVis();
+
     scatterplot = new Scatterplot({
         parentElement: '#scatterplot',
         attribute_selected: scatterplot_attribute
         // Optional: other configurations
-    }, data, regions);
+    }, yearFilteredData, regions);
 
     scatterplot.updateVis();
+
+    attributeDist = new AttributeDistribution({
+        parentElement: '#scatterplot',
+        attribute_selected: scatterplot_attribute
+        // Optional: other configurations
+    }, yearFilteredData, colors);
+
+    attributeDist.updateVis();
+
     selectRegion('', '');
 
 
@@ -106,7 +127,10 @@ Promise.all([
 
 d3.selectAll('#scatter-plot-selector').on('change', e => {
     scatterplot_attribute = e.target.value;
+
+    happinessDist.updateVis();
     scatterplot.updateVis();
+    attributeDist.updateVis();
 })
 
 // Draw the radar plot
@@ -161,8 +185,14 @@ d3.select('#year-slider').on('input', function () {
 
     yearFilteredData = data.filter(d => d.year === selectedYear)
 
+    happinessDist.data = yearFilteredData;
+    happinessDist.updateVis();
+
     scatterplot.data = yearFilteredData;
     scatterplot.updateVis();
+
+    attributeDist.data = yearFilteredData;
+    attributeDist.updateVis();
 
     updateRadarPlot(selectedCountries, selectedYear);
 
