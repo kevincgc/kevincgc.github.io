@@ -156,6 +156,9 @@ d3.select('#year-slider').on('input', function () {
     // Update visualization
     selectedYear = parseInt(this.value);
 
+    // Update label
+    d3.select('#year-value').text(this.value);
+
     yearFilteredData = data.filter(d => d.year === selectedYear)
 
     scatterplot.data = yearFilteredData;
