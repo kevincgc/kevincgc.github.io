@@ -6,7 +6,7 @@ class RadarPlot {
             containerWidth: _config.containerWidth || 500,
             containerHeight: _config.containerHeight || 500,
             margin: _config.margin || { top: 100, right: 100, bottom: 100, left: 100 },
-            tooltipPadding: _config.tooltipPadding || 15,
+            tooltipPadding: _config.tooltipPadding || 3,
             colors: _config.colors
         }
 
@@ -32,32 +32,46 @@ class RadarPlot {
 
         vis.axes = [
             {
-                name: 'Happiness Score pecentile',
-                label: 'Happiness Score'
+                percentValue: 'Happiness Score pecentile',
+                dataValue: 'Happiness Score',
+                tooltipLabel: 'Happiness Score',
+                radarLabel: 'Happiness Score'
             },
             {
-                name: 'Log GDP per capita pecentile',
-                label: 'GDP Per Capita'
+                percentValue: 'Log GDP per capita pecentile',
+                dataValue: 'Log GDP per capita',
+                tooltipLabel: 'Log GDP Per Capita',
+                radarLabel: 'GDP Per Capita'
             },
             {
-                name: 'Social support pecentile',
-                label: 'Social Support'
+                percentValue: 'Social support pecentile',
+                dataValue: 'Social support',
+                tooltipLabel: 'Social Support',
+                radarLabel: 'Social Support'
             },
             {
-                name: 'Healthy life expectancy at birth pecentile',
-                label: 'Life Expentancy'
+                percentValue: 'Healthy life expectancy at birth pecentile',
+                dataValue: 'Healthy life expectancy at birth',
+                tooltipLabel: 'Healthy Life Expectancy',
+                radarLabel: 'Life Expentancy'
             },
             {
-                name: 'Freedom to make life choices pecentile',
-                label: 'Freedom'
+                percentValue: 'Freedom to make life choices pecentile',
+                dataValue: 'Freedom to make life choices',
+                tooltipLabel: 'Freedom To Make Life Choices',
+                radarLabel: 'Freedom'
             },
             {
-                name: 'Generosity pecentile',
-                label: 'Generosity'
+                percentValue: 'Generosity pecentile',
+                dataValue: 'Generosity',
+                tooltipLabel: 'Generosity',
+                radarLabel: 'Generosity'
             },
             {
-                name: 'Perceptions of corruption pecentile',
-                label: 'Corruption'
+                percentValue: 'Perceptions of corruption pecentile',
+                dataValue: 'Perceptions of corruption',
+                tooltipLabel: 'Perceptions Of Corruption',
+                radarLabel: 'Corruption'
             }
         ];
 
@@ -83,7 +97,8 @@ class RadarPlot {
 
         vis.filteredData = vis.data.filter(d => countriesSelected.includes(d.id) && d['year'] == yearSelected)
 
-        vis.radialValue = (d, name) => d[name];
+        vis.percentValue = (d, percentValue) => d[percentValue];
+        vis.dataValue = (d, dataValue) => d[dataValue];
 
         vis.percentageScale = [0, 100];
 
@@ -170,7 +185,7 @@ class RadarPlot {
                         return 0;
                     }
                 })
-                .text(d => d.label));
+                .text(d => d.radarLabel));
 
 
 
@@ -180,7 +195,7 @@ class RadarPlot {
             const pathCoordinates = [];
             for (let i = 0; i < vis.axes.length; i++) {
                 const axis = vis.axes[i];
-                const value = vis.radialScale(vis.radialValue(d, axis.name));
+                const value = vis.radialScale(vis.percentValue(d, axis.percentValue));
 
                 const coordinatesOnAxis = {
                     x: xValue(i, value) + (vis.width / 2),
@@ -223,7 +238,7 @@ class RadarPlot {
                 .attr('stroke', '#00ff00')
                 .attr('opacity', 0.35),
             update => update
-            .attr('fill', d => getColorFromSelectedCountry(d))
+                .attr('fill', d => getColorFromSelectedCountry(d))
                 .datum(d => createPathForRow(d))
                 .attr('d', d3.line()
                     .x(d => d.x)
@@ -252,30 +267,53 @@ class RadarPlot {
                 .attr('z-index', -1)
         );
 
+        // Points
+
         const points = [];
         for (let i = 0; i < vis.filteredData.length; i++) {
             const d = vis.filteredData[i];
             for (const axis of vis.axes) {
                 points.push({
                     color: getColorFromSelectedCountry(d),
-                    label: axis.label,
-                    name: axis.name,
-                    value: vis.radialScale(vis.radialValue(d, axis.name)),
-                    dataPercent: vis.radialValue(d, axis.name),
+                    tooltipLabel: axis.tooltipLabel,
+                    percentValue: axis.percentValue,
+                    radarValue: vis.radialScale(vis.percentValue(d, axis.percentValue)),
+                    dataPercent: vis.percentValue(d, axis.percentValue),
+                    dataValue: vis.dataValue(d, axis.dataValue),
                     data: d
                 });
             }
         }
 
+        const getOtherCountriesData = (d) => {
+            const otherCountries = vis.filteredData
+            .filter(f => f.id != d.data.id)
+            .sort((a, b) => {
+                return vis.percentValue(b, d.percentValue) - vis.percentValue(a, d.percentValue)
+            })
+            .map(z => `<div><b>vs ${z['Country name']}:</b> ${vis.percentValue(z, d.percentValue)} Percentile</div>`)
+            .join('');
+            if (otherCountries != '' && otherCountries) {
+                return '<hr>' + otherCountries;
+            }
+
+            return '';
+
+        }
+
+
+        vis.chart.selectAll('.point')
+            .remove();
+
         const radarPoints = vis.chart.selectAll('.point')
-            .data(points);
+            .data(points)
 
         radarPoints.join(
             enter => enter.append('circle')
                 .attr('class', 'point')
                 .attr('r', 5)
-                .attr('cx', (d, i) => xValue(i, d.value) + (vis.width / 2))
-                .attr('cy', (d, i) => yValue(i, d.value) + (vis.height / 2))
+                .attr('cx', (d, i) => xValue(i, d.radarValue) + (vis.width / 2))
+                .attr('cy', (d, i) => yValue(i, d.radarValue) + (vis.height / 2))
                 .attr('stroke', 'black')
                 .attr('stroke-width', '0')
                 .attr('fill', d => d.color)
@@ -284,33 +322,44 @@ class RadarPlot {
 
                 .on('click', function (event, d) {
                     d3.select(this)
-                        .attr('stroke-width', '3')
-                    vis.onPointClickedEventListener(event, d.data, d.name);
+                        .attr('stroke-width', '3');
+                    vis.onPointClickedEventListener(event, d.data, d.percentValue);
                 })
                 .on('mouseover', function (event, d) {
                     d3.select(this)
                         .attr('stroke-width', '3')
+                        .attr('r', 7)
+
 
                     d3.select('#tooltip')
                         .style('display', 'block')
                         .style('left', (event.pageX + vis.config.tooltipPadding) + 'px')
                         .style('top', (event.pageY + vis.config.tooltipPadding) + 'px')
                         .html(`
-                          <div class="tooltip-title">${d.label}</div>
-                          <div><span>${d.dataPercent}%</span></div>
+                            <div style="background-color: ${d.color}; color: white; padding: 5px" >
+                          <div class="tooltip-title">${d.data['Country name']}</div>
+                          <hr>
+                          <div>
+                            <b>${d.tooltipLabel}</b>
+                            <i>${d.dataValue}</i>
+                          </div>
+                          <div><span>${d.dataPercent} Percentile</span></div>
+                          ${getOtherCountriesData(d) }
+                          </div>
                         `);
                 })
                 .on('mouseleave', function () {
                     d3.select(this)
                         .attr('stroke-width', '0')
+                        .attr('r', 5)
+
 
                     d3.select('#tooltip').style('display', 'none');
                 }),
 
             update => update
-                .attr('cx', (d, i) => xValue(i, d.value) + (vis.width / 2))
-                .attr('cy', (d, i) => yValue(i, d.value) + (vis.height / 2))
-                .attr('fill', d => d.color),
+                .attr('cx', (d, i) => xValue(i, d.radarValue) + (vis.width / 2))
+                .attr('cy', (d, i) => yValue(i, d.radarValue) + (vis.height / 2))
         );
 
     }
