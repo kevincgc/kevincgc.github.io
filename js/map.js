@@ -111,18 +111,29 @@ class GeoMap {
             .attr("class", "country")
             .attr("d", vis.geoPath)
             .attr("fill", (d) => {
-                if (selectedCountries.includes(d.id)) {
-                    return colors[selectedCountries.indexOf(d.id)];
-                }
                 let country = vis.filteredData.filter(e => e.id === d.id);
                 if (country.length > 0) {
-                    // if (d.id === "704") {
-                    //     console.log("canada");
-                    //     console.log(country);
-                    // }
                     return vis.colorScale(country[0]["Happiness Score"]);
                 } else {
                     return "#777777";
+                }
+            })
+            .attr("stroke", d => {
+                if (selectedCountries.includes(d.id)) {
+                    return colors[selectedCountries.indexOf(d.id)];
+                } else if (filteredRegionIds.includes(d.id)) {
+                    return "#004488";
+                } else {
+                    return "#000000";
+                }
+            })
+            .attr("stroke-width", d => {
+                if (selectedCountries.includes(d.id)) {
+                    return 5;
+                } else if (filteredRegionIds.includes(d.id)) {
+                    return 1;
+                } else {
+                    return 0;
                 }
             });
 

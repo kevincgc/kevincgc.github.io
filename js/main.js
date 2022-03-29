@@ -8,6 +8,7 @@ let selectedProjection = "geoNaturalEarth";
 let selectedYear = 2020;
 let selectedCountries = [0, 0, 0];
 let selectedRegion, regionColumn = '';
+let filteredRegionIds = [];
 
 const colors = ['#a217dc', '#01c5a9', '#1437FF'];
 
@@ -185,5 +186,10 @@ function updateSelection(d) {
 function selectRegion(region, column) {
     selectedRegion = region;
     regionColumn = column;
+
+    let filteredRegions = regions.filter(d => d[regionColumn] === selectedRegion);
+    filteredRegionIds = filteredRegions.map(d => d['country-code']);
+
     scatterplot.updateVis();
+    map.updateVis();
 }

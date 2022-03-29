@@ -102,13 +102,11 @@ class Scatterplot {
         vis.yValue = d => d[scatterplot_attribute];
 
         vis.yearFilteredData = data.filter(d => (d.year === selectedYear && vis.yValue(d) !== 0));
-        vis.filteredRegions = regions.filter(d => d[regionColumn] === selectedRegion);
-        vis.filteredRegionIds = vis.filteredRegions.map(d => d['country-code']);
-        
+
         vis.fillColor = d => {
             if (selectedCountries.includes(d.id)) {
                 return colors[selectedCountries.indexOf(d.id)];
-            } else if (this.filteredRegionIds.includes(d.id)) {
+            } else if (filteredRegionIds.includes(d.id)) {
                 return '#004488';
             } else {
                 return '#000';
@@ -118,7 +116,7 @@ class Scatterplot {
         vis.opacity = d => {
             if (selectedCountries.includes(d.id)) {
                 return 1;
-            }  else if (this.filteredRegionIds.includes(d.id)) {
+            }  else if (filteredRegionIds.includes(d.id)) {
                 return 0.6;
             } else {
                 return 0.15;
