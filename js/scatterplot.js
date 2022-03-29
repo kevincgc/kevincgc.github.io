@@ -98,13 +98,13 @@ class Scatterplot {
     updateVis() {
         let vis = this;
 
-        vis.yearFilteredData = data.filter(d => d.year === selectedYear);
-        vis.filteredRegions = regions.filter(d => d[regionColumn] === selectedRegion);
-        vis.filteredRegionIds = vis.filteredRegions.map(d => d['country-code']);
-
         vis.xValue = d => d['Happiness Score'];
         vis.yValue = d => d[scatterplot_attribute];
 
+        vis.yearFilteredData = data.filter(d => (d.year === selectedYear && vis.yValue(d) !== 0));
+        vis.filteredRegions = regions.filter(d => d[regionColumn] === selectedRegion);
+        vis.filteredRegionIds = vis.filteredRegions.map(d => d['country-code']);
+        
         vis.fillColor = d => {
             if (selectedCountries.includes(d.id)) {
                 return colors[selectedCountries.indexOf(d.id)];
