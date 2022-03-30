@@ -108,13 +108,18 @@ class LineChart {
             .x(d => vis.xScale(vis.xValue(d)))
             .y(d => vis.yScale(vis.yValue(d)));
 
-        vis.chart.selectAll('.chart-line')
-            .data([vis.data])
-            .join('path')
-            .attr("fill", "none")
-            .attr("stroke", "steelblue")
-            .attr('class', 'chart-line')
-            .attr('d', vis.line);
+        for (let i = 0; i < selectedCountries.length; i++) {
+            if (selectedCountries[i]) {
+                const data_selected = vis.data.filter(d => d.id === selectedCountries[i]);
+                vis.chart.selectAll(`.chart-line-${i}`)
+                    .data([data_selected])
+                    .join('path')
+                    .attr("fill", "none")
+                    .attr("stroke", colors[i])
+                    .attr('class', `.chart-line-${i}`)
+                    .attr('d', vis.line);
+            }
+        }
 
         // Update the axes/gridlines
         // We use the second .call() to remove the axis and just show gridlines

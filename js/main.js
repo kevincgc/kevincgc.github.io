@@ -2,7 +2,6 @@ let scatterplot, lineplotGdp, lineplotSocial, lineplotLife, lineplotFreedom, lin
     radarplot;
 let data, geojson, regions;
 let scatterplot_attribute = 'Happiness Score'
-let country_selected = "Canada"
 let map;
 let selectedProjection = "geoNaturalEarth";
 let selectedYear = 2020;
@@ -68,8 +67,7 @@ Promise.all([
 
     selectRegion('', '');
 
-
-    const filteredData = data.filter(d => d["Country name"] === country_selected).sort((a, b) => a.year - b.year);
+    const filteredData = data.sort((a, b) => a.year - b.year);
 
     lineplotGdp = new LineChart({
         parentElement: '#line_chart_gdp',
@@ -210,6 +208,13 @@ function updateSelection(d) {
     updateRadarPlot(selectedCountries, selectedYear);
     scatterplot.selectedCountries = selectedCountries;
     scatterplot.updateVis();
+
+    lineplotGdp.updateVis()
+    lineplotSocial.updateVis()
+    lineplotLife.updateVis()
+    lineplotFreedom.updateVis()
+    lineplotGenerosity.updateVis()
+    lineplotCorruption.updateVis()
 
     updateRadarPlot(selectedCountries, selectedYear);
 
