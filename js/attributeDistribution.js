@@ -100,6 +100,14 @@ class AttributeDistribution {
             vis.computedData.push({x: count, y: i+diff})
         }
 
+        vis.filtered_regions = vis.yearFilteredData.filter(d => filteredRegionIds.includes(d.id))
+        vis.filteredComputedData = [];
+
+        for (let i = start; i < maxVal; i = i+diff) {
+            const count = vis.filtered_regions.filter(d => d[scatterplot_attribute] >= i && d[scatterplot_attribute] < i + diff).length
+            vis.filteredComputedData.push({x: count, y: i+diff})
+        }
+
         vis.computedX = d => d["x"]
         vis.computedY = d => d["y"]
 
@@ -135,8 +143,14 @@ class AttributeDistribution {
             .attr("width", d => vis.xScale(vis.computedX(d)))
             .style("opacity", 0.5)
 
-        vis.yAxisG
-            .call(vis.yAxis)
-            .call(g => g.select('.domain').remove())
+        vis.chart.selectAll(".selected-bar")
+            .data(vis.filteredComputedData)
+            .join("rect")
+            .attr("class", "selected-bar")
+            .attr("y", d => vis.yScale(vis.computedY(d)))
+            .attr("height", vis.height / vis.yScale.ticks().length)
+            .attr("width", d => vis.xScale(vis.computedX(d)))
+            .style("opacity", 0.5)
+            .style("fill", "#004488")
     }
 }

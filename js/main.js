@@ -223,6 +223,9 @@ function selectRegion(region, column) {
     let filteredRegions = regions.filter(d => d[regionColumn] === selectedRegion);
     filteredRegionIds = filteredRegions.map(d => d['country-code']);
 
+    happinessDist.updateVis();
     scatterplot.updateVis();
+    attributeDist.updateVis();
+
     map.updateVis();
 }

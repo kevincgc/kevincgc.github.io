@@ -80,12 +80,21 @@ class HappinessDistribution {
 
         vis.yearFilteredData = data.filter(d => (d.year === selectedYear && vis.yValue(d) !== 0));
 
+        vis.filtered_regions = vis.yearFilteredData.filter(d => filteredRegionIds.includes(d.id))
+
         const maxVal = d3.max(vis.yearFilteredData, vis.xValue)
         vis.computedData = [];
 
         for (let i = 0; i < maxVal; i++) {
-            const count = vis.yearFilteredData.filter(d => d['Happiness Score'] >= i && d['Happiness Score'] <= i + 1).length
+            const count = vis.yearFilteredData.filter(d => d['Happiness Score'] >= i && d['Happiness Score'] < i + 1).length
             vis.computedData.push({x: i, y: count})
+        }
+
+        vis.filteredComputedData = [];
+
+        for (let i = 0; i < maxVal; i++) {
+            const count = vis.filtered_regions.filter(d => d['Happiness Score'] >= i && d['Happiness Score'] < i + 1).length
+            vis.filteredComputedData.push({x: i, y: count})
         }
 
         vis.computedX = d => d["x"]
@@ -110,7 +119,6 @@ class HappinessDistribution {
     renderVis() {
         let vis = this;
 
-        vis.bins = vis.histogram(vis.yearFilteredData)
         vis.chart.selectAll(".bar")
             .data(vis.computedData)
             .join("rect")
@@ -120,5 +128,16 @@ class HappinessDistribution {
             .attr("height", (d) => vis.height - vis.yScale(vis.computedY(d)))
             .attr("width", vis.width / vis.maxX)
             .style("opacity", 0.5)
+
+        vis.chart.selectAll(".selected-bar")
+            .data(vis.filteredComputedData)
+            .join("rect")
+            .attr("class", "selected-bar")
+            .attr("x", d => vis.xScale(vis.computedX(d)))
+            .attr("y", d => vis.yScale(vis.computedY(d)))
+            .attr("height", (d) => vis.height - vis.yScale(vis.computedY(d)))
+            .attr("width", vis.width / vis.maxX)
+            .style("opacity", 0.5)
+            .style("fill", "#004488")
     }
 }
