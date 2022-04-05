@@ -5,8 +5,27 @@ body {
 }
 
 .container {
-    width: 1100px;
+    width: 1300px;
     margin: 0 auto;
+}
+
+#vis-map {
+    width: 650px;
+    display: inline-block;
+}
+
+#scatterplot {
+    width: 600px;
+    display: inline-block;
+}
+
+#projection {
+    display: inline;
+}
+
+#attribute {
+    display: inline;
+    float: right;
 }
 
 

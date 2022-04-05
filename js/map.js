@@ -9,8 +9,8 @@ class GeoMap {
     constructor(_config, _data, _geojson) {
         this.config = {
             parentElement: _config.parentElement,
-            containerWidth: _config.containerWidth || 1200,
-            containerHeight: _config.containerHeight || 500,
+            containerWidth: _config.containerWidth || 550,
+            containerHeight: _config.containerHeight || 400,
             margin: _config.margin || {top: 0, right: 0, bottom: 0, left: 0},
             tooltipPadding: 10,
             legendBottom: 50,
@@ -52,13 +52,13 @@ class GeoMap {
         vis.background.append('path')
             .attr('class', 'background')
             .attr('fill', '#ffffff')
-            .attr('transform', `translate(${vis.config.margin.left},${vis.config.margin.top})`);
+            .attr('transform', `translate(-200, -40)`);
 
         // Append group element that will contain our actual chart
         // and position it according to the given margin config
         vis.chart = vis.svg
             .append("g")
-            .attr('transform', `translate(${vis.config.margin.left},${vis.config.margin.top})`);
+            .attr('transform', `translate(-200, -40)`);
 
         // Scales
         vis.colorScale = d3.scaleLinear()
@@ -73,13 +73,13 @@ class GeoMap {
 
         switch (selectedProjection) {
             case "geoNaturalEarth":
-                vis.projection = d3.geoNaturalEarth1();
+                vis.projection = d3.geoNaturalEarth1().scale(110);
                 break;
             case "geoEquirectangular":
-                vis.projection = d3.geoEquirectangular();
+                vis.projection = d3.geoEquirectangular().scale(110);
                 break;
             case "geoConicEqualArea":
-                vis.projection = d3.geoConicEqualArea();
+                vis.projection = d3.geoConicEqualArea().scale(110);
                 break;
         }
 
