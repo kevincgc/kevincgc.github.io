@@ -5,7 +5,7 @@ let map;
 let selectedProjection = "geoNaturalEarth";
 let selectedYear = 2020;
 let selectedCountries = [0, 0, 0];
-let selectedRegion, regionColumn = '';
+let selectedRegion, regionColumn = '', selectedRegionPercentiles = {};
 let filteredRegionIds = [];
 let yearFilteredData;
 let happinessDist, attributeDist;
@@ -179,6 +179,28 @@ function selectRegion(region, column) {
 
     let filteredRegions = regions.filter(d => d[regionColumn] === selectedRegion);
     filteredRegionIds = filteredRegions.map(d => d['country-code']);
+
+    if (filteredRegions.length > 0) {
+        const filteredData = data.filter(d => filteredRegionIds.includes(d.id))
+
+        const meanHappiness = d3.mean(filteredData, d => d["Happiness Score"]);
+        const meanGpd = d3.mean(filteredData, d => d["Log GDP per capita"]);
+        const meanSocialSupport = d3.mean(filteredData, d => d["Social support"]);
+        const meanLifeExpectancy = d3.mean(filteredData, d => d["Healthy life expectancy at birth"]);
+        const meanFreedom = d3.mean(filteredData, d => d["Freedom to make life choices"]);
+        const meanGenerosity = d3.mean(filteredData, d => d["Generosity"]);
+        const meanCorruption = d3.mean(filteredData, d => d["Perceptions of corruption"]);
+
+        selectedRegionPercentiles['happiness_pecentile'] = data.filter(d => d["Happiness Score"] <= meanHappiness).length / data.length
+        selectedRegionPercentiles['gdp_pecentile'] = data.filter(d => d["Log GDP per capita"] <= meanGpd).length / data.length
+        selectedRegionPercentiles['social_support_pecentile'] = data.filter(d => d["Social support"] <= meanSocialSupport).length / data.length
+        selectedRegionPercentiles['life_expectancy_pecentile'] = data.filter(d => d["Healthy life expectancy at birth"] <= meanLifeExpectancy).length / data.length
+        selectedRegionPercentiles['freedom_pecentile'] = data.filter(d => d["Freedom to make life choices"] <= meanFreedom).length / data.length
+        selectedRegionPercentiles['generosity_pecentile'] = data.filter(d => d["Generosity"] <= meanGenerosity).length / data.length
+        selectedRegionPercentiles['corruption_pecentile'] = data.filter(d => d["Perceptions of corruption"] >= meanCorruption).length / data.length
+    } else {
+        selectedRegionPercentiles = {};
+    }
 
     happinessDist.updateVis();
     scatterplot.updateVis();
