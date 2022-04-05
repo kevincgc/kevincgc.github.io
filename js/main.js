@@ -1,5 +1,4 @@
-let scatterplot, lineplotGdp, lineplotSocial, lineplotLife, lineplotFreedom, lineplotGenerosity, lineplotCorruption,
-    radarplot;
+let scatterplot, linePlot;
 let data, geojson, regions;
 let scatterplot_attribute = 'Happiness Score'
 let map;
@@ -65,62 +64,18 @@ Promise.all([
 
     attributeDist.updateVis();
 
-    selectRegion('', '');
-
     const filteredData = data.sort((a, b) => a.year - b.year);
 
-    lineplotGdp = new LineChart({
+    linePlot = new LineChart({
         parentElement: '#line_chart_gdp',
         attribute: 'Log GDP per capita'
         // Optional: other configurations
     }, filteredData);
 
 
-    lineplotGdp.updateVis();
+    linePlot.updateVis();
 
-    lineplotSocial = new LineChart({
-        parentElement: '#line_chart_social',
-        attribute: 'Social support'
-        // Optional: other configurations
-    }, filteredData);
-
-
-    lineplotSocial.updateVis();
-
-    lineplotLife = new LineChart({
-        parentElement: '#line_chart_life',
-        attribute: 'Healthy life expectancy at birth'
-        // Optional: other configurations
-    }, filteredData);
-
-
-    lineplotLife.updateVis();
-
-    lineplotFreedom = new LineChart({
-        parentElement: '#line_chart_freedom',
-        attribute: 'Freedom to make life choices'
-        // Optional: other configurations
-    }, filteredData);
-
-    lineplotFreedom.updateVis();
-
-    lineplotGenerosity = new LineChart({
-        parentElement: '#line_chart_generosity',
-        attribute: 'Generosity'
-        // Optional: other configurations
-    }, filteredData);
-
-    lineplotGenerosity.updateVis();
-
-    lineplotCorruption = new LineChart({
-        parentElement: '#line_chart_corruption',
-        attribute: 'Perceptions of corruption'
-        // Optional: other configurations
-    }, filteredData);
-
-    lineplotCorruption.updateVis();
-
-
+    selectRegion('', '');
 });
 
 d3.selectAll('#scatter-plot-selector').on('change', e => {
@@ -129,6 +84,8 @@ d3.selectAll('#scatter-plot-selector').on('change', e => {
     happinessDist.updateVis();
     scatterplot.updateVis();
     attributeDist.updateVis();
+
+    linePlot.updateVis();
 })
 
 // Draw the radar plot
@@ -209,12 +166,7 @@ function updateSelection(d) {
     scatterplot.selectedCountries = selectedCountries;
     scatterplot.updateVis();
 
-    lineplotGdp.updateVis()
-    lineplotSocial.updateVis()
-    lineplotLife.updateVis()
-    lineplotFreedom.updateVis()
-    lineplotGenerosity.updateVis()
-    lineplotCorruption.updateVis()
+    linePlot.updateVis()
 
     updateRadarPlot(selectedCountries, selectedYear);
 
@@ -231,6 +183,8 @@ function selectRegion(region, column) {
     happinessDist.updateVis();
     scatterplot.updateVis();
     attributeDist.updateVis();
+
+    linePlot.updateVis();
 
     map.updateVis();
 }

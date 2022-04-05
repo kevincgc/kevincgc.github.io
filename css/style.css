@@ -19,6 +19,16 @@ body {
     display: inline-block;
 }
 
+#radarplot {
+    width: 650px;
+    display: inline-block;
+}
+
+#line_chart_gdp {
+    width: 600px;
+    display: inline-block;
+}
+
 #projection {
     display: inline;
 }

@@ -3,8 +3,8 @@ class RadarPlot {
     constructor(_config, _data, _onPointClickedEventListener, _onbackgroundClickedEventListener) {
         this.config = {
             parentElement: _config.parentElement,
-            containerWidth: _config.containerWidth || 500,
-            containerHeight: _config.containerHeight || 500,
+            containerWidth: _config.containerWidth || 550,
+            containerHeight: _config.containerHeight || 400,
             margin: _config.margin || { top: 100, right: 100, bottom: 100, left: 100 },
             tooltipPadding: _config.tooltipPadding || 3,
             colors: _config.colors

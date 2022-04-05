@@ -9,12 +9,13 @@ class LineChart {
         this.config = {
             parentElement: _config.parentElement,
             attribute: _config.attribute,
-            containerWidth: _config.containerWidth || 400,
-            containerHeight: _config.containerHeight || 300,
+            containerWidth: _config.containerWidth || 600,
+            containerHeight: _config.containerHeight || 400,
             margin: _config.margin || {top: 25, right: 20, bottom: 20, left: 35},
             tooltipPadding: _config.tooltipPadding || 15
         }
         this.data = _data;
+        this.paths = [];
         this.initVis();
     }
 
@@ -37,12 +38,12 @@ class LineChart {
         // Initialize axes
         vis.xAxis = d3.axisBottom(vis.xScale)
             .ticks(10)
-            .tickSize(-vis.height - 10)
+            .tickSize(-10)
             .tickPadding(10);
 
         vis.yAxis = d3.axisLeft(vis.yScale)
             .ticks(6)
-            .tickSize(-vis.width - 10)
+            .tickSize(-10)
             .tickPadding(10);
 
         // Define size of SVG drawing area
@@ -74,12 +75,12 @@ class LineChart {
             .style('text-anchor', 'end')
             .text('Happiness Score');
 
-        vis.svg.append('text')
+        vis.yLabel = vis.chart.append('text')
             .attr('class', 'axis-title')
             .attr('x', 0)
             .attr('y', 0)
             .attr('dy', '.71em')
-            .text(vis.config.attribute);
+            .text(scatterplot_attribute);
     }
 
     /**
@@ -89,12 +90,12 @@ class LineChart {
         let vis = this;
 
         vis.xValue = d => vis.parseDate(d['year'])
+        vis.yValue = d => d[scatterplot_attribute]
 
-        vis.yValue = d => d[vis.config.attribute]
+        vis.yearFilteredData = data.filter(d => (vis.yValue(d) !== 0));
 
         // Set the scale input domains
-        vis.yScale.domain([d3.min(vis.data, vis.yValue), d3.max(vis.data, vis.yValue)]);
-
+        vis.yScale.domain([d3.min(vis.yearFilteredData, vis.yValue), d3.max(vis.yearFilteredData, vis.yValue)]);
         vis.renderVis();
     }
 
@@ -110,16 +111,24 @@ class LineChart {
 
         for (let i = 0; i < selectedCountries.length; i++) {
             if (selectedCountries[i]) {
-                const data_selected = vis.data.filter(d => d.id === selectedCountries[i]);
-                vis.chart.selectAll(`.chart-line-${i}`)
+                if (vis.paths[i]) {
+                    vis.paths[i].remove();
+                }
+
+                const data_selected = vis.yearFilteredData.filter(d => d.id === selectedCountries[i]);
+                vis.paths[i] = vis.chart.selectAll(`.chart-line-${i}`)
                     .data([data_selected])
                     .join('path')
                     .attr("fill", "none")
                     .attr("stroke", colors[i])
                     .attr('class', `.chart-line-${i}`)
                     .attr('d', vis.line);
+            } else if (vis.paths[i]) {
+                vis.paths[i].remove();
             }
         }
+
+        vis.yLabel.text(scatterplot_attribute);
 
         // Update the axes/gridlines
         // We use the second .call() to remove the axis and just show gridlines
