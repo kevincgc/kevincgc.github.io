@@ -1,16 +1,18 @@
 let scatterplot, linePlot;
 let data, geojson, regions;
 let scatterplot_attribute = 'Happiness Score'
-let map;
+let map, countrySelector;
 let selectedProjection = "geoNaturalEarth";
 let selectedYear = 2020;
-let selectedCountries = [0, 0, 0];
+let selectedCountries = [0, 0, 0, 0];
 let selectedRegion, regionColumn = '', selectedRegionPercentiles = {};
 let filteredRegionIds = [];
 let yearFilteredData;
 let happinessDist, attributeDist;
+let myCountry = null;
+let myCountryColor = "#FFA500"
 
-const colors = ['#a217dc', '#01c5a9', '#1437FF'];
+const colors = ['#a217dc', '#01c5a9', '#1437FF', myCountryColor];
 
 //Load data from CSV file asynchronously and render chart
 Promise.all([
@@ -28,6 +30,12 @@ Promise.all([
             }
         });
     });
+
+    countrySelector = new CountrySelector({
+        parentElement: '#country-selector'
+    }, data, geojson)
+
+    countrySelector.updateVis();
 
     map = new GeoMap({
         parentElement: '#vis-map'
@@ -76,6 +84,8 @@ Promise.all([
     linePlot.updateVis();
 
     selectRegion('', '');
+
+    handleChartVisiblity();
 });
 
 d3.selectAll('#scatter-plot-selector').on('change', e => {
@@ -103,6 +113,14 @@ function showRadarPlot(data) {
     };
 
     return new RadarPlot(config, data, onRadarPlotPointClicked);
+}
+
+handleChartVisiblity = () => {
+    if (myCountry) {
+        document.getElementById("charts").style.display = "inline";
+    } else {
+        document.getElementById("charts").style.display = "none";
+    }
 }
 
 // Update which countries and year to filter radar plot data
@@ -153,6 +171,28 @@ d3.select('#year-slider').on('input', function () {
 
     map.updateVis();
 });
+
+selectMyCountry = (d) => {
+    if (myCountry === d) {
+        selectedCountries[3] = 0;
+        myCountry = null;
+    } else {
+        myCountry = d;
+        selectedCountries[3] = myCountry;
+        document.getElementById("charts").style.display = "inline";
+        document.getElementById('unpacking-happiness').scrollIntoView({
+            behavior: 'smooth'
+        });
+    }
+
+    handleChartVisiblity();
+
+    countrySelector.updateVis();
+    map.updateVis();
+    scatterplot.updateVis();
+    linePlot.updateVis();
+    updateRadarPlot(selectedCountries, selectedYear);
+}
 
 function updateSelection(d) {
     // Update filter with value

@@ -109,18 +109,21 @@ class LineChart {
             .x(d => vis.xScale(vis.xValue(d)))
             .y(d => vis.yScale(vis.yValue(d)));
 
-        for (let i = 0; i < selectedCountries.length; i++) {
-            if (selectedCountries[i]) {
+        const countries = [...selectedCountries];
+        const chartColors = [...colors];
+
+        for (let i = 0; i < countries.length; i++) {
+            if (countries[i]) {
                 if (vis.paths[i]) {
                     vis.paths[i].remove();
                 }
 
-                const data_selected = vis.yearFilteredData.filter(d => d.id === selectedCountries[i]);
+                const data_selected = vis.yearFilteredData.filter(d => d.id === countries[i]);
                 vis.paths[i] = vis.chart.selectAll(`.chart-line-${i}`)
                     .data([data_selected])
                     .join('path')
                     .attr("fill", "none")
-                    .attr("stroke", colors[i])
+                    .attr("stroke", chartColors[i])
                     .attr('class', `.chart-line-${i}`)
                     .attr('d', vis.line);
             } else if (vis.paths[i]) {

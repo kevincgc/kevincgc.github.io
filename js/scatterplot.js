@@ -108,13 +108,16 @@ class Scatterplot {
                 return colors[selectedCountries.indexOf(d.id)];
             } else if (filteredRegionIds.includes(d.id)) {
                 return '#004488';
-            } else {
+            } else if (myCountry === d.id) {
+                return myCountryColor;
+            }
+            else {
                 return '#000';
             }
         }
 
         vis.opacity = d => {
-            if (selectedCountries.includes(d.id)) {
+            if (selectedCountries.includes(d.id) || d.id === myCountry) {
                 return 1;
             }  else if (filteredRegionIds.includes(d.id)) {
                 return 0.6;
