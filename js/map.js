@@ -46,6 +46,8 @@ class GeoMap {
             .attr("width", vis.config.containerWidth)
             .attr("height", vis.config.containerHeight);
 
+        //vis.svg1 = d3.select('svg');
+
         // Initialize projection and background
         vis.projection = d3.geoNaturalEarth1();
         vis.background = vis.svg.append("g");
@@ -58,7 +60,7 @@ class GeoMap {
         // and position it according to the given margin config
         vis.chart = vis.svg
             .append("g")
-            .attr('transform', `translate(-200, -40)`);
+            .attr('transform', `translate(-250, -100)`);
 
         // Scales
         vis.colorScale = d3.scaleLinear()
@@ -104,7 +106,7 @@ class GeoMap {
             .attr("d", vis.pathGenerator({type: 'Sphere'}));
 
         // Append world map
-        const countryPath = vis.chart
+        vis.countryPath = vis.chart
             .selectAll(".country")
             .data(countries.features)
             .join("path")
@@ -137,7 +139,7 @@ class GeoMap {
                 }
             });
 
-        countryPath
+        vis.countryPath
             .on("mouseover", (event, d) => {
                 let country = vis.filteredData.filter(e => e.id === d.id);
                 if (country.length > 0) {
@@ -162,5 +164,18 @@ class GeoMap {
                     }
                 }
             });
+
+        vis.zoom = d3.zoom().on('zoom', (e) => {
+            vis.countryPath.attr('transform', e.transform);
+        });
+        vis.svg.call(vis.zoom);
+    }
+
+    resetZoom() {
+        let vis = this;
+
+        vis.svg.transition()
+            .duration(750)
+            .call(vis.zoom.transform, d3.zoomIdentity);
     }
 }
