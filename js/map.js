@@ -60,7 +60,7 @@ class GeoMap {
         // and position it according to the given margin config
         vis.chart = vis.svg
             .append("g")
-            .attr('transform', `translate(-250, -100)`);
+            .attr('transform', `translate(-250, -80)`);
 
         // Scales
         vis.colorScale = d3.scaleLinear()
