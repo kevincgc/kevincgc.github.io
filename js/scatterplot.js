@@ -97,7 +97,7 @@ class Scatterplot {
             .attr('fill', 'none');
     }
 
-    normdev(p) {
+    normDev(p) {
         if (p < 0 || p > 1) return false;
         if (p == 0) return -Infinity;
         if (p == 1) return Infinity;
@@ -201,7 +201,7 @@ class Scatterplot {
         if (y > 0.05 + a) {
             // The procedure normdev(p) is assumed to return a negative normal
             // deviate at the lower tail probability level p, e.g. -2.32 for p = 0.01.
-            x = this.normdev(p / 2);
+            x = this.normDev(p / 2);
             y = x * x;
             if (df < 5) c = c + 0.3 * (df - 4.5) * (x + 0.6);
             c = (((0.05 * d * x - 5) * x - 7) * x - 2) * x + b + c;
@@ -233,23 +233,18 @@ class Scatterplot {
         return slope * x + intercept;
     }
 
-    confidenceInterval(data, k) {
-        let vis = this;
-
+    confidenceInterval(data, x) {
         const mean = d3.sum(data, d => d.x) / data.length;
         let a = 0, b = 0;
         for (let i = 0; i < data.length; ++i) {
             a += Math.pow(data[i].x - mean, 2);
-            b += Math.pow(data[i].y - vis.linearReg(data, data[i].x), 2);
+            b += Math.pow(data[i].y - this.linearReg(data, data[i].x), 2);
         }
         const sy = Math.sqrt(b / (data.length - 2));
-        const t = vis.inverseT(+confidenceLevel, data.length - 2)
-        function retfun(x) {
-            const Y = vis.linearReg(data, x);
-            const se = sy * Math.sqrt(1 / data.length + Math.pow(x - mean, 2) / a);
-            return { x, left: Y - t * se, right: Y + t * se };
-        }
-        return retfun(k);
+        const t = this.inverseT(+confidenceLevel, data.length - 2)
+        const Y = this.linearReg(data, x);
+        const se = sy * Math.sqrt(1 / data.length + Math.pow(x - mean, 2) / a);
+        return { x, left: Y - t * se, right: Y + t * se };
     }
 
     /**
@@ -297,24 +292,19 @@ class Scatterplot {
                 y: vis.linearRegressionLine(d)
             };
         });
-
         vis.line = d3.line()
             .x(d => vis.xScale(d.x))
             .y(d => vis.yScale(d.y));
 
-        vis.yearAttributeFilteredData = vis.yearFilteredData.map(d => ({ name: d['Country name'], x: vis.xValue(d), y: vis.yValue(d)}))
-        //console.log(vis.yearAttributeFilteredData);
+        vis.yearAttributeFilteredData = vis.yearFilteredData.map(d => ({
+            name: d['Country name'], x: vis.xValue(d), y: vis.yValue(d)
+        }));
         vis.intervalData = () => {
             const domain = vis.xScale.domain();
             const step = (domain[1] - domain[0]) / 100;
             return d3.range(domain[0], domain[1] + step, step)
                 .map(d => vis.confidenceInterval(vis.yearAttributeFilteredData, d));
         };
-        console.log(vis.intervalData());
-        vis.area = (d) => d3.area()
-            .x(d => vis.xScale(d.x))
-            .y0(d => vis.yScale(d.left))
-            .y1(d => vis.yScale(d.right));
 
         vis.renderVis();
     }
