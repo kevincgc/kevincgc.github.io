@@ -10,7 +10,8 @@ let filteredRegionIds = [];
 let yearFilteredData;
 let happinessDist, attributeDist;
 let myCountry = null;
-let myCountryColor = "#FFA500"
+let myCountryColor = "#FFA500";
+let confidenceLevel = 0.05;
 
 const colors = ['#a217dc', '#01c5a9', '#1437FF', myCountryColor];
 
@@ -170,6 +171,14 @@ d3.select('#year-slider').on('input', function () {
     updateRadarPlot(selectedCountries, selectedYear);
 
     map.updateVis();
+});
+
+// Event slider for input slider
+d3.select('#ci-slider').on('input', function () {
+    // Update visualization
+    confidenceLevel = (100 - parseFloat(this.value)) / 100;
+    d3.select('#ci-value').text(parseFloat(this.value).toFixed(1));
+    scatterplot.updateVis();
 });
 
 selectMyCountry = (d) => {
