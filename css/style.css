@@ -132,7 +132,7 @@ body {
 
 .country:hover {
     stroke: #000000;
-    stroke-width: 2;
+    stroke-width: 1;
 }
 
 /* Tooltip */

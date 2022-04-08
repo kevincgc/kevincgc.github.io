@@ -38,6 +38,10 @@
                         <option value="Generosity">Generosity</option>
                         <option value="Perceptions of corruption">Perceptions of corruption</option>
                     </select>
+                    <div>
+                        <label for="ci-slider">Select Confidence Level: <span id="ci-value">95.0</span>%</label>
+                        <input type="range" min="90" value="95" max="99.9" id="ci-slider" step="0.1">
+                    </div>
                     <div id="region-buttons">
                         Select region:
                         <button onclick="selectRegion('', '')">None</button>

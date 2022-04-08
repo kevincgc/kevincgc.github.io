@@ -85,6 +85,11 @@ class Scatterplot {
             .attr('dy', '.71em')
             .text(scatterplot_attribute);
 
+        vis.ci = vis.chart.append("path")
+            .attr("fill", "#aaa")
+            .attr("stroke", "none")
+            .attr("opacity", 0.2);
+
         vis.regression = vis.chart
             .append('path')
             .attr('class', 'reg')
@@ -92,16 +97,6 @@ class Scatterplot {
             .attr('fill', 'none');
     }
 
-    /**
-     Returns the normal deviate Z corresponding to a given lower tail area of P; Z is accurate to about 1 part in 10**16.
-
-     Wichura, M. J. (1988) Algorithm AS 241: The percentage points of the normal distribution. Applied Statistics, 37, 477–484.
-
-     extension of:
-     Beasley, J. D./ Springer, S. G. (1977), The percentage points of the NormalDistribution, Applied Statistics. 26, 118–121.
-
-     Excel: STANDNORMINV(); R: qnorm()
-     **/
     normdev(p) {
         if (p < 0 || p > 1) return false;
         if (p == 0) return -Infinity;
@@ -189,15 +184,6 @@ class Scatterplot {
         return z;
     }
 
-    /**
-        Hill's approximated inverse t-distribution calculates t given df and two-tail probability:
-        Hill, G. W. (1970), Algorithm 396: Student's t-quantiles. Communications of the ACM, 13(10), 619–620.
-
-        Result should be "correct to at least 6 significant digits even for the analytic continuation through noninteger values of n > 5". For higher precision (used in R, ...) see:
-        Hill, G. W. (1981) Remark on Algorithm 396, ACM Transactions on Mathematical Software, 7, 250–1.
-
-        Excel: TINV(); R: qt()
-    **/
     inverseT(p, df) {
         const {sin, cos, sqrt, pow, exp, PI} = Math;
         let a, b, c, d, t, x, y;
@@ -231,24 +217,7 @@ class Scatterplot {
         return sqrt(df * y);
     }
 
-    // https://stats.stackexchange.com/questions/101318/understanding-shape-and-calculation-of-confidence-bands-in-linear-regression
-    confidenceInterval(data, predict) {
-        const mean = d3.sum(data, d => d.x) / data.length;
-        let a = 0, b = 0;
-        for (let i = 0; i < data.length; ++i) {
-            a += Math.pow(data[i].x - mean, 2);
-            b += Math.pow(data[i].y - predict(data[i].x), 2);
-        }
-        const sy = Math.sqrt(b / (data.length - 2));
-        const t = this.inverseT(+0.95, data.length - 2)
-        return function(x) {
-            const Y = predict(x);
-            const se = sy * Math.sqrt(1 / data.length + Math.pow(x - mean, 2) / a);
-            return { x, left: Y - t * se, right: Y + t * se };
-        }
-    }
-
-    linearRegression(data) {
+    linearReg(data, x) {
         let n = data.length, sumX = 0, sumY = 0, sumXY = 0, sumX2 = 0;
         for (let i = 0; i < data.length; ++i) {
             const xi = data[i].x;
@@ -261,8 +230,28 @@ class Scatterplot {
         }
         const slope = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
         const intercept = (sumY - slope * sumX) / n;
-        return x => slope * x + intercept;
+        return slope * x + intercept;
     }
+
+    confidenceInterval(data, k) {
+        let vis = this;
+
+        const mean = d3.sum(data, d => d.x) / data.length;
+        let a = 0, b = 0;
+        for (let i = 0; i < data.length; ++i) {
+            a += Math.pow(data[i].x - mean, 2);
+            b += Math.pow(data[i].y - vis.linearReg(data, data[i].x), 2);
+        }
+        const sy = Math.sqrt(b / (data.length - 2));
+        const t = vis.inverseT(+confidenceLevel, data.length - 2)
+        function retfun(x) {
+            const Y = vis.linearReg(data, x);
+            const se = sy * Math.sqrt(1 / data.length + Math.pow(x - mean, 2) / a);
+            return { x, left: Y - t * se, right: Y + t * se };
+        }
+        return retfun(k);
+    }
+
     /**
      * Prepare the data and scales before we render it.
      */
@@ -313,6 +302,20 @@ class Scatterplot {
             .x(d => vis.xScale(d.x))
             .y(d => vis.yScale(d.y));
 
+        vis.yearAttributeFilteredData = vis.yearFilteredData.map(d => ({ name: d['Country name'], x: vis.xValue(d), y: vis.yValue(d)}))
+        //console.log(vis.yearAttributeFilteredData);
+        vis.intervalData = () => {
+            const domain = vis.xScale.domain();
+            const step = (domain[1] - domain[0]) / 100;
+            return d3.range(domain[0], domain[1] + step, step)
+                .map(d => vis.confidenceInterval(vis.yearAttributeFilteredData, d));
+        };
+        console.log(vis.intervalData());
+        vis.area = (d) => d3.area()
+            .x(d => vis.xScale(d.x))
+            .y0(d => vis.yScale(d.left))
+            .y1(d => vis.yScale(d.right));
+
         vis.renderVis();
     }
 
@@ -336,6 +339,13 @@ class Scatterplot {
         vis.yLabel.text(scatterplot_attribute);
 
         vis.regression.datum(vis.regressionPoints).attr('d', vis.line);
+
+        vis.ci.datum(vis.intervalData())
+            .attr("d", d3.area()
+                .x(function(d) { return vis.xScale(d.x) })
+                .y0(function(d) { return vis.yScale(d.left) })
+                .y1(function(d) { return vis.yScale(d.right) })
+            );
 
         // Update the axes/gridlines
         // We use the second .call() to remove the axis and just show gridlines

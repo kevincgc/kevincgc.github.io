@@ -9,8 +9,8 @@ class GeoMap {
     constructor(_config, _data, _geojson) {
         this.config = {
             parentElement: _config.parentElement,
-            containerWidth: _config.containerWidth || 550,
-            containerHeight: _config.containerHeight || 400,
+            containerWidth: _config.containerWidth || 600,
+            containerHeight: _config.containerHeight || 500,
             margin: _config.margin || {top: 0, right: 0, bottom: 0, left: 0},
             tooltipPadding: 10,
             legendBottom: 50,
@@ -60,7 +60,7 @@ class GeoMap {
         // and position it according to the given margin config
         vis.chart = vis.svg
             .append("g")
-            .attr('transform', `translate(-250, -80)`);
+            .attr('transform', `translate(-200, -80)`);
 
         // Scales
         vis.colorScale = d3.scaleLinear()
@@ -131,7 +131,7 @@ class GeoMap {
             })
             .attr("stroke-width", d => {
                 if (selectedCountries.includes(d.id)) {
-                    return 5;
+                    return 3;
                 } else if (filteredRegionIds.includes(d.id)) {
                     return 1;
                 } else {
