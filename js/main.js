@@ -2,7 +2,6 @@ let scatterplot, linePlot;
 let data, geojson, regions;
 let scatterplot_attribute = 'Log GDP per capita'
 let map, countrySelector;
-let selectedProjection = "geoNaturalEarth";
 let selectedYear = 2020;
 let selectedCountries = [0, 0, 0, 0];
 let selectedRegion, regionColumn = '', selectedRegionPercentiles = {};
@@ -147,11 +146,6 @@ onRadarPlotPointClicked = (event, d, metric) => {
 
     // TODO update other graphs based on d (data)
 }
-
-d3.select('#projection-selector').on('change', function () {
-    selectedProjection = d3.select(this).property('value');
-    map.updateVis();
-});
 
 // Event slider for input slider
 d3.select('#year-slider').on('input', function () {

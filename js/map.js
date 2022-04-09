@@ -102,18 +102,7 @@ class GeoMap {
         if (vis.selectedRegionPercentiles != {} && vis.selectedRegionPercentiles != undefined && vis.selectedRegionPercentiles != null) {
             vis.selectedCountriesData.push(vis.selectedRegionPercentiles);
         }
-
-        switch (selectedProjection) {
-            case "geoNaturalEarth":
-                vis.projection = d3.geoNaturalEarth1().scale(110);
-                break;
-            case "geoEquirectangular":
-                vis.projection = d3.geoEquirectangular().scale(110);
-                break;
-            case "geoConicEqualArea":
-                vis.projection = d3.geoConicEqualArea().scale(110);
-                break;
-        }
+        vis.projection = d3.geoNaturalEarth1().scale(110);
 
         vis.geoPath = d3.geoPath().projection(vis.projection);
         vis.pathGenerator = d3.geoPath().projection(vis.projection);

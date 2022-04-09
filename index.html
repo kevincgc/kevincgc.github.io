@@ -15,13 +15,7 @@
         <div id="charts">
             <h1 id="unpacking-happiness">Unpacking Happiness</h1>
             <div>
-                <div id="projection">
-                    Select Projection:
-                    <select id="projection-selector">
-                        <option value="geoNaturalEarth">Natural Earth</option>
-                        <option value="geoEquirectangular">Equirectangular</option>
-                        <option value="geoConicEqualArea">Conic Equal Area</option>
-                    </select>
+                <div id="map-items">
                     <label for="year-slider">Select year <span id="year-value">2020</span></label>
                     <input type="range" min="2011" value="2020" max="2020" id="year-slider">
                     <button onclick="map.resetZoom()">Reset Zoom</button>

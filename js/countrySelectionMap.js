@@ -70,19 +70,8 @@ class CountrySelector {
 
     updateVis() {
         let vis = this;
-
-        switch (selectedProjection) {
-            case "geoNaturalEarth":
-                vis.projection = d3.geoNaturalEarth1().scale(250);
-                break;
-            case "geoEquirectangular":
-                vis.projection = d3.geoEquirectangular().scale(250);
-                break;
-            case "geoConicEqualArea":
-                vis.projection = d3.geoConicEqualArea().scale(250);
-                break;
-        }
-
+        
+        vis.projection = d3.geoNaturalEarth1().scale(250);
         vis.geoPath = d3.geoPath().projection(vis.projection);
         vis.pathGenerator = d3.geoPath().projection(vis.projection);
         vis.filteredData = vis.data.filter(d => d.year === selectedYear);
