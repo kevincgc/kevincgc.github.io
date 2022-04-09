@@ -1,6 +1,6 @@
 let scatterplot, linePlot;
 let data, geojson, regions;
-let scatterplot_attribute = 'Happiness Score'
+let scatterplot_attribute = 'Log GDP per capita'
 let map, countrySelector;
 let selectedProjection = "geoNaturalEarth";
 let selectedYear = 2020;

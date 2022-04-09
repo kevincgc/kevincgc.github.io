@@ -74,7 +74,7 @@ class LineChart {
             .attr('x', vis.width + 10)
             .attr('dy', '.71em')
             .style('text-anchor', 'end')
-            .text('Happiness Score');
+            .text('Year');
 
         vis.yLabel = vis.chart.append('text')
             .attr('class', 'axis-title')
