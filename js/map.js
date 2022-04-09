@@ -11,10 +11,10 @@ class GeoMap {
             parentElement: _config.parentElement,
             containerWidth: _config.containerWidth || 600,
             containerHeight: _config.containerHeight || 500,
-            margin: _config.margin || {top: 0, right: 0, bottom: 0, left: 0},
+            margin: _config.margin || { top: 0, right: 0, bottom: 0, left: 0 },
             tooltipPadding: 10,
-            legendBottom: 50,
-            legendLeft: 50,
+            legendBottom: 15,
+            legendLeft: 300,
             legendRectHeight: 12,
             legendRectWidth: 150
         };
@@ -60,18 +60,48 @@ class GeoMap {
         // and position it according to the given margin config
         vis.chart = vis.svg
             .append("g")
-            .attr('transform', `translate(-200, -80)`);
+            .attr('transform', `translate(-200, -40)`);
 
         // Scales
         vis.colorScale = d3.scaleLinear()
             .range(['#FFF7F3', '#FF1812'])
             .interpolate(d3.interpolateHcl);
 
+        vis.xScale = d3.scaleLinear()
+            .range([0, vis.config.legendRectWidth])
+
+        vis.xAxis = d3.axisBottom(vis.xScale)
+            .tickSize(vis.config.legendRectHeight)
+            .ticks(5);
+
+        vis.xAxisG = vis.svg.append('g')
+            .attr('class', 'axis x-axis')
+            .attr('transform', `translate(${(vis.width / 2) - (vis.config.legendRectWidth / 2)},${vis.config.legendBottom})`);
+
+        vis.legendLabel = vis.svg.append('text')
+            .attr('class', 'axis-title')
+            .style('text-align', 'center')
+            .attr('x', (vis.width / 2) - (vis.config.legendRectWidth / 2) + 20)
+            .attr('y', 0)
+            .attr('dy', '.71em')
+            .text('Happiness Score');
+
+        vis.legendDefs = vis.svg.append('defs');
+
+        vis.selectedCountriesArea = vis.svg.append('g')
+            .attr('transform', `translate(0,${vis.height - 90})`);
+
         vis.updateVis();
     }
 
     updateVis() {
         let vis = this;
+
+        vis.selectedCountriesData = data.filter(d => selectedCountries.includes(d.id) && d['year'] == selectedYear);
+
+        if (vis.selectedRegionPercentiles != {} && vis.selectedRegionPercentiles != undefined && vis.selectedRegionPercentiles != null) {
+            vis.selectedCountriesData.push(vis.selectedRegionPercentiles);
+        }
 
         switch (selectedProjection) {
             case "geoNaturalEarth":
@@ -89,9 +119,86 @@ class GeoMap {
         vis.pathGenerator = d3.geoPath().projection(vis.projection);
         vis.filteredData = vis.data.filter(d => d.year === selectedYear);
         vis.happinessValue = d => d["Happiness Score"];
-        vis.colorScale.domain(d3.extent(vis.filteredData, vis.happinessValue));
+        vis.extent = d3.extent(vis.filteredData, vis.happinessValue);
+        vis.colorScale.domain(vis.extent);
+
+        vis.legendTicks = [];
+        for (let i = 0; i < Math.ceil(vis.extent[1]); i++) {
+            vis.legendTicks.push({
+                color: vis.colorScale(i),
+                value: i
+            });
+        }
+
+        vis.xScale.domain(vis.extent)
 
         vis.renderVis();
+    }
+
+    renderLegend() {
+        let vis = this;
+
+        // Draw selected countries
+        const evenLegendX = 25;
+        const oddLegendX = 200;
+        const legendYMultiplier = 10;
+        const legendTextXOffset = 15;
+        const legendTextYOffset = 4;
+
+        vis.fillColor = d => {
+            if (selectedCountries.includes(d.id)) {
+                return colors[selectedCountries.indexOf(d.id)];
+            } else if (filteredRegionIds.includes(d.id)) {
+                return '#004488';
+            } else if (myCountry === d.id) {
+                return myCountryColor;
+            } else {
+                return '#000';
+            }
+        }
+
+        vis.selectedCountriesArea.selectAll('.selected-country')
+            .data(vis.selectedCountriesData)
+            .join("circle")
+            .attr('class', 'selected-country')
+            .attr("cx", (_, i) => {
+                // Even legend items
+                if (i % 2 == 0) return evenLegendX;
+                // Odd legend items
+                else return oddLegendX;
+            })
+            .attr("cy", (_, i) => {
+                // Even legend items
+                if (i % 2 == 0) return (i + 1) * legendYMultiplier;
+                // Odd legend items
+                else return i * legendYMultiplier;
+            })
+            .attr("r", 6)
+            .attr('fill-opacity', '0.60')
+            .attr('stroke', '#333')
+            .attr('stroke-width', '0.3')
+            .attr("fill", d => vis.fillColor(d))
+
+            console.log("selected country", vis.selectedCountriesData)
+
+        vis.selectedCountriesArea.selectAll(".select-country-text")
+            .data(vis.selectedCountriesData)
+            .join('text')
+            .attr('text-anchor', 'left')
+            .attr('class', 'select-country-text')
+            .attr('dx', (_, i) => {
+                // Even legend items
+                if (i % 2 == 0) return evenLegendX + legendTextXOffset;
+                // Odd legend items
+                else return oddLegendX + legendTextXOffset;
+            })
+            .attr("dy", (_, i) => {
+                // Even legend items
+                if (i % 2 == 0) return ((i + 1) * legendYMultiplier) + legendTextYOffset;
+                // Odd legend items
+                else return (i * legendYMultiplier) + legendTextYOffset;
+            })
+            .text(d => d['Country name'])
     }
 
     renderVis() {
@@ -100,10 +207,32 @@ class GeoMap {
         // Convert compressed TopoJSON to GeoJSON format
         const countries = topojson.feature(vis.geojson, vis.geojson.objects.countries);
 
+        // Draw legend
+        const legend = vis.legendDefs.append('linearGradient').attr('id', 'legendGradient');
+
+        legend.selectAll('stop')
+            .data(vis.legendTicks)
+            .enter().append('stop')
+            .attr('offset', d => ((d.value - vis.extent[0]) / (vis.extent[1] - vis.extent[0]) * 100) + '%')
+            .attr('stop-color', d => d.color);
+
+        vis.xAxisG.append('rect')
+            .attr('width', vis.config.legendRectWidth)
+            .attr('height', vis.config.legendRectHeight)
+            .style('fill', 'url(#legendGradient)');
+
+        vis.xAxisG
+            .call(vis.xAxis)
+            .call(g => g.selectAll('.tick text')
+                .attr('font-size', '0.8rem'));
+
+        // Render selected countires
+        vis.renderLegend();
+
         // Defines the scale of the projection so that the geometry fits within the SVG area
         //vis.projection.fitSize([vis.width, vis.height], countries);
         d3.selectAll(".background")
-            .attr("d", vis.pathGenerator({type: 'Sphere'}));
+            .attr("d", vis.pathGenerator({ type: 'Sphere' }));
 
         // Append world map
         vis.countryPath = vis.chart
@@ -112,6 +241,7 @@ class GeoMap {
             .join("path")
             .attr("class", "country")
             .attr("d", vis.geoPath)
+            .style('cursor', 'pointer')
             .attr("fill", (d) => {
                 let country = vis.filteredData.filter(e => e.id === d.id);
                 if (country.length > 0) {
@@ -140,6 +270,7 @@ class GeoMap {
             });
 
         vis.countryPath
+            .style('cursor', 'pointer')
             .on("mouseover", (event, d) => {
                 let country = vis.filteredData.filter(e => e.id === d.id);
                 if (country.length > 0) {
@@ -148,7 +279,13 @@ class GeoMap {
                         .style("display", "block")
                         .style("left", event.pageX + vis.config.tooltipPadding + "px")
                         .style("top", event.pageY + vis.config.tooltipPadding + "px").html(`
-              <div class="tooltip-title">${country[0]["Country name"]}</div>
+
+                <div style="display: flex">
+                <div class="tooltip-title">${country[0]["Country name"]}</div>
+                <div style="margin-left: auto; margin-right: 0">${selectedYear}</div>
+                </div>
+          <hr>
+
               <div>Happiness Score: <strong>${country[0]["Happiness Score"]}</strong></div>
             `);
                 }

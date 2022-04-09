@@ -11,7 +11,7 @@ class Scatterplot {
             attribute_selected: _config.attribute_selected,
             containerWidth: _config.containerWidth || 500,
             containerHeight: _config.containerHeight || 400,
-            margin: _config.margin || {top: 25, right: 20, bottom: 20, left: 35},
+            margin: _config.margin || { top: 25, right: 20, bottom: 20, left: 35 },
             tooltipPadding: _config.tooltipPadding || 15
         }
         this.data = _data;
@@ -185,7 +185,7 @@ class Scatterplot {
     }
 
     inverseT(p, df) {
-        const {sin, cos, sqrt, pow, exp, PI} = Math;
+        const { sin, cos, sqrt, pow, exp, PI } = Math;
         let a, b, c, d, t, x, y;
 
         if (df == 1) return cos(p * PI / 2) / sin(p * PI / 2);
@@ -324,7 +324,41 @@ class Scatterplot {
             .attr('cy', d => vis.yScale(vis.yValue(d)))
             .attr('cx', d => vis.xScale(vis.xValue(d)))
             .attr('fill', d => vis.fillColor(d))
-            .attr("opacity", d => vis.opacity(d));
+            .attr('opacity', d => vis.opacity(d))
+            .style('cursor', 'pointer')
+            .on('mouseover', function (event, d) {
+                d3.select(this)
+                    .attr('stroke-width', '3')
+                    .attr('r', 7)
+                d3.select('#tooltip')
+                    .style('display', 'block')
+                    .style('left', (event.pageX + vis.config.tooltipPadding) + 'px')
+                    .style('top', (event.pageY + vis.config.tooltipPadding) + 'px')
+                    .html(`
+                        <div >
+                        <div style="display: flex">
+                            <div class="tooltip-title">${d['Country name']}</div>
+                            <div style="margin-left: auto; margin-right: 0">${selectedYear}</div>
+                        </div>
+                      
+                      <hr>
+                      <div>
+                        <b>${scatterplot_attribute}</b>
+                        <i>${vis.yValue(d)}</i>
+                      </div>
+                      <div>
+                        <b>Happiness Score</b>
+                        <i>${vis.xValue(d)}</i>
+                        </div>
+                      </div>
+                    `);
+            })
+            .on('mouseleave', function () {
+                d3.select(this)
+                    .attr('stroke-width', '0')
+                    .attr('r', 4)
+                d3.select('#tooltip').style('display', 'none');
+            });
 
         vis.yLabel.text(scatterplot_attribute);
 
@@ -332,9 +366,9 @@ class Scatterplot {
 
         vis.ci.datum(vis.intervalData())
             .attr("d", d3.area()
-                .x(function(d) { return vis.xScale(d.x) })
-                .y0(function(d) { return vis.yScale(d.left) })
-                .y1(function(d) { return vis.yScale(d.right) })
+                .x(function (d) { return vis.xScale(d.x) })
+                .y0(function (d) { return vis.yScale(d.left) })
+                .y1(function (d) { return vis.yScale(d.right) })
             );
 
         // Update the axes/gridlines

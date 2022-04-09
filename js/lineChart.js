@@ -16,6 +16,7 @@ class LineChart {
         }
         this.data = _data;
         this.paths = [];
+        this.points = [];
         this.initVis();
     }
 
@@ -114,8 +115,10 @@ class LineChart {
 
         for (let i = 0; i < countries.length; i++) {
             if (countries[i]) {
+                // Paths
                 if (vis.paths[i]) {
                     vis.paths[i].remove();
+                    vis.points[i].remove();
                 }
 
                 const data_selected = vis.yearFilteredData.filter(d => d.id === countries[i]);
@@ -125,9 +128,52 @@ class LineChart {
                     .attr("fill", "none")
                     .attr("stroke", chartColors[i])
                     .attr('class', `.chart-line-${i}`)
-                    .attr('d', vis.line);
-            } else if (vis.paths[i]) {
+                    .attr('d', vis.line)
+
+                vis.points[i] = vis.chart.selectAll(`.point-${i}`)
+                    .data(data_selected)
+                    .join('circle')
+                    .attr('class', `.point-${i}`)
+                    .attr('r', 4)
+                    .attr('cy', d => vis.yScale(vis.yValue(d)))
+                    .attr('cx', d => vis.xScale(vis.xValue(d)))
+                    .attr('fill', chartColors[i])
+                    .style('cursor', 'pointer')
+                    .on('mouseover', function (event, d) {
+                        d3.select(this)
+                            .attr('stroke-width', '3')
+                            .attr('r', 7)
+                        d3.select('#tooltip')
+                            .style('display', 'block')
+                            .style('left', (event.pageX + vis.config.tooltipPadding) + 'px')
+                            .style('top', (event.pageY + vis.config.tooltipPadding) + 'px')
+                            .html(`
+                                <div>
+                                    <div style="display: flex">
+                                        <div class="tooltip-title">${d['Country name']}</div>
+                                        <div style="margin-left: auto; margin-right: 0">${vis.xValue(d).getFullYear()}</div>
+                                    </div>
+                              <hr>
+                              <div>
+                                <b>${scatterplot_attribute}</b>
+                                <i>${vis.yValue(d)}</i>
+                              </div>
+
+                              </div>
+                            `);
+                    })
+                    .on('mouseleave', function () {
+                        d3.select(this)
+                            .attr('stroke-width', '0')
+                            .attr('r', 4)
+                        d3.select('#tooltip').style('display', 'none');
+                    });
+                    
+            } 
+            else if (vis.paths[i]) {
                 vis.paths[i].remove();
+                vis.points[i].remove();
+
             }
         }
 

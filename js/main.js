@@ -32,6 +32,8 @@ Promise.all([
         });
     });
 
+    scatterplot_attribute = 'Log GDP per capita';
+
     countrySelector = new CountrySelector({
         parentElement: '#country-selector'
     }, data, geojson)
@@ -129,7 +131,9 @@ handleChartVisiblity = () => {
 // yearSelected: string
 updateRadarPlot = (countriesSelected, yearSelected) => {
     radarplot.data = data;
-    radarplot.updateVis(countriesSelected, yearSelected);
+    radarplot.countriesSelected = countriesSelected || [];
+    radarplot.yearSelected = yearSelected != null ? yearSelected.toString() : null;
+    radarplot.updateVis();
 }
 
 // Called by radar plot when a point is clicked
@@ -157,7 +161,9 @@ d3.select('#year-slider').on('input', function () {
     // Update label
     d3.select('#year-value').text(this.value);
 
-    yearFilteredData = data.filter(d => d.year === selectedYear)
+    yearFilteredData = data.filter(d => d.year === selectedYear);
+
+    updateRegionData();
 
     happinessDist.data = yearFilteredData;
     happinessDist.updateVis();
@@ -222,15 +228,12 @@ function updateSelection(d) {
     map.updateVis();
 }
 
-function selectRegion(region, column) {
-    selectedRegion = region;
-    regionColumn = column;
-
+function updateRegionData() {
     let filteredRegions = regions.filter(d => d[regionColumn] === selectedRegion);
     filteredRegionIds = filteredRegions.map(d => d['country-code']);
 
     if (filteredRegions.length > 0) {
-        const filteredData = data.filter(d => filteredRegionIds.includes(d.id))
+        const filteredData = yearFilteredData.filter(d => filteredRegionIds.includes(d.id))
 
         const meanHappiness = d3.mean(filteredData, d => d["Happiness Score"]);
         const meanGpd = d3.mean(filteredData, d => d["Log GDP per capita"]);
@@ -240,16 +243,31 @@ function selectRegion(region, column) {
         const meanGenerosity = d3.mean(filteredData, d => d["Generosity"]);
         const meanCorruption = d3.mean(filteredData, d => d["Perceptions of corruption"]);
 
-        selectedRegionPercentiles['happiness_pecentile'] = data.filter(d => d["Happiness Score"] <= meanHappiness).length / data.length
-        selectedRegionPercentiles['gdp_pecentile'] = data.filter(d => d["Log GDP per capita"] <= meanGpd).length / data.length
-        selectedRegionPercentiles['social_support_pecentile'] = data.filter(d => d["Social support"] <= meanSocialSupport).length / data.length
-        selectedRegionPercentiles['life_expectancy_pecentile'] = data.filter(d => d["Healthy life expectancy at birth"] <= meanLifeExpectancy).length / data.length
-        selectedRegionPercentiles['freedom_pecentile'] = data.filter(d => d["Freedom to make life choices"] <= meanFreedom).length / data.length
-        selectedRegionPercentiles['generosity_pecentile'] = data.filter(d => d["Generosity"] <= meanGenerosity).length / data.length
-        selectedRegionPercentiles['corruption_pecentile'] = data.filter(d => d["Perceptions of corruption"] >= meanCorruption).length / data.length
-    } else {
         selectedRegionPercentiles = {};
+        selectedRegionPercentiles['Country name'] = selectedRegion;
+        selectedRegionPercentiles['Happiness Score pecentile'] = data.filter(d => d["Happiness Score"] <= meanHappiness).length / data.length * 100
+        selectedRegionPercentiles['Log GDP per capita pecentile'] = data.filter(d => d["Log GDP per capita"] <= meanGpd).length / data.length * 100
+        selectedRegionPercentiles['Social support pecentile'] = data.filter(d => d["Social support"] <= meanSocialSupport).length / data.length * 100
+        selectedRegionPercentiles['Healthy life expectancy at birth pecentile'] = data.filter(d => d["Healthy life expectancy at birth"] <= meanLifeExpectancy).length / data.length * 100
+        selectedRegionPercentiles['Freedom to make life choices pecentile'] = data.filter(d => d["Freedom to make life choices"] <= meanFreedom).length / data.length * 100
+        selectedRegionPercentiles['Generosity pecentile'] = data.filter(d => d["Generosity"] <= meanGenerosity).length / data.length * 100
+        selectedRegionPercentiles['Perceptions of corruption pecentile'] = data.filter(d => d["Perceptions of corruption"] >= meanCorruption).length / data.length * 100
+    } else {
+        selectedRegionPercentiles = null;
     }
+
+    radarplot.selectedRegionPercentiles = selectedRegionPercentiles;
+    map.selectedRegionPercentiles = selectedRegionPercentiles;
+
+}
+
+function selectRegion(region, column) {
+    selectedRegion = region;
+    regionColumn = column;
+
+    updateRegionData();
+
+    radarplot.updateVis();
 
     happinessDist.updateVis();
     scatterplot.updateVis();

@@ -110,6 +110,7 @@ class CountrySelector {
             .join("path")
             .attr("class", "country")
             .attr("d", vis.geoPath)
+            .style('cursor', 'pointer')
             .attr("fill", (d) => {
                 let country = vis.filteredData.filter(e => e.id === d.id);
                 if (country.length > 0) {
@@ -144,7 +145,11 @@ class CountrySelector {
                         .style("display", "block")
                         .style("left", event.pageX + vis.config.tooltipPadding + "px")
                         .style("top", event.pageY + vis.config.tooltipPadding + "px").html(`
-              <div class="tooltip-title">${country[0]["Country name"]}</div>
+                        <div style="display: flex">
+                        <div class="tooltip-title">${country[0]["Country name"]}</div>
+                        <div style="margin-left: auto; margin-right: 0">${country[0]["year"]}</div>
+                        </div>
+                        <hr>
               <div>Happiness Score: <strong>${country[0]["Happiness Score"]}</strong></div>
             `);
                 }

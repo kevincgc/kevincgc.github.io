@@ -13,6 +13,8 @@ class RadarPlot {
         this.onPointClickedEventListener = _onPointClickedEventListener;
         this.onbackgroundClickedEventListener = _onbackgroundClickedEventListener;
         this.data = _data;
+        this.countriesSelected = [];
+        this.yearSelected = null;
         this.initVis();
     }
 
@@ -89,13 +91,14 @@ class RadarPlot {
 
     }
 
-    updateVis(countriesSelected = [], yearSelected = null) {
+    updateVis() {
         let vis = this;
 
-        vis.countriesSelected = countriesSelected;
-        vis.yearSelected = yearSelected != null ? yearSelected.toString() : null;
+        vis.filteredData = vis.data.filter(d => vis.countriesSelected.includes(d.id) && d['year'] == vis.yearSelected);
 
-        vis.filteredData = vis.data.filter(d => countriesSelected.includes(d.id) && d['year'] == yearSelected)
+        if (vis.selectedRegionPercentiles != {} && vis.selectedRegionPercentiles != undefined && vis.selectedRegionPercentiles != null) {
+            vis.filteredData.push(vis.selectedRegionPercentiles);
+        }
 
         vis.percentValue = (d, percentValue) => d[percentValue];
         vis.dataValue = (d, dataValue) => d[dataValue];
@@ -110,6 +113,9 @@ class RadarPlot {
 
     renderVis() {
         let vis = this;
+
+        console.log("filtered values", vis.filteredData);
+        console.log("selected region", vis.selectedRegionPercentiles)
 
         // --------- Circles ---------
 
@@ -211,15 +217,17 @@ class RadarPlot {
             return pathCoordinates;
         }
 
+
+
         const getColorFromSelectedCountry = (d) => {
-            if (vis.countriesSelected.includes(d.id)) {
-                if (vis.countriesSelected.indexOf(d.id) === 0) {
-                    return colors[0];
-                } else if (vis.countriesSelected.indexOf(d.id) === 1) {
-                    return colors[1];
-                } else {
-                    return colors[2];
-                }
+            if (selectedCountries.includes(d.id)) {
+                return colors[selectedCountries.indexOf(d.id)];
+            } else if (filteredRegionIds.includes(d.id)) {
+                return '#004488';
+            } else if (myCountry === d.id) {
+                return myCountryColor;
+            } else {
+                return '#000';
             }
         }
 
@@ -278,7 +286,7 @@ class RadarPlot {
                     tooltipLabel: axis.tooltipLabel,
                     percentValue: axis.percentValue,
                     radarValue: vis.radialScale(vis.percentValue(d, axis.percentValue)),
-                    dataPercent: vis.percentValue(d, axis.percentValue),
+                    dataPercent: Math.round(vis.percentValue(d, axis.percentValue) * 100) / 100,
                     dataValue: vis.dataValue(d, axis.dataValue),
                     data: d
                 });
@@ -291,7 +299,18 @@ class RadarPlot {
             .sort((a, b) => {
                 return vis.percentValue(b, d.percentValue) - vis.percentValue(a, d.percentValue)
             })
-            .map(z => `<div><b>vs ${z['Country name']}:</b> ${vis.percentValue(z, d.percentValue)} Percentile</div>`)
+            .map(z => `<div>
+                <b>vs ${z['Country name']}:</b> ${Math.round(vis.percentValue(z, d.percentValue) * 100) / 100} Percentile
+
+                <div style="
+                display: block; 
+                height: 8px; 
+                width: 100%; 
+                background-color: ${getColorFromSelectedCountry(z) || '#000'};
+                margin-bottom: 5px;">
+                </div>
+
+                </div>`)
             .join('');
             if (otherCountries != '' && otherCountries) {
                 return '<hr>' + otherCountries;
@@ -319,7 +338,7 @@ class RadarPlot {
                 .attr('fill', d => d.color)
                 .attr('stroke', d => vis.config.colors[d.index])
                 .attr('z-index', 99999)
-
+                .style('cursor', 'pointer')
                 .on('click', function (event, d) {
                     d3.select(this)
                         .attr('stroke-width', '3');
@@ -336,12 +355,25 @@ class RadarPlot {
                         .style('left', (event.pageX + vis.config.tooltipPadding) + 'px')
                         .style('top', (event.pageY + vis.config.tooltipPadding) + 'px')
                         .html(`
-                            <div style="background-color: ${d.color}; color: white; padding: 5px" >
-                          <div class="tooltip-title">${d.data['Country name']}</div>
-                          <hr>
+                            <div >
+
+                          <div style="display: flex">
+                                <div class="tooltip-title">${d.data['Country name']}</div>
+                                <div style="margin-left: auto; margin-right: 0">${vis.yearSelected}</div>
+                        </div>
+
+                        <div style="
+                            display: block; 
+                            height: 12px; 
+                            width: 100%; 
+                            background-color: ${d.color || '#000'};
+                            margin-bottom: 5px;">
+                        </div>
+
                           <div>
                             <b>${d.tooltipLabel}</b>
-                            <i>${d.dataValue}</i>
+                            ${d.dataValue != undefined ? `<i>${d.dataValue}</i>` : ''}
+                            
                           </div>
                           <div><span>${d.dataPercent} Percentile</span></div>
                           ${getOtherCountriesData(d) }
