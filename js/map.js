@@ -62,6 +62,8 @@ class GeoMap {
             .append("g")
             .attr('transform', `translate(-200, -40)`);
 
+        vis.map = vis.chart.append("g");
+
         // Scales
         vis.colorScale = d3.scaleLinear()
             .range(['#FFF7F3', '#FF1812'])
@@ -110,6 +112,10 @@ class GeoMap {
         vis.happinessValue = d => d["Happiness Score"];
         vis.extent = d3.extent(vis.filteredData, vis.happinessValue);
         vis.colorScale.domain(vis.extent);
+        vis.features = topojson.feature(vis.geojson, vis.geojson.objects.countries).features;
+        vis.centroids = vis.features.map(function (feature){
+            return [feature.id, vis.geoPath.centroid(feature)];
+        });
 
         vis.legendTicks = [];
         for (let i = 0; i < Math.ceil(vis.extent[1]); i++) {
@@ -224,7 +230,7 @@ class GeoMap {
             .attr("d", vis.pathGenerator({ type: 'Sphere' }));
 
         // Append world map
-        vis.countryPath = vis.chart
+        vis.countryPath = vis.map
             .selectAll(".country")
             .data(countries.features)
             .join("path")
@@ -291,10 +297,25 @@ class GeoMap {
                 }
             });
 
+        vis.country = myCountry === null ? [] : [myCountry];
+        vis.marker = vis.map.selectAll(".marker")
+            .data(vis.country)
+            .join("path")
+            .attr("class", "marker")
+            .attr("d", "M0,0l-8.8-17.7C-12.1-24.3-7.4-32,0-32h0c7.4,0,12.1,7.7,8.8,14.3L0,0z")
+            .attr("transform", d => {
+                let countryCentroid = vis.centroids.find(e => e[0] === d);
+                return "translate(" + countryCentroid[1][0] + "," + countryCentroid[1][1] + ") scale(0.55)";
+            })
+        //.on('mouseover', function(d){})
+        ;
+
         vis.zoom = d3.zoom().on('zoom', (e) => {
-            vis.countryPath.attr('transform', e.transform);
+            vis.map.attr('transform', e.transform);
         });
         vis.svg.call(vis.zoom);
+
+
     }
 
     resetZoom() {

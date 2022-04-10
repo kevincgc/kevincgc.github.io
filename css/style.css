@@ -153,3 +153,16 @@ body {
     font-size: 14px;
     font-weight: 600;
 }
+
+.marker {
+    fill: #31558d;
+    stroke: #31558d;
+    fill-opacity: .96;
+    transition: all .2s ease-in-out;
+}
+
+.marker:hover{
+     fill: #8d3155;
+     fill-opacity: 1;
+     cursor: pointer;
+}

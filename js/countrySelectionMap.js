@@ -77,6 +77,10 @@ class CountrySelector {
         vis.filteredData = vis.data.filter(d => d.year === selectedYear);
         vis.happinessValue = d => d["Happiness Score"];
         vis.colorScale.domain(d3.extent(vis.filteredData, vis.happinessValue));
+        vis.features = topojson.feature(vis.geojson, vis.geojson.objects.countries).features;
+        vis.centroids = vis.features.map(function (feature){
+            return [feature.id, vis.geoPath.centroid(feature)];
+        });
 
         vis.renderVis();
     }
@@ -109,20 +113,10 @@ class CountrySelector {
                 }
             })
             .attr("stroke", d => {
-                if (selectedCountries.includes(d.id)) {
-                    return colors[selectedCountries.indexOf(d.id)];
-                } else if (filteredRegionIds.includes(d.id)) {
-                    return "#004488";
-                } else {
-                    return "#000000";
-                }
+                return "#000000";
             })
             .attr("stroke-width", d => {
-                if (myCountry === d.id) {
-                    return 5;
-                } else {
-                    return 0;
-                }
+                return 0;
             });
 
         countryPath
@@ -152,5 +146,17 @@ class CountrySelector {
                     selectMyCountry(d.id);
                 }
             });
+        vis.country = myCountry === null ? [] : [myCountry];
+        vis.marker = vis.chart.selectAll(".marker")
+            .data(vis.country)
+            .join("path")
+            .attr("class", "marker")
+            .attr("d", "M0,0l-8.8-17.7C-12.1-24.3-7.4-32,0-32h0c7.4,0,12.1,7.7,8.8,14.3L0,0z")
+            .attr("transform", d => {
+                let countryCentroid = vis.centroids.find(e => e[0] === d);
+                return "translate(" + countryCentroid[1][0] + "," + countryCentroid[1][1] + ") scale(1.5)";
+            })
+            //.on('mouseover', function(d){})
+        ;
     }
 }
