@@ -114,9 +114,6 @@ class RadarPlot {
     renderVis() {
         let vis = this;
 
-        console.log("filtered values", vis.filteredData);
-        console.log("selected region", vis.selectedRegionPercentiles)
-
         // --------- Circles ---------
 
         // Add circles

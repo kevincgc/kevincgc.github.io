@@ -358,6 +358,9 @@ class Scatterplot {
                     .attr('stroke-width', '0')
                     .attr('r', 4)
                 d3.select('#tooltip').style('display', 'none');
+            })
+            .on('click', function (event, d) {
+                updateSelection(d.id);
             });
 
         vis.yLabel.text(scatterplot_attribute);

@@ -173,9 +173,8 @@ d3.select('#year-slider').on('input', function () {
     map.updateVis();
 });
 
-// Event slider for input slider
+// Update Confidence Level on Scatterplot
 d3.select('#ci-slider').on('input', function () {
-    // Update visualization
     confidenceLevel = (100 - parseFloat(this.value)) / 100;
     d3.select('#ci-value').text(parseFloat(this.value).toFixed(1));
     scatterplot.updateVis();
@@ -205,11 +204,11 @@ selectMyCountry = (d) => {
 
 function updateSelection(d) {
     // Update filter with value
-    if (selectedCountries.includes(d)) {
-    selectedCountries[selectedCountries.indexOf(d)] = 0;
-} else if (selectedCountries.includes(0)) {
-    selectedCountries[selectedCountries.indexOf(0)] = d;
-}
+    if (filteredRegionIds.includes(d)) {
+        filteredRegionIds = filteredRegionIds.filter(e => e !== d);
+    } else {
+        filteredRegionIds.push(d);
+    }
 
     updateRadarPlot(selectedCountries, selectedYear);
     scatterplot.selectedCountries = selectedCountries;
@@ -262,12 +261,9 @@ function selectRegion(region, column) {
     updateRegionData();
 
     radarplot.updateVis();
-
     happinessDist.updateVis();
     scatterplot.updateVis();
     attributeDist.updateVis();
-
     linePlot.updateVis();
-
     map.updateVis();
 }

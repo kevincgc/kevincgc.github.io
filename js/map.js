@@ -174,8 +174,6 @@ class GeoMap {
             .attr('stroke-width', '0.3')
             .attr("fill", d => vis.fillColor(d))
 
-            console.log("selected country", vis.selectedCountriesData)
-
         vis.selectedCountriesArea.selectAll(".select-country-text")
             .data(vis.selectedCountriesData)
             .join('text')
@@ -246,19 +244,15 @@ class GeoMap {
                 }
             })
             .attr("stroke", d => {
-                if (selectedCountries.includes(d.id)) {
-                    return colors[selectedCountries.indexOf(d.id)];
-                } else if (filteredRegionIds.includes(d.id)) {
+                if (filteredRegionIds.includes(d.id)) {
                     return "#004488";
                 } else {
                     return "#000000";
                 }
             })
             .attr("stroke-width", d => {
-                if (selectedCountries.includes(d.id)) {
-                    return 3;
-                } else if (filteredRegionIds.includes(d.id)) {
-                    return 1;
+                if (filteredRegionIds.includes(d.id)) {
+                    return 2;
                 } else {
                     return 0;
                 }
@@ -289,11 +283,9 @@ class GeoMap {
                 d3.select("#tooltip").style("display", "none");
             })
             .on('click', function (event, d) {
-                if (selectedCountries[3] !== d.id) {
-                    let country = vis.filteredData.filter(e => e.id === d.id);
-                    if (country.length > 0) {
-                        updateSelection(d.id);
-                    }
+                let country = vis.filteredData.filter(e => e.id === d.id);
+                if (country.length > 0) {
+                    updateSelection(d.id);
                 }
             });
 
