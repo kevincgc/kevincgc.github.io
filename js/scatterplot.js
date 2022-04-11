@@ -71,6 +71,7 @@ class Scatterplot {
         function resetBrush() {
             filteredRegionIds = [];
             updateSelection(0);
+            updateRegionData();
         }
 
         function removeBrush() {
@@ -94,6 +95,7 @@ class Scatterplot {
                 if (brushed) {
                     filteredRegionIds.push(d.id);
                 }
+                updateRegionData();
                 return brushed;
             } );
         }

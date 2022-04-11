@@ -4,7 +4,7 @@ let scatterplot_attribute = 'Log GDP per capita'
 let map, countrySelector;
 let selectedYear = 2020;
 let selectedCountries = [0, 0, 0, 0];
-let selectedRegion, regionColumn = '', selectedRegionPercentiles = {};
+let selectedRegion, regionColumn = '', selectedRegionPercentiles = {}, selectedRegionAverage = {};
 let filteredRegionIds = [];
 let yearFilteredData;
 let happinessDist, attributeDist;
@@ -276,10 +276,7 @@ function updateSelection(d) {
 }
 
 function updateRegionData() {
-    let filteredRegions = regions.filter(d => d[regionColumn] === selectedRegion && validCountries.includes(d['country-code']));
-    filteredRegionIds = filteredRegions.map(d => d['country-code']);
-
-    if (filteredRegions.length > 0) {
+    if (filteredRegionIds.length > 0) {
         const filteredData = yearFilteredData.filter(d => filteredRegionIds.includes(d.id))
 
         const meanHappiness = d3.mean(filteredData, d => d["Happiness Score"]);
@@ -289,6 +286,15 @@ function updateRegionData() {
         const meanFreedom = d3.mean(filteredData, d => d["Freedom to make life choices"]);
         const meanGenerosity = d3.mean(filteredData, d => d["Generosity"]);
         const meanCorruption = d3.mean(filteredData, d => d["Perceptions of corruption"]);
+
+        selectedRegionAverage = {};
+        selectedRegionAverage['Happiness Score'] = meanHappiness;
+        selectedRegionAverage['Log GDP per capita'] = meanGpd;
+        selectedRegionAverage['Social support'] = meanSocialSupport;
+        selectedRegionAverage['Healthy life expectancy at birth'] = meanLifeExpectancy;
+        selectedRegionAverage['Freedom to make life choices'] = meanFreedom;
+        selectedRegionAverage['Generosity'] = meanGenerosity;
+        selectedRegionAverage['Perceptions of corruption'] = meanCorruption;
 
         selectedRegionPercentiles = {};
         selectedRegionPercentiles['Country name'] = selectedRegion + ' (Regional Mean)';
@@ -313,6 +319,9 @@ function selectRegion(region, column) {
     selectedRegion = region;
     regionColumn = column;
     document.getElementById(selectedRegion).setAttribute("class", "btn-clicked");
+
+    let filteredRegions = regions.filter(d => d[regionColumn] === selectedRegion && validCountries.includes(d['country-code']));
+    filteredRegionIds = filteredRegions.map(d => d['country-code']);
 
     updateRegionData();
 
