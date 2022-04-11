@@ -188,8 +188,12 @@ class CountrySelector {
                 let countryCentroid = vis.centroids.find(e => e[0] === d);
                 return "translate(" + countryCentroid[1][0] + "," + countryCentroid[1][1] + ") scale(1.5)";
             })
-            //.on('mouseover', function(d){})
-        ;
+            .on('click', function (event, d) {
+                document.getElementById('unpacking-happiness').scrollIntoView({
+                    behavior: 'smooth'
+                })
+            });
+
         // Draw legend
         const legend = vis.legendDefs.append('linearGradient').attr('id', 'legendGradient');
 
