@@ -5,7 +5,7 @@ class RadarPlot {
             parentElement: _config.parentElement,
             containerWidth: _config.containerWidth || 550,
             containerHeight: _config.containerHeight || 400,
-            margin: _config.margin || { top: 100, right: 100, bottom: 100, left: 100 },
+            margin: _config.margin || { top: 50, right: 100, bottom: 0, left: 100 },
             tooltipPadding: _config.tooltipPadding || 3,
             colors: _config.colors
         }
@@ -153,7 +153,7 @@ class RadarPlot {
             enter => enter.append('text')
                 .attr('class', 'circleTick')
                 .attr('x', vis.width / 2)
-                .attr('y', d => vis.radarRadius - vis.radialScale(d))
+                .attr('y', d => vis.radarRadius * 1.7 - vis.radialScale(d))
                 .attr('dy', '-.45em')
                 .attr('dx', '.35em')
                 .text(d => `${d}th`));

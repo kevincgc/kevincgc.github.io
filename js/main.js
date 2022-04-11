@@ -143,7 +143,7 @@ selectChart = (selectedId, unselectedId) => {
 // Draw the radar plot
 function showRadarPlot(data) {
     const containerWidth = 500;
-    const containerHeight = 500;
+    const containerHeight = 420;
 
     const parentElement = '#radarplot'
 
