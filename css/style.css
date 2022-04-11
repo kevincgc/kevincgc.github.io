@@ -9,6 +9,11 @@ body {
     margin: 0 auto;
 }
 
+#title {
+    text-align: center;
+    padding-bottom: 20px;
+}
+
 #vis-map {
     width: 650px;
     display: inline-block;
@@ -24,13 +29,14 @@ body {
     display: inline-block;
 }
 
-#line_chart_gdp {
+#line_chart {
     width: 600px;
     display: inline-block;
 }
 
 #projection {
     display: inline;
+    float: left;
 }
 
 #attribute {

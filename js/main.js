@@ -15,6 +15,10 @@ let validCountries = [];
 const regionColor = "#0057e7";
 //const myCountryColor = "#01c5a9";
 const colors = ['#ff0048', '#a217dc', '#fdd100', myCountryColor];
+let chartIdVisible = "scatterplot";
+let chartIdInvisible = "line_chart";
+
+// const colors = ['#a217dc', '#01c5a9', '#1437FF', myCountryColor];
 
 //Load data from CSV file asynchronously and render chart
 Promise.all([
@@ -81,7 +85,7 @@ Promise.all([
     const filteredData = data.sort((a, b) => a.year - b.year);
 
     linePlot = new LineChart({
-        parentElement: '#line_chart_gdp',
+        parentElement: '#line_chart',
         attribute: 'Log GDP per capita'
         // Optional: other configurations
     }, filteredData);
@@ -90,6 +94,12 @@ Promise.all([
     linePlot.updateVis();
 
     handleChartVisiblity();
+    document.getElementById(chartIdInvisible).style.display = "none";
+    document.getElementById(chartIdVisible).style.display = "inline-block";
+
+    // document.getElementById(chartIdVisible).style.visibility = "visible";
+    // document.getElementById(chartIdInvisible).style.visibility = "hidden";
+
 });
 
 d3.selectAll('#scatter-plot-selector').on('change', e => {
@@ -101,6 +111,26 @@ d3.selectAll('#scatter-plot-selector').on('change', e => {
 
     linePlot.updateVis();
 })
+
+selectChart = (selectedId, unselectedId) => {
+    // document.getElementById(selectedId).style.visibility = "visible";
+    // document.getElementById(unselectedId).style.visibility = "hidden";
+
+    document.getElementById(unselectedId).style.display = "none";
+    document.getElementById(selectedId).style.display = "inline-block";
+
+    chartIdVisible = selectedId;
+    chartIdInvisible = unselectedId;
+
+    if (chartIdVisible === "line_chart") {
+        document.getElementById("happiness-score").hidden = false;
+        document.getElementById("confidence-level").style.visibility = "hidden";
+
+    } else {
+        document.getElementById("happiness-score").hidden = true;
+        document.getElementById("confidence-level").style.visibility = "visible";
+    }
+}
 
 // Draw the radar plot
 function showRadarPlot(data) {
