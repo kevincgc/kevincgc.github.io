@@ -239,8 +239,10 @@ class GeoMap {
                 let country = vis.filteredData.filter(e => e.id === d.id);
                 if (country.length > 0) {
                     return vis.colorScale(country[0]["Happiness Score"]);
+                } else if (validCountries.includes(d.id)) {
+                    return "#333";
                 } else {
-                    return "#777777";
+                    return "#999";
                 }
             })
             .attr("stroke", d => {
@@ -262,7 +264,7 @@ class GeoMap {
             .style('cursor', 'pointer')
             .on("mouseover", (event, d) => {
                 let country = vis.filteredData.filter(e => e.id === d.id);
-                if (country.length > 0) {
+                let countryData = regions.find(e => e["country-code"] === d.id);
                     d3
                         .select("#tooltip")
                         .style("display", "block")
@@ -270,14 +272,14 @@ class GeoMap {
                         .style("top", event.pageY + vis.config.tooltipPadding + "px").html(`
 
                 <div style="display: flex">
-                <div class="tooltip-title">${country[0]["Country name"]}</div>
+                <div class="tooltip-title">${countryData.name}</div>
                 <div style="margin-left: auto; margin-right: 0">${selectedYear}</div>
                 </div>
           <hr>
 
-              <div>Happiness Score: <strong>${country[0]["Happiness Score"]}</strong></div>
+              <div>Happiness Score: <strong>${country.length > 0 ? country[0]["Happiness Score"]:
+                        (validCountries.includes(d.id) ? "Missing Data for " + selectedYear : "No Data Available" )}</strong></div>
             `);
-                }
             })
             .on("mouseleave", () => {
                 d3.select("#tooltip").style("display", "none");

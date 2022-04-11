@@ -108,7 +108,7 @@ class CountrySelector {
                 if (vis.filteredData.has(d.id)) {
                     return vis.colorScale(vis.filteredData.get(d.id));
                 } else {
-                    return "#777777";
+                    return "#999";
                 }
             })
             .attr("stroke", d => {
@@ -121,7 +121,6 @@ class CountrySelector {
         countryPath
             .on("mouseover", (event, d) => {
                 let country = regions.find(e => e["country-code"] === d.id);
-                if (validCountries.includes(d.id)) {
                     d3
                         .select("#tooltip")
                         .style("display", "block")
@@ -129,11 +128,13 @@ class CountrySelector {
                         .style("top", event.pageY + vis.config.tooltipPadding + "px").html(`
                         <div style="display: flex">
                         <div class="tooltip-title">${country.name}</div>
+                        <div style="margin-left: auto; margin-right: 0">2011 to 2020</div>
                         </div>
                         <hr>
-              <div>Happiness Score: <strong>${vis.filteredData.get(d.id).toFixed(4)}</strong></div>
+              <div>Happiness Score Mean: <strong>${
+                        validCountries.includes(d.id) ? vis.filteredData.get(d.id).toFixed(4) : "No Data Available"
+                        }</strong></div>
             `);
-                }
             })
             .on("mouseleave", () => {
                 d3.select("#tooltip").style("display", "none");
