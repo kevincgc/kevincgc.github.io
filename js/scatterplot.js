@@ -134,6 +134,7 @@ class Scatterplot {
             .append('path')
             .attr('class', 'reg')
             .attr('stroke', 'black')
+            .attr('stroke-width', 2)
             .attr('fill', 'none');
 
         vis.chart.call(vis.brush);
