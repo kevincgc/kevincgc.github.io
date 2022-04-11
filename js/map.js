@@ -313,6 +313,11 @@ class GeoMap {
                 let countryCentroid = vis.centroids.find(e => e[0] === d);
                 return "translate(" + countryCentroid[1][0] + "," + countryCentroid[1][1] + ") scale(0.55)";
             })
+            .on('click', function (event, d) {
+                document.getElementById('title').scrollIntoView({
+                    behavior: 'smooth'
+                })
+            })
         //.on('mouseover', function(d){})
         ;
 
