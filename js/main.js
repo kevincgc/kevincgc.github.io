@@ -319,7 +319,10 @@ function selectRegion(region, column) {
     clearButtonStyle();
     selectedRegion = region;
     regionColumn = column;
-    document.getElementById(selectedRegion).setAttribute("class", "btn-clicked");
+    if (selectedRegion) {
+        document.getElementById(selectedRegion).setAttribute("class", "btn-clicked");
+    }
+
 
     let filteredRegions = regions.filter(d => d[regionColumn] === selectedRegion && validCountries.includes(d['country-code']));
     filteredRegionIds = filteredRegions.map(d => d['country-code']);

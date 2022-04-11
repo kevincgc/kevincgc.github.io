@@ -20,11 +20,11 @@
 
                     <label for="year-slider">Select year <span id="year-value">2019</span></label>
                     <input type="range" min="2011" value="2019" max="2020" id="year-slider">
-                    <button onclick="map.resetZoom()">Reset Zoom</button>
+                    <button class='btn' onclick="map.resetZoom()">Reset Zoom</button>
+                    <button id='none' class='btn' onclick="selectRegion('', '')">Unselect All</button>
 
                 <div id="region-buttons">
                     Select region:
-                    <button id='none' class='btn' onclick="selectRegion('none', '')">None</button>
                     <button id='Europe' class='btn' onclick="selectRegion('Europe', 'region')">EU</button>
                     <button id='Northern America' class='btn' onclick="selectRegion('Northern America', 'sub-region')">
                         NA
