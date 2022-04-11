@@ -214,6 +214,8 @@ function updateSelection(d) {
         }
     }
 
+    map.selectedRegionPercentiles = {'Country name': 'Selected Countries (Mean Of Selection)'};
+
     clearButtonStyle();
 
     updateRadarPlot(selectedCountries, selectedYear);

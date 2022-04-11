@@ -104,6 +104,7 @@ class GeoMap {
         if (vis.selectedRegionPercentiles != {} && vis.selectedRegionPercentiles != undefined && vis.selectedRegionPercentiles != null) {
             vis.selectedCountriesData.push(vis.selectedRegionPercentiles);
         }
+        console.log(vis.selectedCountriesData);
         vis.projection = d3.geoNaturalEarth1().scale(110);
 
         vis.geoPath = d3.geoPath().projection(vis.projection);
