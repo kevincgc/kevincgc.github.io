@@ -11,6 +11,7 @@ let happinessDist, attributeDist;
 let myCountry = null;
 let myCountryColor = "#8533af";
 let confidenceLevel = 0.05;
+let validCountries = [];
 
 const colors = ['#a217dc', '#01c5a9', '#1437FF', myCountryColor];
 
@@ -24,12 +25,14 @@ Promise.all([
     geojson = _data[1];
     regions = _data[2];
     data.forEach(d => {
+        validCountries.push(d.id);
         Object.keys(d).forEach(attr => {
             if (attr !== 'Country name' && attr !== 'id') {
                 d[attr] = +d[attr];
             }
         });
     });
+    validCountries = [...new Set(validCountries)];
 
     scatterplot_attribute = 'Log GDP per capita';
 
@@ -222,7 +225,7 @@ function updateSelection(d) {
 }
 
 function updateRegionData() {
-    let filteredRegions = regions.filter(d => d[regionColumn] === selectedRegion);
+    let filteredRegions = regions.filter(d => d[regionColumn] === selectedRegion && validCountries.includes(d['country-code']));
     filteredRegionIds = filteredRegions.map(d => d['country-code']);
 
     if (filteredRegions.length > 0) {

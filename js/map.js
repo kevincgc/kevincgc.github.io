@@ -283,8 +283,7 @@ class GeoMap {
                 d3.select("#tooltip").style("display", "none");
             })
             .on('click', function (event, d) {
-                let country = vis.filteredData.filter(e => e.id === d.id);
-                if (country.length > 0) {
+                if (validCountries.includes(d.id)) {
                     updateSelection(d.id);
                 }
             });
