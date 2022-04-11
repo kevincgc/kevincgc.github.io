@@ -43,7 +43,7 @@ class AttributeDistribution {
         // Append group element that will contain our actual chart
         // and position it according to the given margin config
         vis.chart = vis.svg.append('g')
-            .attr('transform', `translate(10,-10)`);
+            .attr('transform', `translate(10,0)`);
 
         vis.overall = vis.chart.append("path")
             .attr("class", "happiness-overall")
