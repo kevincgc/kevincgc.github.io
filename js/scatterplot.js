@@ -386,7 +386,8 @@ class Scatterplot {
                             </div>
 
                             <div class="tooltip-colordiv"
-                                style="background-color: ${vis.fillColor(d) || '#000'}; opacity: ${vis.fillColor(d) === "#000" ? 0.15 : 1};">
+                                style="background-color: ${ d.id === myCountry ? myCountryColor :vis.fillColor(d)}; 
+                                opacity: ${vis.fillColor(d) === "#000" ? 0.15 : 1};">
                                 
                             </div>
                         
@@ -414,7 +415,8 @@ class Scatterplot {
                 d3.select('#tooltip').style('display', 'none');
             })
             .on("mousedown", function(event,d) { event.stopPropagation(); })
-            .on("mouseup", function(event,d) { event.stopPropagation();
+            .on("mouseup", function(event,d) {
+                event.stopPropagation();
                 updateSelection(d.id);
             });
 
