@@ -169,7 +169,7 @@ class GeoMap {
                 else return i * legendYMultiplier;
             })
             .attr("r", 6)
-            .attr('fill-opacity', '0.60')
+            .attr('fill-opacity', '1')
             .attr('stroke', '#333')
             .attr('stroke-width', '0.3')
             .attr("fill", d => vis.fillColor(d))

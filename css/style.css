@@ -84,18 +84,6 @@ body {
     fill: #76768a;
 }
 
-.point.active {
-    opacity: 0.7;
-}
-
-.point.active.selected {
-    fill: orange;
-}
-
-.point.active:hover {
-    opacity: 1;
-    cursor: pointer;
-}
 
 #lexis-chart {
     box-sizing: content-box;
@@ -131,8 +119,7 @@ body {
 
 
 .country:hover {
-    stroke: #000000;
-    stroke-width: 1;
+    stroke-width: 4;
 }
 
 /* Tooltip */
@@ -155,14 +142,14 @@ body {
 }
 
 .marker {
-    fill: #31558d;
-    stroke: #31558d;
+    fill: #8533af;
+    stroke: #8533af;
     fill-opacity: .96;
     transition: all .2s ease-in-out;
 }
 
 .marker:hover{
-     fill: #8d3155;
+     fill: #31558d;
      fill-opacity: 1;
      cursor: pointer;
 }

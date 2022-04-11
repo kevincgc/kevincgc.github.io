@@ -259,22 +259,20 @@ class Scatterplot {
         vis.yearFilteredData = data.filter(d => (d.year === selectedYear && vis.yValue(d) !== 0));
 
         vis.fillColor = d => {
-            if (selectedCountries.includes(d.id)) {
-                return colors[selectedCountries.indexOf(d.id)];
-            } else if (filteredRegionIds.includes(d.id)) {
+            if (filteredRegionIds.includes(d.id)) {
                 return '#004488';
-            } else if (myCountry === d.id) {
-                return myCountryColor;
+            } else if (d.id === myCountry) {
+                return '#999'
             } else {
                 return '#000';
             }
         }
 
         vis.opacity = d => {
-            if (selectedCountries.includes(d.id) || d.id === myCountry) {
-                return 1;
+            if (d.id === myCountry) {
+                return 1
             } else if (filteredRegionIds.includes(d.id)) {
-                return 0.6;
+                return 0.8;
             } else {
                 return 0.15;
             }
@@ -320,16 +318,23 @@ class Scatterplot {
             .data(vis.yearFilteredData)
             .join('circle')
             .attr('class', 'point')
-            .attr('r', 4)
+            .attr('r', d => d.id === myCountry ? 6 : 4)
             .attr('cy', d => vis.yScale(vis.yValue(d)))
             .attr('cx', d => vis.xScale(vis.xValue(d)))
             .attr('fill', d => vis.fillColor(d))
             .attr('opacity', d => vis.opacity(d))
+            .attr('stroke', d => d.id === myCountry ? myCountryColor : "transparent")
+            .attr('stroke-width', 4)
+            .attr('stroke-opacity', 1)
             .style('cursor', 'pointer')
             .on('mouseover', function (event, d) {
-                d3.select(this)
-                    .attr('stroke-width', '3')
-                    .attr('r', 7)
+                if (d.id !== myCountry) {
+                    d3.select(this)
+                        .attr('r', 6);
+                } else {
+                    d3.select(this)
+                        .attr('r', 8);
+                }
                 d3.select('#tooltip')
                     .style('display', 'block')
                     .style('left', (event.pageX + vis.config.tooltipPadding) + 'px')
@@ -353,10 +358,15 @@ class Scatterplot {
                       </div>
                     `);
             })
-            .on('mouseleave', function () {
-                d3.select(this)
-                    .attr('stroke-width', '0')
-                    .attr('r', 4)
+            .on('mouseleave', function (event, d) {
+                if (d.id !== myCountry) {
+                    d3.select(this)
+                        .attr('r', 4);
+                } else {
+                    d3.select(this)
+                        .attr('r', 6);
+                }
+
                 d3.select('#tooltip').style('display', 'none');
             })
             .on('click', function (event, d) {
