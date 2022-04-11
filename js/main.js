@@ -139,7 +139,7 @@ selectChart = (selectedId, unselectedId) => {
             linePlot.updateVis();
         }
         document.getElementById("happiness-score").hidden = true;
-        document.getElementById("confidence-level").style.visibility = "visible";
+        document.getElementById("scatterplot-control").style.visibility = "visible";
     }
 }
 

@@ -1,5 +1,4 @@
 class AttributeDistribution {
-
     /**
      * Class constructor with basic chart configuration
      * @param {Object}
@@ -11,7 +10,7 @@ class AttributeDistribution {
             attribute_selected: _config.attribute_selected,
             containerWidth: _config.containerWidth || 150,
             containerHeight: _config.containerHeight || 600,
-            margin: _config.margin || {top: 25, right: 20, bottom: 20, left: 35},
+            margin: _config.margin || {top: 25, right: 20, bottom: 20, left: 0},
             tooltipPadding: _config.tooltipPadding || 15
         }
         this.data = _data;
@@ -29,24 +28,11 @@ class AttributeDistribution {
         vis.width = vis.config.containerWidth - vis.config.margin.left - vis.config.margin.right;
         vis.height = vis.config.containerHeight - vis.config.margin.top - vis.config.margin.bottom;
 
-        vis.parseDate = d3.timeParse("%Y");
-
         vis.xScale = d3.scaleLinear()
             .range([0, vis.width]);
 
         vis.yScale = d3.scaleLinear()
-            .range([vis.height, 0]);
-
-        // Initialize axes
-        vis.xAxis = d3.axisBottom(vis.xScale)
-            .ticks(3)
-            .tickSize(-10)
-            .tickPadding(10);
-
-        vis.yAxis = d3.axisLeft(vis.yScale)
-            .ticks(6)
-            .tickSize(0)
-            .tickPadding(10);
+            .range([vis.height,0]);
 
         // Define size of SVG drawing area
         vis.svg = d3.select(vis.config.parentElement)
@@ -57,26 +43,23 @@ class AttributeDistribution {
         // Append group element that will contain our actual chart
         // and position it according to the given margin config
         vis.chart = vis.svg.append('g')
-            .attr('transform', `translate(${vis.config.margin.left},${vis.config.margin.top})`);
+            .attr('transform', `translate(30,-10)`);
 
-        // Append empty x-axis group and move it to the bottom of the chart
-        vis.xAxisG = vis.chart.append('g')
-            .attr('class', 'axis x-axis')
-            .attr('transform', `translate(0,${vis.height})`);
+        vis.overall = vis.chart.append("path")
+            .attr("class", "happiness-overall")
+            .attr("fill", "#777")
+            .attr("opacity", ".8")
+            .attr("stroke", "#000")
+            .attr("stroke-width", 1)
+            .attr("stroke-linejoin", "round");
 
-        // Append y-axis group
-        vis.yAxisG = vis.chart.append('g')
-            .attr('class', 'axis y-axis');
-
-        vis.diffMap = {
-            "Happiness Score": 0.5,
-            "Log GDP per capita": 0.5,
-            "Social support": 0.05,
-            "Healthy life expectancy at birth": 2,
-            "Freedom to make life choices": 0.05,
-            "Generosity": 0.1,
-            "Perceptions of corruption": 0.1
-        }
+        vis.selected = vis.chart.append("path")
+            .attr("class", "happiness-overall")
+            .attr("fill", "#004488")
+            .attr("opacity", ".8")
+            .attr("stroke", "#000")
+            .attr("stroke-width", 1)
+            .attr("stroke-linejoin", "round");
     }
 
     /**
@@ -85,44 +68,34 @@ class AttributeDistribution {
     updateVis() {
         let vis = this;
 
-        vis.yValue = d => d[scatterplot_attribute];
+        vis.xValue = d => d['Happiness Score']
+        vis.yValue = d => d[scatterplot_attribute]
+
         vis.yearFilteredData = data.filter(d => (d.year === selectedYear && vis.yValue(d) !== 0));
 
-        const maxVal = d3.max(vis.yearFilteredData, vis.yValue)
-
-        vis.computedData = [];
-        const diff = vis.diffMap[scatterplot_attribute]
-
-        const start = Math.floor(d3.min(vis.yearFilteredData, vis.yValue))
-
-        for (let i = start; i < maxVal; i = i+diff) {
-            const count = vis.yearFilteredData.filter(d => d[scatterplot_attribute] >= i && d[scatterplot_attribute] < i + diff).length
-            vis.computedData.push({x: count, y: i+diff})
-        }
-
         vis.filtered_regions = vis.yearFilteredData.filter(d => filteredRegionIds.includes(d.id))
-        vis.filteredComputedData = [];
 
-        for (let i = start; i < maxVal; i = i+diff) {
-            const count = vis.filtered_regions.filter(d => d[scatterplot_attribute] >= i && d[scatterplot_attribute] < i + diff).length
-            vis.filteredComputedData.push({x: count, y: i+diff})
+        // set the parameters for the histogram
+        vis.histogram = d3.histogram()
+            .value(function(d) {return vis.yValue(d);})
+            .domain([d3.min(vis.yearFilteredData, vis.yValue) - Math.abs(d3.max(vis.yearFilteredData, vis.yValue) * 0.1),
+                d3.max(vis.yearFilteredData, vis.yValue) + d3.max(vis.yearFilteredData, vis.yValue) * 0.1])
+            .thresholds(binSize); // then the numbers of bins
+        // And apply this function to data to get the bins
+        vis.bins = vis.histogram(vis.yearFilteredData);
+        vis.binsCount = [];
+        for (let i = 0; i < vis.bins.length; i++) {
+            vis.binsCount.push([i, vis.bins[i].length]);
         }
+        vis.selectedBins = vis.histogram(vis.filtered_regions);
+        vis.selectedBinsCount = [];
+        for (let i = 0; i < vis.selectedBins.length; i++) {
+            vis.selectedBinsCount.push([i, vis.selectedBins[i].length]);
+        }
+        console.log(this.binsCount);
 
-        vis.computedX = d => d["x"]
-        vis.computedY = d => d["y"]
-
-        vis.histogram  = d3.histogram()
-            .value((d) => d[scatterplot_attribute])
-            .domain(vis.yScale.domain())
-            .thresholds(vis.yScale.ticks(6));
-
-
-        vis.maxY = d3.max(vis.computedData, vis.computedY)
-        vis.maxX = d3.max(vis.computedData, vis.computedX)
-
-        // Set the scale input domains
-        vis.xScale.domain([0, vis.maxX]);
-        vis.yScale.domain([d3.min(vis.yearFilteredData, vis.yValue), maxVal]);
+        vis.xScale.domain([0, d3.max(vis.binsCount, d => d[1])]);
+        vis.yScale.domain([0, vis.bins.length]);
         vis.renderVis();
     }
 
@@ -132,25 +105,18 @@ class AttributeDistribution {
     renderVis() {
         let vis = this;
 
-        vis.bins = vis.histogram(vis.yearFilteredData)
-        vis.chart
-            .selectAll(".bar")
-            .data(vis.computedData)
-            .join("rect")
-            .attr("class", "bar")
-            .attr("y", d => vis.yScale(vis.computedY(d)))
-            .attr("height", vis.height / vis.yScale.ticks().length)
-            .attr("width", d => vis.xScale(vis.computedX(d)))
-            .style("opacity", 0.5)
+        vis.overall.datum(vis.binsCount)
+            .attr("d",  d3.line()
+                .curve(d3.curveBasis)
+                .x(function(d) { return vis.xScale(d[1]); })
+                .y(function(d) { return vis.yScale(d[0]); })
+            );
 
-        vis.chart.selectAll(".selected-bar")
-            .data(vis.filteredComputedData)
-            .join("rect")
-            .attr("class", "selected-bar")
-            .attr("y", d => vis.yScale(vis.computedY(d)))
-            .attr("height", vis.height / vis.yScale.ticks().length)
-            .attr("width", d => vis.xScale(vis.computedX(d)))
-            .style("opacity", 0.5)
-            .style("fill", regionColor)
+        vis.selected.datum(vis.selectedBinsCount)
+            .attr("d",  d3.line()
+                .curve(d3.curveBasis)
+                .x(function(d) { return vis.xScale(d[1]); })
+                .y(function(d) { return vis.yScale(d[0]); })
+            );
     }
 }

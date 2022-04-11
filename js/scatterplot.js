@@ -323,8 +323,8 @@ class Scatterplot {
 
         // Set the scale input domains
         vis.xScale.domain([d3.min(vis.data, vis.xValue) - 0.6, d3.max(vis.data, vis.xValue) + 0.6]);
-        vis.yScale.domain([d3.min(vis.yearFilteredData, vis.yValue) - Math.abs(d3.max(vis.yearFilteredData, vis.yValue) * 0.06),
-            d3.max(vis.yearFilteredData, vis.yValue) + d3.max(vis.yearFilteredData, vis.yValue) * 0.06]);
+        vis.yScale.domain([d3.min(vis.yearFilteredData, vis.yValue) - Math.abs(d3.max(vis.yearFilteredData, vis.yValue) * 0.1),
+            d3.max(vis.yearFilteredData, vis.yValue) + d3.max(vis.yearFilteredData, vis.yValue) * 0.1]);
 
         vis.linearRegression = ss.linearRegression(vis.yearFilteredData.map(d => [vis.xValue(d), vis.yValue(d)]));
         vis.linearRegressionLine = ss.linearRegressionLine(vis.linearRegression);
