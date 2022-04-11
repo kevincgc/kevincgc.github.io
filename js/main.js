@@ -59,7 +59,7 @@ Promise.all([
     yearFilteredData = data.filter(d => d.year === selectedYear)
 
     happinessDist = new HappinessDistribution({
-        parentElement: '#scatterplot',
+        parentElement: '#happiness-dist',
         attribute_selected: scatterplot_attribute
         // Optional: other configurations
     }, yearFilteredData, colors);
@@ -75,7 +75,7 @@ Promise.all([
     scatterplot.updateVis();
 
     attributeDist = new AttributeDistribution({
-        parentElement: '#scatterplot',
+        parentElement: '#attribute-dist',
         attribute_selected: scatterplot_attribute
         // Optional: other configurations
     }, yearFilteredData, colors);
@@ -116,8 +116,8 @@ selectChart = (selectedId, unselectedId) => {
     // document.getElementById(selectedId).style.visibility = "visible";
     // document.getElementById(unselectedId).style.visibility = "hidden";
 
-    document.getElementById(unselectedId).style.display = "none";
-    document.getElementById(selectedId).style.display = "inline-block";
+    document.querySelectorAll("." + unselectedId).forEach(d => {d.style.display = "none"});
+    document.querySelectorAll("." + selectedId).forEach(d => {d.style.display = "inline-block"});
 
     chartIdVisible = selectedId;
     chartIdInvisible = unselectedId;
@@ -127,6 +127,14 @@ selectChart = (selectedId, unselectedId) => {
         document.getElementById("confidence-level").style.visibility = "hidden";
 
     } else {
+        if (document.getElementById('scatter-plot-selector').value === "Happiness Score") {
+            document.getElementById('scatter-plot-selector').value = "Log GDP per capita";
+            scatterplot_attribute = "Log GDP per capita";
+            happinessDist.updateVis();
+            scatterplot.updateVis();
+            attributeDist.updateVis();
+            linePlot.updateVis();
+        }
         document.getElementById("happiness-score").hidden = true;
         document.getElementById("confidence-level").style.visibility = "visible";
     }
@@ -186,6 +194,7 @@ d3.select('#year-slider').on('input', function () {
 
     // Update label
     d3.select('#year-value').text(this.value);
+    d3.select('#year-value-dup').text(this.value);
 
     yearFilteredData = data.filter(d => d.year === selectedYear);
 
@@ -257,6 +266,7 @@ function updateSelection(d) {
     updateRadarPlot(selectedCountries, selectedYear);
 
     map.updateVis();
+    radarplot.updateVis();
 
     // Update tooltip for map
     d3.select("#tooltip-colordiv")

@@ -9,8 +9,8 @@ class Scatterplot {
         this.config = {
             parentElement: _config.parentElement,
             attribute_selected: _config.attribute_selected,
-            containerWidth: _config.containerWidth || 500,
-            containerHeight: _config.containerHeight || 400,
+            containerWidth: _config.containerWidth || 900,
+            containerHeight: _config.containerHeight || 600,
             margin: _config.margin || { top: 25, right: 20, bottom: 20, left: 35 },
             tooltipPadding: _config.tooltipPadding || 15
         }
@@ -317,8 +317,9 @@ class Scatterplot {
         }
 
         // Set the scale input domains
-        vis.xScale.domain([0, d3.max(vis.data, vis.xValue)]);
-        vis.yScale.domain([d3.min(vis.yearFilteredData, vis.yValue), d3.max(vis.yearFilteredData, vis.yValue)]);
+        vis.xScale.domain([d3.min(vis.data, vis.xValue) - 0.3, d3.max(vis.data, vis.xValue) + 0.3]);
+        vis.yScale.domain([d3.min(vis.yearFilteredData, vis.yValue) - d3.max(vis.yearFilteredData, vis.yValue) * 0.03,
+            d3.max(vis.yearFilteredData, vis.yValue) + d3.max(vis.yearFilteredData, vis.yValue) * 0.03]);
 
         vis.linearRegression = ss.linearRegression(vis.yearFilteredData.map(d => [vis.xValue(d), vis.yValue(d)]));
         vis.linearRegressionLine = ss.linearRegressionLine(vis.linearRegression);

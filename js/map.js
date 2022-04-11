@@ -9,8 +9,8 @@ class GeoMap {
     constructor(_config, _data, _geojson) {
         this.config = {
             parentElement: _config.parentElement,
-            containerWidth: _config.containerWidth || 600,
-            containerHeight: _config.containerHeight || 500,
+            containerWidth: _config.containerWidth || 700,
+            containerHeight: _config.containerHeight || 350,
             margin: _config.margin || { top: 0, right: 0, bottom: 0, left: 0 },
             tooltipPadding: 10,
             legendBottom: 15,
@@ -60,7 +60,7 @@ class GeoMap {
         // and position it according to the given margin config
         vis.chart = vis.svg
             .append("g")
-            .attr('transform', `translate(-200, -40)`);
+            .attr('transform', `translate(-140, -60)`);
 
         vis.map = vis.chart.append("g");
 
@@ -99,12 +99,13 @@ class GeoMap {
     updateVis() {
         let vis = this;
 
-        vis.selectedCountriesData = data.filter(d => selectedCountries.includes(d.id) && d['year'] == selectedYear);
+        let myCountryObj = regions.find(e => e["country-code"] === myCountry);
+        vis.selectedCountriesData = [{'Country name': myCountryObj ? myCountryObj.name : "", 'id': myCountry}];
 
         if (vis.selectedRegionPercentiles != {} && vis.selectedRegionPercentiles != undefined && vis.selectedRegionPercentiles != null) {
             vis.selectedCountriesData.push(vis.selectedRegionPercentiles);
         }
-        console.log(vis.selectedCountriesData);
+
         vis.projection = d3.geoNaturalEarth1().scale(110);
 
         vis.geoPath = d3.geoPath().projection(vis.projection);
@@ -175,12 +176,7 @@ class GeoMap {
                 // Odd legend items
                 else return oddLegendX;
             })
-            .attr("cy", (_, i) => {
-                // Even legend items
-                if (i % 2 == 0) return (i + 1) * legendYMultiplier;
-                // Odd legend items
-                else return i * legendYMultiplier;
-            })
+            .attr("cy", 75)
             .attr("r", 6)
             .attr('fill-opacity', '1')
             .attr('stroke', '#333')
@@ -198,12 +194,13 @@ class GeoMap {
                 // Odd legend items
                 else return oddLegendX + legendTextXOffset;
             })
-            .attr("dy", (_, i) => {
-                // Even legend items
-                if (i % 2 == 0) return ((i + 1) * legendYMultiplier) + legendTextYOffset;
-                // Odd legend items
-                else return (i * legendYMultiplier) + legendTextYOffset;
-            })
+            // .attr("dy", (_, i) => {
+            //     // Even legend items
+            //     if (i % 2 == 0) return ((i + 1) * legendYMultiplier) + legendTextYOffset;
+            //     // Odd legend items
+            //     else return (i * legendYMultiplier) + legendTextYOffset;
+            // })
+            .attr("dy", 80)
             .text(d => d['Country name'])
     }
 

@@ -9,8 +9,8 @@ class AttributeDistribution {
         this.config = {
             parentElement: _config.parentElement,
             attribute_selected: _config.attribute_selected,
-            containerWidth: _config.containerWidth || 100,
-            containerHeight: _config.containerHeight || 400,
+            containerWidth: _config.containerWidth || 150,
+            containerHeight: _config.containerHeight || 600,
             margin: _config.margin || {top: 25, right: 20, bottom: 20, left: 35},
             tooltipPadding: _config.tooltipPadding || 15
         }

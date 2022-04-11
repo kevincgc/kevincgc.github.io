@@ -5,7 +5,7 @@ body {
 }
 
 .container {
-    width: 1300px;
+    width: 1700px;
     margin: 0 auto;
 }
 
@@ -14,36 +14,9 @@ body {
     padding-bottom: 20px;
 }
 
-#vis-map {
-    width: 650px;
-    display: inline-block;
+h2 {
+    text-align: center;
 }
-
-#scatterplot {
-    width: 600px;
-    display: inline-block;
-}
-
-#radarplot {
-    width: 650px;
-    display: inline-block;
-}
-
-#line_chart {
-    width: 600px;
-    display: inline-block;
-}
-
-#projection {
-    display: inline;
-    float: left;
-}
-
-#attribute {
-    display: inline;
-    float: right;
-}
-
 
 .line:hover {
     opacity: 1;
@@ -208,4 +181,51 @@ body {
     height: 8px; 
     width: 100%; 
     margin-bottom: 5px;
+}
+
+p {
+    margin-bottom: 5px;
+}
+
+#country-selector {
+    text-align: center;
+}
+
+#unpacking-happiness {
+    display: flex;
+    flex-direction: row;
+    row-gap: 400px;
+}
+#left {
+    display: flex;
+    flex-direction: column;
+}
+#right {
+    display: flex;
+    flex-direction: column;
+}
+#outer {
+    position: relative;
+    width: 1010px;
+}
+#line_chart {
+    position: absolute;
+    top: 50px;
+    left: 0;
+}
+#scatterplot {
+    position: absolute;
+    top: 120px;
+    left: 0;
+}
+#happiness-dist {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+#attribute-dist {
+    position: absolute;
+    top: 120px;
+    right: 0;
 }
