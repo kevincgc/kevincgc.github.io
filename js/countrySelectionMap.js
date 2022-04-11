@@ -123,7 +123,7 @@ class CountrySelector {
                 if (selectedCountries.includes(d.id)) {
                     return colors[selectedCountries.indexOf(d.id)];
                 } else if (filteredRegionIds.includes(d.id)) {
-                    return "#004488";
+                    return regionColor;
                 } else {
                     return "#000000";
                 }

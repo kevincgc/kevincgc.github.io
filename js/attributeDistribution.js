@@ -151,6 +151,6 @@ class AttributeDistribution {
             .attr("height", vis.height / vis.yScale.ticks().length)
             .attr("width", d => vis.xScale(vis.computedX(d)))
             .style("opacity", 0.5)
-            .style("fill", "#004488")
+            .style("fill", regionColor)
     }
 }

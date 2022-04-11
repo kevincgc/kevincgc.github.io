@@ -138,6 +138,6 @@ class HappinessDistribution {
             .attr("height", (d) => vis.height - vis.yScale(vis.computedY(d)))
             .attr("width", vis.width / vis.maxX)
             .style("opacity", 0.5)
-            .style("fill", "#004488")
+            .style("fill", regionColor)
     }
 }

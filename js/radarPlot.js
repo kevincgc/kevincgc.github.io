@@ -43,7 +43,7 @@ class RadarPlot {
                 percentValue: 'Log GDP per capita pecentile',
                 dataValue: 'Log GDP per capita',
                 tooltipLabel: 'Log GDP Per Capita',
-                radarLabel: 'GDP Per Capita'
+                radarLabel: 'GDP per capita'
             },
             {
                 percentValue: 'Social support pecentile',
@@ -55,7 +55,7 @@ class RadarPlot {
                 percentValue: 'Healthy life expectancy at birth pecentile',
                 dataValue: 'Healthy life expectancy at birth',
                 tooltipLabel: 'Healthy Life Expectancy',
-                radarLabel: 'Life Expentancy'
+                radarLabel: 'Life Expectancy'
             },
             {
                 percentValue: 'Freedom to make life choices pecentile',
@@ -89,6 +89,22 @@ class RadarPlot {
         vis.chart = vis.svg.append('g')
             .attr('transform', `translate(${vis.config.margin.left},${vis.config.margin.top})`)
 
+        // Append both axis titles
+        vis.svg.append('text')
+            .attr('class', 'plot-title')
+            .attr('y', 25)
+            .attr('x', 5)
+            .attr('dy', '.71em')
+            .text('Regional/National Indicators');
+
+        // Append both axis titles
+        vis.svg.append('text')
+            .attr('class', 'plot-description')
+            .attr('y', 42)
+            .attr('x', 5)
+            .attr('dy', '.71em')
+            .text('Values are represented as percentiles');
+
     }
 
     updateVis() {
@@ -113,9 +129,6 @@ class RadarPlot {
 
     renderVis() {
         let vis = this;
-
-        console.log("filtered values", vis.filteredData);
-        console.log("selected region", vis.selectedRegionPercentiles)
 
         // --------- Circles ---------
 
@@ -143,7 +156,7 @@ class RadarPlot {
                 .attr('y', d => vis.radarRadius - vis.radialScale(d))
                 .attr('dy', '-.45em')
                 .attr('dx', '.35em')
-                .text(d => `${d}%`));
+                .text(d => `${d}th`));
 
         // --------- Axes ---------
 
@@ -223,11 +236,11 @@ class RadarPlot {
             if (selectedCountries.includes(d.id)) {
                 return colors[selectedCountries.indexOf(d.id)];
             } else if (filteredRegionIds.includes(d.id)) {
-                return '#004488';
+                return regionColor;
             } else if (myCountry === d.id) {
                 return myCountryColor;
             } else {
-                return '#000';
+                return regionColor;
             }
         }
 
@@ -295,29 +308,24 @@ class RadarPlot {
 
         const getOtherCountriesData = (d) => {
             const otherCountries = vis.filteredData
-            .filter(f => f.id != d.data.id)
-            .sort((a, b) => {
-                return vis.percentValue(b, d.percentValue) - vis.percentValue(a, d.percentValue)
-            })
-            .map(z => `<div>
+                .filter(f => f.id != d.data.id)
+                .sort((a, b) => {
+                    return vis.percentValue(b, d.percentValue) - vis.percentValue(a, d.percentValue)
+                })
+                .map(z => `<div>
                 <b>vs ${z['Country name']}:</b> ${Math.round(vis.percentValue(z, d.percentValue) * 100) / 100} Percentile
 
-                <div style="
-                display: block; 
-                height: 8px; 
-                width: 100%; 
-                background-color: ${getColorFromSelectedCountry(z) || '#000'};
-                margin-bottom: 5px;">
-                </div>
+                <div class="tooltip-comparison"
+                style="background-color: ${getColorFromSelectedCountry(z) || '#000'};">
+            </div>
 
                 </div>`)
-            .join('');
+                .join('');
             if (otherCountries != '' && otherCountries) {
                 return '<hr>' + otherCountries;
             }
 
             return '';
-
         }
 
 
@@ -355,29 +363,26 @@ class RadarPlot {
                         .style('left', (event.pageX + vis.config.tooltipPadding) + 'px')
                         .style('top', (event.pageY + vis.config.tooltipPadding) + 'px')
                         .html(`
-                            <div >
+                            <div>
+                                <div style="display: flex">
+                                    <div class="tooltip-title" style="margin-right: 10px">${d.data['Country name']}</div>
+                                    <div style="margin-left: auto; margin-right: 0">${vis.yearSelected}</div>
+                                </div>
 
-                          <div style="display: flex">
-                                <div class="tooltip-title">${d.data['Country name']}</div>
-                                <div style="margin-left: auto; margin-right: 0">${vis.yearSelected}</div>
-                        </div>
+                                <div class="tooltip-colordiv"
+                                    style="background-color: ${d.color || '#000'};">
+                                </div>
 
-                        <div style="
-                            display: block; 
-                            height: 12px; 
-                            width: 100%; 
-                            background-color: ${d.color || '#000'};
-                            margin-bottom: 5px;">
-                        </div>
+                                <div>
+                                    <b>${d.tooltipLabel}</b>
+                                    ${d.dataValue != undefined ? `<i>${d.dataValue}</i>` : ''}
+                                </div>
 
-                          <div>
-                            <b>${d.tooltipLabel}</b>
-                            ${d.dataValue != undefined ? `<i>${d.dataValue}</i>` : ''}
-                            
-                          </div>
-                          <div><span>${d.dataPercent} Percentile</span></div>
-                          ${getOtherCountriesData(d) }
-                          </div>
+                                <div>
+                                    <span>${d.dataPercent} Percentile</span>
+                                </div>
+                                ${getOtherCountriesData(d)}
+                             </div>
                         `);
                 })
                 .on('mouseleave', function () {

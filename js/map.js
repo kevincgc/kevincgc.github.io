@@ -122,6 +122,18 @@ class GeoMap {
         vis.extent = d3.extent(vis.filteredData, vis.happinessValue);
         vis.colorScale.domain(vis.extent);
 
+        vis.fillColor = d => {
+            if (selectedCountries.includes(d.id)) {
+                return colors[selectedCountries.indexOf(d.id)];
+            } else if (filteredRegionIds.includes(d.id)) {
+                return regionColor;
+            } else if (myCountry === d.id) {
+                return myCountryColor;
+            } else {
+                return '#000';
+            }
+        }
+
         vis.legendTicks = [];
         for (let i = 0; i < Math.ceil(vis.extent[1]); i++) {
             vis.legendTicks.push({
@@ -145,15 +157,15 @@ class GeoMap {
         const legendTextXOffset = 15;
         const legendTextYOffset = 4;
 
-        vis.fillColor = d => {
+        vis.fillLegendColor = d => {
             if (selectedCountries.includes(d.id)) {
                 return colors[selectedCountries.indexOf(d.id)];
             } else if (filteredRegionIds.includes(d.id)) {
-                return '#004488';
+                return regionColor;
             } else if (myCountry === d.id) {
                 return myCountryColor;
             } else {
-                return '#000';
+                return regionColor;
             }
         }
 
@@ -177,9 +189,9 @@ class GeoMap {
             .attr('fill-opacity', '0.60')
             .attr('stroke', '#333')
             .attr('stroke-width', '0.3')
-            .attr("fill", d => vis.fillColor(d))
+            .attr("fill", d => vis.fillLegendColor(d))
 
-            console.log("selected country", vis.selectedCountriesData)
+        console.log("selected country", vis.selectedCountriesData)
 
         vis.selectedCountriesArea.selectAll(".select-country-text")
             .data(vis.selectedCountriesData)
@@ -254,7 +266,7 @@ class GeoMap {
                 if (selectedCountries.includes(d.id)) {
                     return colors[selectedCountries.indexOf(d.id)];
                 } else if (filteredRegionIds.includes(d.id)) {
-                    return "#004488";
+                    return regionColor;
                 } else {
                     return "#000000";
                 }
@@ -274,19 +286,25 @@ class GeoMap {
             .on("mouseover", (event, d) => {
                 let country = vis.filteredData.filter(e => e.id === d.id);
                 if (country.length > 0) {
-                    d3
-                        .select("#tooltip")
+                    d3.select("#tooltip")
                         .style("display", "block")
                         .style("left", event.pageX + vis.config.tooltipPadding + "px")
-                        .style("top", event.pageY + vis.config.tooltipPadding + "px").html(`
+                        .style("top", event.pageY + vis.config.tooltipPadding + "px")
+                        .html(`
+                            <div>
+                                <div style="display: flex">
+                                    <div class="tooltip-title">${country[0]["Country name"]}</div>
+                                    <div style="margin-left: auto; margin-right: 0">${selectedYear}</div>
+                                </div>
+                                
+                                <div class="tooltip-colordiv" id="tooltip-colordiv"
+                                    style="background-color: ${vis.fillColor(d) || '#000'}; opacity: ${vis.fillColor(d) === "#000" ? 0.15 : 1};">
+                                </div>
 
-                <div style="display: flex">
-                <div class="tooltip-title">${country[0]["Country name"]}</div>
-                <div style="margin-left: auto; margin-right: 0">${selectedYear}</div>
-                </div>
-          <hr>
-
-              <div>Happiness Score: <strong>${country[0]["Happiness Score"]}</strong></div>
+                                <div>
+                                    Happiness Score: <strong>${country[0]["Happiness Score"]}</strong>
+                                </div>
+                            </div>
             `);
                 }
             })

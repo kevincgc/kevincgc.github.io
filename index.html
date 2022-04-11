@@ -23,8 +23,8 @@
                         <option value="geoConicEqualArea">Conic Equal Area</option>
                     </select>
                     <label for="year-slider">Select year <span id="year-value">2020</span></label>
-                    <input type="range" min="2011" value="2020" max="2020" id="year-slider">
-                    <button onclick="map.resetZoom()">Reset Zoom</button>
+                    <input class="clickable" type="range" min="2011" value="2020" max="2020" id="year-slider">
+                    <button class="clickable" onclick="map.resetZoom()">Reset Zoom</button>
                 </div>
 
                 <div id="attribute">
@@ -39,20 +39,20 @@
                     </select>
                     <div>
                         <label for="ci-slider">Select Confidence Level: <span id="ci-value">95.0</span>%</label>
-                        <input type="range" min="90" value="95" max="99.9" id="ci-slider" step="0.1">
+                        <input class="clickable" type="range" min="90" value="95" max="99.9" id="ci-slider" step="0.1">
                     </div>
                     <div id="region-buttons">
                         Select region:
-                        <button onclick="selectRegion('', '')">None</button>
-                        <button onclick="selectRegion('Europe', 'region')">EU</button>
-                        <button onclick="selectRegion('Northern America', 'sub-region')">NA</button>
-                        <button onclick="selectRegion('South America', 'intermediate-region')">SA</button>
-                        <button onclick="selectRegion('Asia', 'region')">Asia</button>
-                        <button onclick="selectRegion('Africa', 'region')">Africa</button>
-                        <button onclick="selectRegion('Americas', 'region')">Americas</button>
-                        <button onclick="selectRegion('South-eastern Asia', 'sub-region')">SEA</button>
-                        <button onclick="selectRegion('Western Europe', 'sub-region')">Western Europe</button>
-                        <button onclick="selectRegion('Oceania', 'region')">Oceania</button>
+                        <button class="clickable" onclick="selectRegion('', '')">None</button>
+                        <button class="clickable" onclick="selectRegion('Europe', 'region')">EU</button>
+                        <button class="clickable" onclick="selectRegion('Northern America', 'sub-region')">NA</button>
+                        <button class="clickable" onclick="selectRegion('South America', 'intermediate-region')">SA</button>
+                        <button class="clickable" onclick="selectRegion('Asia', 'region')">Asia</button>
+                        <button class="clickable" onclick="selectRegion('Africa', 'region')">Africa</button>
+                        <button class="clickable" onclick="selectRegion('Americas', 'region')">Americas</button>
+                        <button class="clickable" onclick="selectRegion('South-eastern Asia', 'sub-region')">SEA</button>
+                        <button class="clickable" onclick="selectRegion('Western Europe', 'sub-region')">Western Europe</button>
+                        <button class="clickable" onclick="selectRegion('Oceania', 'region')">Oceania</button>
                     </div>
                 </div>
             </div>
