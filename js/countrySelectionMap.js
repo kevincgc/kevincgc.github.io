@@ -74,9 +74,9 @@ class CountrySelector {
         vis.projection = d3.geoNaturalEarth1().scale(250);
         vis.geoPath = d3.geoPath().projection(vis.projection);
         vis.pathGenerator = d3.geoPath().projection(vis.projection);
-        vis.filteredData = vis.data.filter(d => d.year === selectedYear);
+        vis.filteredData = d3.rollup(vis.data, v => d3.mean(v, d => d["Happiness Score"]), d => d.id);
         vis.happinessValue = d => d["Happiness Score"];
-        vis.colorScale.domain(d3.extent(vis.filteredData, vis.happinessValue));
+        vis.colorScale.domain([3.36, 7.61]);
         vis.features = topojson.feature(vis.geojson, vis.geojson.objects.countries).features;
         vis.centroids = vis.features.map(function (feature){
             return [feature.id, vis.geoPath.centroid(feature)];
@@ -105,9 +105,8 @@ class CountrySelector {
             .attr("d", vis.geoPath)
             .style('cursor', 'pointer')
             .attr("fill", (d) => {
-                let country = vis.filteredData.filter(e => e.id === d.id);
-                if (country.length > 0) {
-                    return vis.colorScale(country[0]["Happiness Score"]);
+                if (vis.filteredData.has(d.id)) {
+                    return vis.colorScale(vis.filteredData.get(d.id));
                 } else {
                     return "#777777";
                 }
@@ -121,19 +120,18 @@ class CountrySelector {
 
         countryPath
             .on("mouseover", (event, d) => {
-                let country = vis.filteredData.filter(e => e.id === d.id);
-                if (country.length > 0) {
+                let country = regions.find(e => e["country-code"] === d.id);
+                if (validCountries.includes(d.id)) {
                     d3
                         .select("#tooltip")
                         .style("display", "block")
                         .style("left", event.pageX + vis.config.tooltipPadding + "px")
                         .style("top", event.pageY + vis.config.tooltipPadding + "px").html(`
                         <div style="display: flex">
-                        <div class="tooltip-title">${country[0]["Country name"]}</div>
-                        <div style="margin-left: auto; margin-right: 0">${country[0]["year"]}</div>
+                        <div class="tooltip-title">${country.name}</div>
                         </div>
                         <hr>
-              <div>Happiness Score: <strong>${country[0]["Happiness Score"]}</strong></div>
+              <div>Happiness Score: <strong>${vis.filteredData.get(d.id).toFixed(4)}</strong></div>
             `);
                 }
             })
@@ -141,8 +139,7 @@ class CountrySelector {
                 d3.select("#tooltip").style("display", "none");
             })
             .on('click', function (event, d) {
-                let country = vis.filteredData.filter(e => e.id === d.id);
-                if (country.length > 0) {
+                if (validCountries.includes(d.id)) {
                     selectMyCountry(d.id);
                 }
             });
