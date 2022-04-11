@@ -1,5 +1,5 @@
 class Scatterplot {
-
+    thischart;
     /**
      * Class constructor with basic chart configuration
      * @param {Object}
@@ -59,6 +59,44 @@ class Scatterplot {
         // and position it according to the given margin config
         vis.chart = vis.svg.append('g')
             .attr('transform', `translate(${vis.config.margin.left},${vis.config.margin.top})`);
+
+        // Add the brush feature using the d3.brush function
+        vis.brush = d3.brush()
+            //.extent( [ [0,0], [vis.width,vis.height] ] )
+            .on("start", resetBrush)
+            .on("brush", updateBrush)
+            .on("end", removeBrush);
+        vis.chart.call(vis.brush);
+
+        function resetBrush() {
+            filteredRegionIds = [];
+            updateSelection(0);
+        }
+
+        function removeBrush() {
+            updateSelection(0);
+            d3.select(this).call(d3.brush().move, null);
+        }
+
+        // A function that return TRUE or FALSE according if a dot is in the selection or not
+        function isBrushed(brush_coords, cx, cy) {
+            let x0 = brush_coords[0][0],
+                x1 = brush_coords[1][0],
+                y0 = brush_coords[0][1],
+                y1 = brush_coords[1][1];
+            return x0 <= cx && cx <= x1 && y0 <= cy && cy <= y1;    // This return TRUE or FALSE depending on if the points is in the selected area
+        }
+
+        function updateBrush(event) {
+            filteredRegionIds = [];
+            vis.circles.classed("selected", function(d){
+                let brushed = isBrushed(event.selection, vis.xScale(vis.xValue(d)), vis.yScale(vis.yValue(d)));
+                if (brushed) {
+                    filteredRegionIds.push(d.id);
+                }
+                return brushed;
+            } );
+        }
 
         // Append empty x-axis group and move it to the bottom of the chart
         vis.xAxisG = vis.chart.append('g')
@@ -314,7 +352,7 @@ class Scatterplot {
         let vis = this;
 
         // Add circles
-        vis.chart.selectAll('.point')
+        vis.circles = vis.chart.selectAll('.point')
             .data(vis.yearFilteredData)
             .join('circle')
             .attr('class', 'point')
@@ -369,7 +407,8 @@ class Scatterplot {
 
                 d3.select('#tooltip').style('display', 'none');
             })
-            .on('click', function (event, d) {
+            .on("mousedown", function(event,d) { event.stopPropagation(); })
+            .on("mouseup", function(event,d) { event.stopPropagation();
                 updateSelection(d.id);
             });
 

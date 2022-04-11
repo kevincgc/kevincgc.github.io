@@ -170,3 +170,8 @@ body {
 .btn:hover {
     background-color: #aaa;
 }
+
+.selected {
+    opacity: 1 !important;
+    fill: #004488;
+}

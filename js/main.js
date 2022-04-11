@@ -205,11 +205,14 @@ selectMyCountry = (d) => {
 
 function updateSelection(d) {
     // Update filter with value
-    if (filteredRegionIds.includes(d)) {
-        filteredRegionIds = filteredRegionIds.filter(e => e !== d);
-    } else {
-        filteredRegionIds.push(d);
+    if (d !== 0) {
+        if (filteredRegionIds.includes(d)) {
+            filteredRegionIds = filteredRegionIds.filter(e => e !== d);
+        } else {
+            filteredRegionIds.push(d);
+        }
     }
+
     clearButtonStyle();
 
     updateRadarPlot(selectedCountries, selectedYear);
