@@ -5,11 +5,12 @@
     <link rel="icon" href="data:;base64,iVBORwOKGO="/>
     <link rel="stylesheet" href="css/style.css">
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link href='http://fonts.googleapis.com/css?family=Karla|Quantico|Audiowide|Ubuntu' rel='stylesheet' type='text/css'>
 </head>
 <body>
 <div class="container">
     <h1 id="title">Unpacking Happiness</h1>
-    <h2>Select your country</h2>
+    <h2>Select your country:</h2>
     <div id="country-selector"></div>
 
     <div id="charts">
@@ -17,8 +18,8 @@
             <div id="left">
                 <p>
 
-                    <label for="year-slider">Select year <span id="year-value">2020</span></label>
-                    <input type="range" min="2011" value="2020" max="2020" id="year-slider">
+                    <label for="year-slider">Select year <span id="year-value">2019</span></label>
+                    <input type="range" min="2011" value="2019" max="2020" id="year-slider">
                     <button onclick="map.resetZoom()">Reset Zoom</button>
 
                 <div id="region-buttons">
@@ -63,7 +64,7 @@
 
                         <input type="radio" id="happiness-distribution" name="distribution" value="Over Happiness"
                                onclick="selectChart('scatterplot', 'line_chart')" checked>
-                        <label for="happiness-distribution">Plot Versus Happiness (<span id="year-value-dup">2020</span> Data)</label>
+                        <label for="happiness-distribution">Plot Versus Happiness (<span id="year-value-dup">2019</span> Data)</label>
                         <input type="radio" id="time-distribution" name="distribution" value="Over Time"
                                onclick="selectChart('line_chart', 'scatterplot')">
                         <label for="time-distribution">Plot Versus Time</label>

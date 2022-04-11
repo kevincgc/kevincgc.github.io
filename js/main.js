@@ -2,7 +2,7 @@ let scatterplot, linePlot;
 let data, geojson, regions;
 let scatterplot_attribute = 'Log GDP per capita'
 let map, countrySelector;
-let selectedYear = 2020;
+let selectedYear = 2019;
 let selectedCountries = [0, 0, 0, 0];
 let selectedRegion, regionColumn = '', selectedRegionPercentiles = {}, selectedRegionAverage = {};
 let filteredRegionIds = [];
