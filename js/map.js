@@ -81,7 +81,7 @@ class GeoMap {
             .attr('transform', `translate(${(vis.width / 2) - (vis.config.legendRectWidth / 2)},${vis.config.legendBottom})`);
 
         vis.legendLabel = vis.svg.append('text')
-            .attr('class', 'axis-title')
+            .attr('class', 'map-legend-title')
             .style('text-align', 'center')
             .attr('x', (vis.width / 2) - (vis.config.legendRectWidth / 2) + 20)
             .attr('y', 0)

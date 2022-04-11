@@ -1,21 +1,19 @@
 class Scatterplot {
-    thischart;
     /**
      * Class constructor with basic chart configuration
      * @param {Object}
      * @param {Array}
      */
-    constructor(_config, _data, _regions) {
+    constructor(_config, _data) {
         this.config = {
             parentElement: _config.parentElement,
             attribute_selected: _config.attribute_selected,
             containerWidth: _config.containerWidth || 900,
             containerHeight: _config.containerHeight || 600,
-            margin: _config.margin || { top: 25, right: 20, bottom: 20, left: 35 },
+            margin: _config.margin || { top: 0, right: 0, bottom: 40, left: 55 },
             tooltipPadding: _config.tooltipPadding || 15
         }
         this.data = _data;
-        this.regions = _regions;
         this.initVis();
     }
 
@@ -29,9 +27,7 @@ class Scatterplot {
         vis.width = vis.config.containerWidth - vis.config.margin.left - vis.config.margin.right;
         vis.height = vis.config.containerHeight - vis.config.margin.top - vis.config.margin.bottom;
 
-        vis.parseDate = d3.timeParse("%Y");
-        // vis.xScale = d3.scaleTime().range([0, vis.width]).domain([vis.parseDate(2011), vis.parseDate(2020)]);
-
+        // Initialize scales
         vis.xScale = d3.scaleLinear()
             .range([0, vis.width]);
 
@@ -40,14 +36,12 @@ class Scatterplot {
 
         // Initialize axes
         vis.xAxis = d3.axisBottom(vis.xScale)
-            .ticks(6)
-            .tickSize(-vis.height - 10)
-            .tickPadding(10);
+            .ticks(8)
+            .tickSize(-vis.height + 10);
 
         vis.yAxis = d3.axisLeft(vis.yScale)
-            .ticks(6)
-            .tickSize(-vis.width - 10)
-            .tickPadding(10);
+            .ticks(8)
+            .tickSize(-vis.width - 10);
 
         // Define size of SVG drawing area
         vis.svg = d3.select(vis.config.parentElement)
@@ -66,7 +60,6 @@ class Scatterplot {
             .on("start", resetBrush)
             .on("brush", updateBrush)
             .on("end", removeBrush);
-        vis.chart.call(vis.brush);
 
         function resetBrush() {
             filteredRegionIds = [];
@@ -79,13 +72,13 @@ class Scatterplot {
             d3.select(this).call(d3.brush().move, null);
         }
 
-        // A function that return TRUE or FALSE according if a dot is in the selection or not
+        // Returns true if coords are in the area and false otherwise
         function isBrushed(brush_coords, cx, cy) {
             let x0 = brush_coords[0][0],
                 x1 = brush_coords[1][0],
                 y0 = brush_coords[0][1],
                 y1 = brush_coords[1][1];
-            return x0 <= cx && cx <= x1 && y0 <= cy && cy <= y1;    // This return TRUE or FALSE depending on if the points is in the selected area
+            return x0 <= cx && cx <= x1 && y0 <= cy && cy <= y1;
         }
 
         function updateBrush(event) {
@@ -112,10 +105,10 @@ class Scatterplot {
         // Append both axis titles
         vis.chart.append('text')
             .attr('class', 'axis-title')
-            .attr('y', vis.height - 15)
-            .attr('x', vis.width + 10)
+            .attr('y', vis.height + 25)
+            .attr('x', vis.width/2)
             .attr('dy', '.71em')
-            .style('text-anchor', 'end')
+            .style('text-anchor', 'middle')
             .text('Happiness Score');
 
         vis.yLabel = vis.chart.append('text')
@@ -123,6 +116,8 @@ class Scatterplot {
             .attr('x', 0)
             .attr('y', 0)
             .attr('dy', '.71em')
+            .attr("text-anchor", "middle")
+            .attr('transform', `translate(-45,${vis.height/2})rotate(-90)`)
             .text(scatterplot_attribute);
 
         vis.ci = vis.chart.append("path")
@@ -135,6 +130,8 @@ class Scatterplot {
             .attr('class', 'reg')
             .attr('stroke', 'black')
             .attr('fill', 'none');
+
+        vis.chart.call(vis.brush);
     }
 
     normDev(p) {
@@ -319,9 +316,9 @@ class Scatterplot {
         }
 
         // Set the scale input domains
-        vis.xScale.domain([d3.min(vis.data, vis.xValue) - 0.3, d3.max(vis.data, vis.xValue) + 0.3]);
-        vis.yScale.domain([d3.min(vis.yearFilteredData, vis.yValue) - d3.max(vis.yearFilteredData, vis.yValue) * 0.03,
-            d3.max(vis.yearFilteredData, vis.yValue) + d3.max(vis.yearFilteredData, vis.yValue) * 0.03]);
+        vis.xScale.domain([d3.min(vis.data, vis.xValue) - 0.6, d3.max(vis.data, vis.xValue) + 0.6]);
+        vis.yScale.domain([d3.min(vis.yearFilteredData, vis.yValue) - Math.abs(d3.max(vis.yearFilteredData, vis.yValue) * 0.06),
+            d3.max(vis.yearFilteredData, vis.yValue) + d3.max(vis.yearFilteredData, vis.yValue) * 0.06]);
 
         vis.linearRegression = ss.linearRegression(vis.yearFilteredData.map(d => [vis.xValue(d), vis.yValue(d)]));
         vis.linearRegressionLine = ss.linearRegressionLine(vis.linearRegression);
@@ -355,12 +352,13 @@ class Scatterplot {
     renderVis() {
         let vis = this;
 
+        let normalR = 6, myR = 8, normalRHover = 8, myRHover = 10;
         // Add circles
         vis.circles = vis.chart.selectAll('.point')
             .data(vis.yearFilteredData)
             .join('circle')
             .attr('class', 'point')
-            .attr('r', d => d.id === myCountry ? 6 : 4)
+            .attr('r', d => d.id === myCountry ? myR : normalR)
             .attr('cy', d => vis.yScale(vis.yValue(d)))
             .attr('cx', d => vis.xScale(vis.xValue(d)))
             .attr('fill', d => vis.fillColor(d))
@@ -372,10 +370,10 @@ class Scatterplot {
             .on('mouseover', function (event, d) {
                 if (d.id !== myCountry) {
                     d3.select(this)
-                        .attr('r', 6);
+                        .attr('r', normalRHover);
                 } else {
                     d3.select(this)
-                        .attr('r', 8);
+                        .attr('r', myRHover);
                 }
                 d3.select('#tooltip')
                     .style('display', 'block')
@@ -409,10 +407,10 @@ class Scatterplot {
             .on('mouseleave', function (event, d) {
                 if (d.id !== myCountry) {
                     d3.select(this)
-                        .attr('r', 4);
+                        .attr('r', normalR);
                 } else {
                     d3.select(this)
-                        .attr('r', 6);
+                        .attr('r', myR);
                 }
 
                 d3.select('#tooltip').style('display', 'none');
@@ -437,11 +435,9 @@ class Scatterplot {
         // Update the axes/gridlines
         // We use the second .call() to remove the axis and just show gridlines
         vis.xAxisG
-            .call(vis.xAxis)
-            .call(g => g.select('.domain').remove());
+            .call(vis.xAxis);
 
         vis.yAxisG
-            .call(vis.yAxis)
-            .call(g => g.select('.domain').remove())
+            .call(vis.yAxis);
     }
 }

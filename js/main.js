@@ -70,7 +70,7 @@ Promise.all([
         parentElement: '#scatterplot',
         attribute_selected: scatterplot_attribute
         // Optional: other configurations
-    }, yearFilteredData, regions);
+    }, yearFilteredData);
 
     scatterplot.updateVis();
 

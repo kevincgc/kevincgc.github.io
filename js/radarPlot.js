@@ -153,7 +153,7 @@ class RadarPlot {
             enter => enter.append('text')
                 .attr('class', 'circleTick')
                 .attr('x', vis.width / 2)
-                .attr('y', d => vis.radarRadius * 1.7 - vis.radialScale(d))
+                .attr('y', d => vis.radarRadius * 1.25 - vis.radialScale(d))
                 .attr('dy', '-.45em')
                 .attr('dx', '.35em')
                 .text(d => `${d}th`));
