@@ -42,9 +42,14 @@ class LineChart {
             .tickSize(5)
             .tickSizeOuter(0);
 
+        vis.locale = d3.formatLocale({
+            minus: "\u002d",
+        })
+
         vis.yAxis = d3.axisLeft(vis.yScale)
             .ticks(8)
-            .tickSize(-vis.width - 10);
+            .tickSize(-vis.width - 10)
+            .tickFormat(d => vis.locale.format('.2')(d));
 
         // Define size of SVG drawing area
         vis.svg = d3.select(vis.config.parentElement)
