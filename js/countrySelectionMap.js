@@ -65,6 +65,27 @@ class CountrySelector {
             .range(['#FFF7F3', '#FF1812'])
             .interpolate(d3.interpolateHcl);
 
+        vis.xScale = d3.scaleLinear()
+            .range([0, vis.config.legendRectWidth])
+
+        vis.xAxis = d3.axisBottom(vis.xScale)
+            .tickSize(vis.config.legendRectHeight)
+            .ticks(5);
+
+        vis.xAxisG = vis.svg.append('g')
+            .attr('class', 'axis x-axis')
+            .attr('transform', `translate(${(vis.width - vis.config.legendRectWidth )},${15})`);
+
+        vis.legendLabel = vis.svg.append('text')
+            .attr('class', 'map-legend-title')
+            .style('text-align', 'center')
+            .attr('x', vis.width - vis.config.legendRectWidth + 10)
+            .attr('y', 0)
+            .attr('dy', '.71em')
+            .text('Happiness Score');
+
+        vis.legendDefs = vis.svg.append('defs');
+
         vis.updateVis();
     }
 
@@ -76,11 +97,21 @@ class CountrySelector {
         vis.pathGenerator = d3.geoPath().projection(vis.projection);
         vis.filteredData = d3.rollup(vis.data, v => d3.mean(v, d => d["Happiness Score"]), d => d.id);
         vis.happinessValue = d => d["Happiness Score"];
+        vis.extent = [3.36, 7.61];
         vis.colorScale.domain([3.36, 7.61]);
         vis.features = topojson.feature(vis.geojson, vis.geojson.objects.countries).features;
         vis.centroids = vis.features.map(function (feature){
             return [feature.id, vis.geoPath.centroid(feature)];
         });
+
+        vis.legendTicks = [];
+        for (let i = 0; i < Math.ceil(vis.extent[1]); i++) {
+            vis.legendTicks.push({
+                color: vis.colorScale(i),
+                value: i
+            });
+        }
+        vis.xScale.domain(vis.extent)
 
         vis.renderVis();
     }
@@ -156,5 +187,23 @@ class CountrySelector {
             })
             //.on('mouseover', function(d){})
         ;
+        // Draw legend
+        const legend = vis.legendDefs.append('linearGradient').attr('id', 'legendGradient');
+
+        legend.selectAll('stop')
+            .data(vis.legendTicks)
+            .enter().append('stop')
+            .attr('offset', d => ((d.value - vis.extent[0]) / (vis.extent[1] - vis.extent[0]) * 100) + '%')
+            .attr('stop-color', d => d.color);
+
+        vis.xAxisG.append('rect')
+            .attr('width', vis.config.legendRectWidth)
+            .attr('height', vis.config.legendRectHeight)
+            .style('fill', 'url(#legendGradient)');
+
+        vis.xAxisG
+            .call(vis.xAxis)
+            .call(g => g.selectAll('.tick text')
+                .attr('font-size', '0.8rem'));
     }
 }
