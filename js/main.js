@@ -252,6 +252,7 @@ function updateSelection(d) {
             filteredRegionIds.push(d);
         }
     }
+    updateRegionData();
 
     map.selectedRegionPercentiles = {'Country name': 'Selected Countries (Mean Of Selection)'};
 
