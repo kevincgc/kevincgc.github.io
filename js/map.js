@@ -117,6 +117,18 @@ class GeoMap {
             return [feature.id, vis.geoPath.centroid(feature)];
         });
 
+        vis.fillColor = d => {
+            if (selectedCountries.includes(d.id)) {
+                return colors[selectedCountries.indexOf(d.id)];
+            } else if (filteredRegionIds.includes(d.id)) {
+                return regionColor;
+            } else if (myCountry === d.id) {
+                return myCountryColor;
+            } else {
+                return '#000';
+            }
+        }
+
         vis.legendTicks = [];
         for (let i = 0; i < Math.ceil(vis.extent[1]); i++) {
             vis.legendTicks.push({
@@ -140,15 +152,15 @@ class GeoMap {
         const legendTextXOffset = 15;
         const legendTextYOffset = 4;
 
-        vis.fillColor = d => {
+        vis.fillLegendColor = d => {
             if (selectedCountries.includes(d.id)) {
                 return colors[selectedCountries.indexOf(d.id)];
             } else if (filteredRegionIds.includes(d.id)) {
-                return '#004488';
+                return regionColor;
             } else if (myCountry === d.id) {
                 return myCountryColor;
             } else {
-                return '#000';
+                return regionColor;
             }
         }
 
@@ -172,8 +184,8 @@ class GeoMap {
             .attr('fill-opacity', '1')
             .attr('stroke', '#333')
             .attr('stroke-width', '0.3')
-            .attr("fill", d => vis.fillColor(d))
-
+            .attr("fill", d => vis.fillLegendColor(d))
+        
         vis.selectedCountriesArea.selectAll(".select-country-text")
             .data(vis.selectedCountriesData)
             .join('text')
@@ -276,6 +288,9 @@ class GeoMap {
                 <div style="margin-left: auto; margin-right: 0">${selectedYear}</div>
                 </div>
           <hr>
+                      <div class="tooltip-colordiv" id="tooltip-colordiv"
+                style="background-color: ${vis.fillColor(d) || '#000'}; opacity: ${vis.fillColor(d) === "#000" ? 0.15 : 1};">
+            </div>
 
               <div>Happiness Score: <strong>${country.length > 0 ? country[0]["Happiness Score"]:
                         (validCountries.includes(d.id) ? "Missing Data for " + selectedYear : "No Data Available" )}</strong></div>

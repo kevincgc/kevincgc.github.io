@@ -12,8 +12,9 @@ let myCountry = null;
 let myCountryColor = "#8533af";
 let confidenceLevel = 0.05;
 let validCountries = [];
-
-const colors = ['#a217dc', '#01c5a9', '#1437FF', myCountryColor];
+const regionColor = "#0057e7";
+//const myCountryColor = "#01c5a9";
+const colors = ['#ff0048', '#a217dc', '#fdd100', myCountryColor];
 
 //Load data from CSV file asynchronously and render chart
 Promise.all([
@@ -224,6 +225,12 @@ function updateSelection(d) {
     updateRadarPlot(selectedCountries, selectedYear);
 
     map.updateVis();
+
+    // Update tooltip for map
+    d3.select("#tooltip-colordiv")
+        .style('background-color', map.fillColor({id: d}))
+        .style('opacity', map.fillColor({id: d}) === "#000" ? 0.15 : 1);
+
 }
 
 function updateRegionData() {
@@ -242,7 +249,7 @@ function updateRegionData() {
         const meanCorruption = d3.mean(filteredData, d => d["Perceptions of corruption"]);
 
         selectedRegionPercentiles = {};
-        selectedRegionPercentiles['Country name'] = selectedRegion;
+        selectedRegionPercentiles['Country name'] = selectedRegion + ' (Regional Mean)';
         selectedRegionPercentiles['Happiness Score pecentile'] = data.filter(d => d["Happiness Score"] <= meanHappiness).length / data.length * 100
         selectedRegionPercentiles['Log GDP per capita pecentile'] = data.filter(d => d["Log GDP per capita"] <= meanGpd).length / data.length * 100
         selectedRegionPercentiles['Social support pecentile'] = data.filter(d => d["Social support"] <= meanSocialSupport).length / data.length * 100

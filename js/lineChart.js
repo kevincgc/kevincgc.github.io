@@ -95,6 +95,18 @@ class LineChart {
 
         vis.yearFilteredData = data.filter(d => (vis.yValue(d) !== 0));
 
+        vis.fillColor = d => {
+            if (selectedCountries.includes(d.id)) {
+                return colors[selectedCountries.indexOf(d.id)];
+            } else if (filteredRegionIds.includes(d.id)) {
+                return regionColor;
+            } else if (myCountry === d.id) {
+                return myCountryColor;
+            } else {
+                return '#000';
+            }
+        }
+
         // Set the scale input domains
         vis.yScale.domain([d3.min(vis.yearFilteredData, vis.yValue), d3.max(vis.yearFilteredData, vis.yValue)]);
         vis.renderVis();
@@ -109,6 +121,28 @@ class LineChart {
         vis.line = d3.line()
             .x(d => vis.xScale(vis.xValue(d)))
             .y(d => vis.yScale(vis.yValue(d)));
+
+        const getOtherCountriesData = (d) => {
+            const otherCountries = vis.yearFilteredData
+                .filter(f => f.id != d.id && f['year'] == d['year'] && countries.includes(f.id))
+                .sort((a, b) => {
+                    return vis.yValue(b) - vis.yValue(a)
+                })
+                .map(z => `<div>
+                <b>vs ${z['Country name']}:</b> ${vis.yValue(z)}
+
+                <div class="tooltip-comparison"
+                    style="background-color: ${vis.fillColor(z) || '#000'};">
+                </div>
+
+                </div>`)
+                .join('');
+            if (otherCountries != '' && otherCountries) {
+                return '<hr>' + otherCountries;
+            }
+
+            return '';
+        }
 
         const countries = [...selectedCountries];
         const chartColors = [...colors];
@@ -153,13 +187,18 @@ class LineChart {
                                         <div class="tooltip-title">${d['Country name']}</div>
                                         <div style="margin-left: auto; margin-right: 0">${vis.xValue(d).getFullYear()}</div>
                                     </div>
-                              <hr>
-                              <div>
-                                <b>${scatterplot_attribute}</b>
-                                <i>${vis.yValue(d)}</i>
-                              </div>
 
-                              </div>
+                                    <div class="tooltip-colordiv"
+                                        style="background-color: ${vis.fillColor(d) || '#000'};">
+                                    </div>
+
+                                    <div>
+                                        <b>${scatterplot_attribute}</b>
+                                        <i>${vis.yValue(d)}</i>
+                                    </div>
+
+                                    ${getOtherCountriesData(d)}
+                                </div>
                             `);
                     })
                     .on('mouseleave', function () {

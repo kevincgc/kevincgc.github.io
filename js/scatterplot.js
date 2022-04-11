@@ -345,6 +345,7 @@ class Scatterplot {
         vis.renderVis();
     }
 
+
     /**
      * Bind data to visual elements.
      */
@@ -378,22 +379,27 @@ class Scatterplot {
                     .style('left', (event.pageX + vis.config.tooltipPadding) + 'px')
                     .style('top', (event.pageY + vis.config.tooltipPadding) + 'px')
                     .html(`
-                        <div >
-                        <div style="display: flex">
-                            <div class="tooltip-title">${d['Country name']}</div>
-                            <div style="margin-left: auto; margin-right: 0">${selectedYear}</div>
+                        <div>
+                            <div style="display: flex">
+                                <div class="tooltip-title">${d['Country name']}</div>
+                                <div style="margin-left: auto; margin-right: 0">${selectedYear}</div>
+                            </div>
+
+                            <div class="tooltip-colordiv"
+                                style="background-color: ${vis.fillColor(d) || '#000'}; opacity: ${vis.fillColor(d) === "#000" ? 0.15 : 1};">
+                                
+                            </div>
+                        
+                            <div>
+                                <b>${scatterplot_attribute}</b>
+                                <i>${vis.yValue(d)}</i>
+                            </div>
+                        
+                            <div>
+                                <b>Happiness Score</b>
+                                <i>${vis.xValue(d)}</i>
+                            </div>
                         </div>
-                      
-                      <hr>
-                      <div>
-                        <b>${scatterplot_attribute}</b>
-                        <i>${vis.yValue(d)}</i>
-                      </div>
-                      <div>
-                        <b>Happiness Score</b>
-                        <i>${vis.xValue(d)}</i>
-                        </div>
-                      </div>
                     `);
             })
             .on('mouseleave', function (event, d) {
