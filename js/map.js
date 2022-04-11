@@ -275,6 +275,9 @@ class GeoMap {
             .on("mouseover", (event, d) => {
                 let country = vis.filteredData.filter(e => e.id === d.id);
                 let countryData = regions.find(e => e["country-code"] === d.id);
+                if (!countryData) {
+                    countryData = {name:"Somalia"};
+                }
                     d3
                         .select("#tooltip")
                         .style("display", "block")

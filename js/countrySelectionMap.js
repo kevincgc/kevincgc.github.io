@@ -152,6 +152,9 @@ class CountrySelector {
         countryPath
             .on("mouseover", (event, d) => {
                 let country = regions.find(e => e["country-code"] === d.id);
+                if (!country) {
+                    country = {name:"Somalia"};
+                }
                     d3
                         .select("#tooltip")
                         .style("display", "block")
