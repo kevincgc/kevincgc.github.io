@@ -43,7 +43,7 @@ class AttributeDistribution {
         // Append group element that will contain our actual chart
         // and position it according to the given margin config
         vis.chart = vis.svg.append('g')
-            .attr('transform', `translate(30,-10)`);
+            .attr('transform', `translate(10,-10)`);
 
         vis.overall = vis.chart.append("path")
             .attr("class", "happiness-overall")
@@ -92,7 +92,6 @@ class AttributeDistribution {
         for (let i = 0; i < vis.selectedBins.length; i++) {
             vis.selectedBinsCount.push([i, vis.selectedBins[i].length]);
         }
-        console.log(this.binsCount);
 
         vis.xScale.domain([0, d3.max(vis.binsCount, d => d[1])]);
         vis.yScale.domain([0, vis.bins.length]);

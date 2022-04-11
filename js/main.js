@@ -127,7 +127,7 @@ selectChart = (selectedId, unselectedId) => {
 
     if (chartIdVisible === "line_chart") {
         document.getElementById("happiness-score").hidden = false;
-        document.getElementById("confidence-level").style.visibility = "hidden";
+        document.getElementById("scatterplot-control").style.visibility = "hidden";
 
     } else {
         if (document.getElementById('scatter-plot-selector').value === "Happiness Score") {
