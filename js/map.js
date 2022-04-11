@@ -44,7 +44,8 @@ class GeoMap {
             .select(vis.config.parentElement)
             .append("svg")
             .attr("width", vis.config.containerWidth)
-            .attr("height", vis.config.containerHeight);
+            .attr("height", vis.config.containerHeight)
+            .attr("style", "outline: thin solid black;");
 
         //vis.svg1 = d3.select('svg');
 
