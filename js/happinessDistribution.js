@@ -10,7 +10,7 @@ class HappinessDistribution {
             parentElement: _config.parentElement,
             attribute_selected: _config.attribute_selected,
             containerWidth: _config.containerWidth || 900,
-            containerHeight: _config.containerHeight || 150,
+            containerHeight: _config.containerHeight || 130,
             margin: _config.margin || {top: 25, right: 20, bottom: 20, left: 35},
             tooltipPadding: _config.tooltipPadding || 15
         }
@@ -29,24 +29,11 @@ class HappinessDistribution {
         vis.width = vis.config.containerWidth - vis.config.margin.left - vis.config.margin.right;
         vis.height = vis.config.containerHeight - vis.config.margin.top - vis.config.margin.bottom;
 
-        vis.parseDate = d3.timeParse("%Y");
-
         vis.xScale = d3.scaleLinear()
             .range([0, vis.width]);
 
         vis.yScale = d3.scaleLinear()
-            .range([vis.height, 0]);
-
-        // Initialize axes
-        vis.xAxis = d3.axisBottom(vis.xScale)
-            .ticks(10)
-            .tickSize(-10)
-            .tickPadding(10);
-
-        vis.yAxis = d3.axisLeft(vis.yScale)
-            .ticks(3)
-            .tickSize(0)
-            .tickPadding(10);
+            .range([130, 0]);
 
         // Define size of SVG drawing area
         vis.svg = d3.select(vis.config.parentElement)
@@ -57,16 +44,23 @@ class HappinessDistribution {
         // Append group element that will contain our actual chart
         // and position it according to the given margin config
         vis.chart = vis.svg.append('g')
-            .attr('transform', `translate(${vis.config.margin.left},${vis.config.margin.top})`);
+            .attr('transform', `translate(60,0)`);
 
-        // Append empty x-axis group and move it to the bottom of the chart
-        vis.xAxisG = vis.chart.append('g')
-            .attr('class', 'axis x-axis')
-            .attr('transform', `translate(0,${vis.height})`);
+        vis.overall = vis.chart.append("path")
+            .attr("class", "happiness-overall")
+            .attr("fill", "#777")
+            .attr("opacity", ".8")
+            .attr("stroke", "#000")
+            .attr("stroke-width", 1)
+            .attr("stroke-linejoin", "round");
 
-        // Append y-axis group
-        vis.yAxisG = vis.chart.append('g')
-            .attr('class', 'axis y-axis');
+        vis.selected = vis.chart.append("path")
+            .attr("class", "happiness-overall")
+            .attr("fill", "#004488")
+            .attr("opacity", ".8")
+            .attr("stroke", "#000")
+            .attr("stroke-width", 1)
+            .attr("stroke-linejoin", "round");
     }
 
     /**
@@ -82,34 +76,26 @@ class HappinessDistribution {
 
         vis.filtered_regions = vis.yearFilteredData.filter(d => filteredRegionIds.includes(d.id))
 
-        const maxVal = d3.max(vis.yearFilteredData, vis.xValue)
-        vis.computedData = [];
-
-        for (let i = 0; i < maxVal; i++) {
-            const count = vis.yearFilteredData.filter(d => d['Happiness Score'] >= i && d['Happiness Score'] < i + 1).length
-            vis.computedData.push({x: i, y: count})
+        // set the parameters for the histogram
+        vis.histogram = d3.histogram()
+            .value(function(d) {
+                return d['Happiness Score']; })   // I need to give the vector of value
+            .domain([d3.min(vis.data, vis.xValue) - 0.6, d3.max(vis.data, vis.xValue) + 0.6])
+            .thresholds(binSize); // then the numbers of bins
+        // And apply this function to data to get the bins
+        vis.bins = vis.histogram(vis.yearFilteredData);
+        vis.binsCount = [];
+        for (let i = 0; i < vis.bins.length; i++) {
+            vis.binsCount.push([i, vis.bins[i].length]);
+        }
+        vis.selectedBins = vis.histogram(vis.filtered_regions);
+        vis.selectedBinsCount = [];
+        for (let i = 0; i < vis.selectedBins.length; i++) {
+            vis.selectedBinsCount.push([i, vis.selectedBins[i].length]);
         }
 
-        vis.filteredComputedData = [];
-
-        for (let i = 0; i < maxVal; i++) {
-            const count = vis.filtered_regions.filter(d => d['Happiness Score'] >= i && d['Happiness Score'] < i + 1).length
-            vis.filteredComputedData.push({x: i, y: count})
-        }
-
-        vis.computedX = d => d["x"]
-        vis.computedY = d => d["y"]
-
-        vis.histogram  = d3.histogram()
-            .value((d) => d['Happiness Score'])
-            .domain(vis.xScale.domain())
-            .thresholds(vis.xScale.ticks(10));
-
-
-        vis.maxX = d3.max(vis.yearFilteredData, vis.xValue)
-
-        vis.xScale.domain([0, vis.maxX]);
-        vis.yScale.domain([0, d3.max(vis.computedData, vis.computedY)]);
+        vis.xScale.domain([0,vis.bins.length]);
+        vis.yScale.domain([0,d3.max(vis.binsCount, d => d[1])]);
         vis.renderVis();
     }
 
@@ -119,25 +105,20 @@ class HappinessDistribution {
     renderVis() {
         let vis = this;
 
-        vis.chart.selectAll(".bar")
-            .data(vis.computedData)
-            .join("rect")
-            .attr("class", "bar")
-            .attr("x", d => vis.xScale(vis.computedX(d)))
-            .attr("y", d => vis.yScale(vis.computedY(d)))
-            .attr("height", (d) => vis.height - vis.yScale(vis.computedY(d)))
-            .attr("width", vis.width / vis.maxX)
-            .style("opacity", 0.5)
+        vis.overall.datum(vis.binsCount)
+            .attr("d",  d3.line()
+                .curve(d3.curveBasis)
+                .x(function(d) { return vis.xScale(d[0]); })
+                .y(function(d) { return vis.yScale(d[1]); })
+            );
 
-        vis.chart.selectAll(".selected-bar")
-            .data(vis.filteredComputedData)
-            .join("rect")
-            .attr("class", "selected-bar")
-            .attr("x", d => vis.xScale(vis.computedX(d)))
-            .attr("y", d => vis.yScale(vis.computedY(d)))
-            .attr("height", (d) => vis.height - vis.yScale(vis.computedY(d)))
-            .attr("width", vis.width / vis.maxX)
-            .style("opacity", 0.5)
-            .style("fill", regionColor)
+        vis.selected.datum(vis.selectedBinsCount)
+            .attr("d",  d3.line()
+                .curve(d3.curveBasis)
+                .x(function(d) { return vis.xScale(d[0]); })
+                .y(function(d) { return vis.yScale(d[1]); })
+            );
+
+        // Plot the area
     }
 }

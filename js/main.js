@@ -17,6 +17,7 @@ const regionColor = "#0057e7";
 const colors = ['#ff0048', '#a217dc', '#fdd100', myCountryColor];
 let chartIdVisible = "scatterplot";
 let chartIdInvisible = "line_chart";
+let binSize = 20;
 
 // const colors = ['#a217dc', '#01c5a9', '#1437FF', myCountryColor];
 
@@ -58,6 +59,14 @@ Promise.all([
 
     yearFilteredData = data.filter(d => d.year === selectedYear)
 
+    scatterplot = new Scatterplot({
+        parentElement: '#scatterplot',
+        attribute_selected: scatterplot_attribute
+        // Optional: other configurations
+    }, yearFilteredData);
+
+    scatterplot.updateVis();
+
     happinessDist = new HappinessDistribution({
         parentElement: '#happiness-dist',
         attribute_selected: scatterplot_attribute
@@ -66,13 +75,7 @@ Promise.all([
 
     happinessDist.updateVis();
 
-    scatterplot = new Scatterplot({
-        parentElement: '#scatterplot',
-        attribute_selected: scatterplot_attribute
-        // Optional: other configurations
-    }, yearFilteredData);
 
-    scatterplot.updateVis();
 
     attributeDist = new AttributeDistribution({
         parentElement: '#attribute-dist',
@@ -221,6 +224,14 @@ d3.select('#ci-slider').on('input', function () {
     scatterplot.updateVis();
 });
 
+// Update Confidence Level on Scatterplot
+d3.select('#bin-slider').on('input', function () {
+    binSize = parseInt(this.value);
+    d3.select('#bin-value').text(this.value < 10 ? "0" + this.value : this.value);
+    happinessDist.updateVis();
+    attributeDist.updateVis();
+});
+
 selectMyCountry = (d) => {
     if (myCountry === d) {
         selectedCountries[3] = 0;
@@ -261,6 +272,8 @@ function updateSelection(d) {
     updateRadarPlot(selectedCountries, selectedYear);
     scatterplot.selectedCountries = selectedCountries;
     scatterplot.updateVis();
+    happinessDist.updateVis();
+    attributeDist.updateVis();
 
     linePlot.updateVis()
 
