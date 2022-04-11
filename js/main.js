@@ -88,8 +88,6 @@ Promise.all([
 
     linePlot.updateVis();
 
-    selectRegion('', '');
-
     handleChartVisiblity();
 });
 
@@ -212,6 +210,7 @@ function updateSelection(d) {
     } else {
         filteredRegionIds.push(d);
     }
+    clearButtonStyle();
 
     updateRadarPlot(selectedCountries, selectedYear);
     scatterplot.selectedCountries = selectedCountries;
@@ -258,8 +257,10 @@ function updateRegionData() {
 }
 
 function selectRegion(region, column) {
+    clearButtonStyle();
     selectedRegion = region;
     regionColumn = column;
+    document.getElementById(selectedRegion).setAttribute("class", "btn-clicked");
 
     updateRegionData();
 
@@ -269,4 +270,10 @@ function selectRegion(region, column) {
     attributeDist.updateVis();
     linePlot.updateVis();
     map.updateVis();
+}
+
+function clearButtonStyle() {
+    if (selectedRegion) {
+        document.getElementById(selectedRegion).setAttribute("class", "btn");
+    }
 }
