@@ -247,3 +247,13 @@ p {
     font-size: 12px;
     color: #333;
 }
+
+.axis-year line {
+    stroke: #333;
+}
+
+.axis-year {
+    font-family: 'Castoro', sans-serif;
+    font-size: 12px;
+    color: #333;
+}

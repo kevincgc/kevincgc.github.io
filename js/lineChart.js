@@ -11,7 +11,7 @@ class LineChart {
             attribute: _config.attribute,
             containerWidth: _config.containerWidth || 900,
             containerHeight: _config.containerHeight || 600,
-            margin: _config.margin || {top: 25, right: 20, bottom: 20, left: 35},
+            margin: _config.margin || {top: 25, right: 20, bottom: 50, left: 55},
             tooltipPadding: _config.tooltipPadding || 15
         }
         this.data = _data;
@@ -31,7 +31,7 @@ class LineChart {
         vis.height = vis.config.containerHeight - vis.config.margin.top - vis.config.margin.bottom;
 
         vis.parseDate = d3.timeParse("%Y");
-        vis.xScale = d3.scaleTime().range([0, vis.width]).domain([vis.parseDate(2011), vis.parseDate(2020)]);
+        vis.xScale = d3.scaleTime().range([0, vis.width]).domain([new Date(2010, 8),new Date(2020, 4)]);
 
         vis.yScale = d3.scaleLinear()
             .range([vis.height, 0]);
@@ -39,13 +39,12 @@ class LineChart {
         // Initialize axes
         vis.xAxis = d3.axisBottom(vis.xScale)
             .ticks(10)
-            .tickSize(-10)
-            .tickPadding(10);
+            .tickSize(5)
+            .tickSizeOuter(0);
 
         vis.yAxis = d3.axisLeft(vis.yScale)
-            .ticks(6)
-            .tickSize(-10)
-            .tickPadding(10);
+            .ticks(8)
+            .tickSize(-vis.width - 10);
 
         // Define size of SVG drawing area
         vis.svg = d3.select(vis.config.parentElement)
@@ -60,7 +59,7 @@ class LineChart {
 
         // Append empty x-axis group and move it to the bottom of the chart
         vis.xAxisG = vis.chart.append('g')
-            .attr('class', 'axis x-axis')
+            .attr('class', 'axis-year')
             .attr('transform', `translate(0,${vis.height})`);
 
         // Append y-axis group
@@ -70,10 +69,10 @@ class LineChart {
         // Append both axis titles
         vis.chart.append('text')
             .attr('class', 'axis-title')
-            .attr('y', vis.height - 15)
-            .attr('x', vis.width + 10)
+            .attr('y', vis.height + 25)
+            .attr('x', vis.width/2)
             .attr('dy', '.71em')
-            .style('text-anchor', 'end')
+            .style('text-anchor', 'middle')
             .text('Year');
 
         vis.yLabel = vis.chart.append('text')
@@ -81,6 +80,8 @@ class LineChart {
             .attr('x', 0)
             .attr('y', 0)
             .attr('dy', '.71em')
+            .attr("text-anchor", "middle")
+            .attr('transform', `translate(-45,${vis.height/2})rotate(-90)`)
             .text(scatterplot_attribute);
     }
 
@@ -221,8 +222,7 @@ class LineChart {
         // Update the axes/gridlines
         // We use the second .call() to remove the axis and just show gridlines
         vis.xAxisG
-            .call(vis.xAxis)
-            .call(g => g.select('.domain').remove());
+            .call(vis.xAxis);
 
         vis.yAxisG
             .call(vis.yAxis)
