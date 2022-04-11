@@ -137,6 +137,14 @@ class Scatterplot {
             .attr('stroke-width', 2)
             .attr('fill', 'none');
 
+        vis.chart.append('line')
+            .style("stroke", "black")
+            .attr('stroke-width', 2)
+            .attr("x1", vis.width)
+            .attr("y1", 0)
+            .attr("x2", vis.width)
+            .attr("y2", vis.height);
+
         vis.chart.call(vis.brush);
     }
 
