@@ -305,16 +305,15 @@ function updateRegionData() {
             })
         }
 
-        // Determine percentiles
         selectedRegionPercentiles = {};
         selectedRegionPercentiles['Country name'] = selectedRegionTitle;
-        selectedRegionPercentiles['Happiness Score pecentile'] = data.filter(d => d["Happiness Score"] <= meanHappiness).length / data.length * 100
-        selectedRegionPercentiles['Log GDP per capita pecentile'] = data.filter(d => d["Log GDP per capita"] <= meanGpd).length / data.length * 100
-        selectedRegionPercentiles['Social support pecentile'] = data.filter(d => d["Social support"] <= meanSocialSupport).length / data.length * 100
-        selectedRegionPercentiles['Healthy life expectancy at birth pecentile'] = data.filter(d => d["Healthy life expectancy at birth"] <= meanLifeExpectancy).length / data.length * 100
-        selectedRegionPercentiles['Freedom to make life choices pecentile'] = data.filter(d => d["Freedom to make life choices"] <= meanFreedom).length / data.length * 100
-        selectedRegionPercentiles['Generosity pecentile'] = data.filter(d => d["Generosity"] <= meanGenerosity).length / data.length * 100
-        selectedRegionPercentiles['Perceptions of corruption pecentile'] = data.filter(d => d["Perceptions of corruption"] >= meanCorruption).length / data.length * 100
+        selectedRegionPercentiles['Happiness Score pecentile'] = yearFilteredData.filter(d => d["Happiness Score"] <= meanHappiness).length / yearFilteredData.length * 100
+        selectedRegionPercentiles['Log GDP per capita pecentile'] = yearFilteredData.filter(d => d["Log GDP per capita"] <= meanGpd).length / yearFilteredData.length * 100
+        selectedRegionPercentiles['Social support pecentile'] = yearFilteredData.filter(d => d["Social support"] <= meanSocialSupport).length / yearFilteredData.length * 100
+        selectedRegionPercentiles['Healthy life expectancy at birth pecentile'] = yearFilteredData.filter(d => d["Healthy life expectancy at birth"] <= meanLifeExpectancy).length / yearFilteredData.length * 100
+        selectedRegionPercentiles['Freedom to make life choices pecentile'] = yearFilteredData.filter(d => d["Freedom to make life choices"] <= meanFreedom).length / yearFilteredData.length * 100
+        selectedRegionPercentiles['Generosity pecentile'] = yearFilteredData.filter(d => d["Generosity"] <= meanGenerosity).length / yearFilteredData.length * 100
+        selectedRegionPercentiles['Perceptions of corruption pecentile'] = yearFilteredData.filter(d => d["Perceptions of corruption"] >= meanCorruption).length / yearFilteredData.length * 100
     } else {
         selectedRegionPercentiles = null;
     }
