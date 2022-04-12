@@ -4,7 +4,7 @@ let scatterplot_attribute = 'Log GDP per capita'
 let map, countrySelector;
 let selectedYear = 2019;
 let selectedCountries = [0, 0, 0, 0];
-let selectedRegion, regionColumn = '', selectedRegionPercentiles = {}, selectedRegionAverage = {};
+let selectedRegion, regionColumn = '', selectedRegionPercentiles = {}, selectedRegionAverage = [];
 let filteredRegionIds = [];
 let yearFilteredData;
 let happinessDist, attributeDist;
@@ -75,16 +75,6 @@ Promise.all([
 
     happinessDist.updateVis();
 
-
-
-    attributeDist = new AttributeDistribution({
-        parentElement: '#attribute-dist',
-        attribute_selected: scatterplot_attribute
-        // Optional: other configurations
-    }, yearFilteredData, colors);
-
-    attributeDist.updateVis();
-
     const filteredData = data.sort((a, b) => a.year - b.year);
 
     linePlot = new LineChart({
@@ -93,9 +83,21 @@ Promise.all([
         // Optional: other configurations
     }, filteredData);
 
-
     linePlot.updateVis();
 
+    scatterplot = new Scatterplot({
+        parentElement: '#scatterplot',
+        attribute_selected: scatterplot_attribute
+        // Optional: other configurations
+    }, yearFilteredData, regions);
+
+    attributeDist = new AttributeDistribution({
+        parentElement: '#attribute-dist',
+        attribute_selected: scatterplot_attribute
+        // Optional: other configurations
+    }, yearFilteredData, colors);
+
+    attributeDist.updateVis();
     handleChartVisiblity();
     document.getElementById(chartIdInvisible).style.display = "none";
     document.getElementById(chartIdVisible).style.display = "inline-block";
@@ -301,14 +303,28 @@ function updateRegionData() {
         const meanGenerosity = d3.mean(filteredData, d => d["Generosity"]);
         const meanCorruption = d3.mean(filteredData, d => d["Perceptions of corruption"]);
 
-        selectedRegionAverage = {};
-        selectedRegionAverage['Happiness Score'] = meanHappiness;
-        selectedRegionAverage['Log GDP per capita'] = meanGpd;
-        selectedRegionAverage['Social support'] = meanSocialSupport;
-        selectedRegionAverage['Healthy life expectancy at birth'] = meanLifeExpectancy;
-        selectedRegionAverage['Freedom to make life choices'] = meanFreedom;
-        selectedRegionAverage['Generosity'] = meanGenerosity;
-        selectedRegionAverage['Perceptions of corruption'] = meanCorruption;
+        const regionData = data.filter(d => filteredRegionIds.includes(d.id))
+        const happinessAverage = d3.rollup(regionData, v => d3.mean(v, d => d["Happiness Score"]), d => d.year);
+        const gdpAverage = d3.rollup(regionData, v => d3.mean(v, d => d["Log GDP per capita"]), d => d.year);
+        const socialSupportAverage = d3.rollup(regionData, v => d3.mean(v, d => d["Social support"]), d => d.year);
+        const lifeExpectancyAverage = d3.rollup(regionData, v => d3.mean(v, d => d["Healthy life expectancy at birth"]), d => d.year);
+        const freedomAverage = d3.rollup(regionData, v => d3.mean(v, d => d["Freedom to make life choices"]), d => d.year);
+        const generosityAverage = d3.rollup(regionData, v => d3.mean(v, d => d["Generosity"]), d => d.year);
+        const corruptionAverage = d3.rollup(regionData, v => d3.mean(v, d => d["Perceptions of corruption"]), d => d.year);
+
+        selectedRegionAverage = [];
+        for (let i = 2011; i <= 2020; i++) {
+            selectedRegionAverage.push({
+                'year': i,
+                'Happiness Score': happinessAverage.get(i),
+                'Log GDP per capita': gdpAverage.get(i),
+                'Social support': socialSupportAverage.get(i),
+                'Healthy life expectancy at birth': lifeExpectancyAverage.get(i),
+                'Freedom to make life choices': freedomAverage.get(i),
+                'Generosity': generosityAverage.get(i),
+                'Perceptions of corruption': corruptionAverage.get(i)
+            })
+        }
 
         selectedRegionPercentiles = {};
         selectedRegionPercentiles['Country name'] = selectedRegion + ' (Regional Mean)';

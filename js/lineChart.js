@@ -153,6 +153,9 @@ class LineChart {
         const countries = [...selectedCountries];
         const chartColors = [...colors];
 
+        countries[0] = -1;
+        chartColors[0] = regionColor;
+
         for (let i = 0; i < countries.length; i++) {
             if (countries[i]) {
                 // Paths
@@ -160,8 +163,13 @@ class LineChart {
                     vis.paths[i].remove();
                     vis.points[i].remove();
                 }
+                let data_selected;
+                if (countries[i] === -1) {
+                    data_selected = selectedRegionAverage;
+                } else {
+                    data_selected = vis.yearFilteredData.filter(d => d.id === countries[i]);
+                }
 
-                const data_selected = vis.yearFilteredData.filter(d => d.id === countries[i]);
                 vis.paths[i] = vis.chart.selectAll(`.chart-line-${i}`)
                     .data([data_selected])
                     .join('path')
