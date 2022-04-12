@@ -40,29 +40,29 @@ const yValue = (i, value) => Math.sin(calculateLineAngle(i)) * value;
 
 ### [Ref-4] Scatterplot d3
 **Problems**: 
-- Drag to select regions 
-- Show distribution of regions 
+- Drag to select multiple countries
 - Plot the line of best fit 
-- Plot the confidence interval 
-- Make the confidence interval adjustable 
-- Make the distribution adjustable 
-
-**Modification**: 
-- Implement d3.brush to select multiple points by dragging
-- Use ss.linearRegressionLine to find the line of best fit
-- Find the confidence interval using linear regression and inverse transformation with a customizable value
-
+- Draw the confidence bands
 
 **Sources**:
-- [Scatterplot](https://github.com/UBC-InfoVis/436V-materials/tree/22Jan/d3-examples/d3-interactive-scatter-plot)
-- [Histogram in d3](https://d3-graph-gallery.com/graph/histogram_basic.html)
-- [d3 brush](https://github.com/d3/d3-brush)
-- [Linear Regression Line](https://observablehq.com/@bbruneau/simple-linear-regression-scatterplot-with-d3)
-- [Confidence interval](https://www.statisticshowto.com/probability-and-statistics/confidence-interval/)
-
+- Scatterplot based on example [from tutorials](https://github.com/UBC-InfoVis/436V-materials/tree/22Jan/d3-examples/d3-interactive-scatter-plot)
+- Used [D3 Brushing](https://d3-graph-gallery.com/graph/interactivity_brush.html#realgraph) to understand how to perform brushing, how to calculate if a point is contained in the selected area, and how to change the style of the selected points 
+- Used [Scatter plot + Brush](http://bl.ocks.org/feyderm/6bdbc74236c27a843db633981ad22c1b) to know how to hide the brushed area on mouse up
+- Used [Simple Linear Regression](https://observablehq.com/@hydrosquall/simple-linear-regression-scatterplot-with-d3) to know how to calculate and draw a regression line using [Simple Statistics](https://github.com/simple-statistics/simple-statistics)
+- Used [Linear Regression with Confidence Bands](https://observablehq.com/@toja/linear-regression-with-confidence-bands) to know how to draw the confidence bands (functions for statistical calculations are copied with no modifications)
 ---
 
-### [Ref-5] Choropleth Map
+### [Ref-5] Marginal Histograms
+**Problems**:
+- Calculate histogram binning
+- Draw continous histograms
+
+**Sources**:
+- Used [Basic Density Graph](https://d3-graph-gallery.com/graph/density_basic.html) and [Density Graph From Integers](https://stackoverflow.com/questions/57751840/density-plot-using-a-list-of-integers) to understand how to draw a smoothed curve from a list of integers
+- Used [Histogram](https://datacadamia.com/viz/d3/histogram) to understand the d3.histogram() function and how to use it to bin the data
+---
+
+### [Ref-6] Choropleth Map
 **Problems**:
 - Draw choropleth world map
 - Zoom + pan functionality
@@ -75,18 +75,6 @@ const yValue = (i, value) => Math.sin(calculateLineAngle(i)) * value;
 - Used [D3 Choropleth Map](https://vizhub.com/curran/d5ad96d1fe8148bd827a25230cc0f083?edit=files&file=index.js) to understand how to add zooming + panning interactions
 - Used [Pan & Zoom Axes](https://bl.ocks.org/mbostock/db6b4335bf1662b413e7968910104f0f) to reset the map zoom on button click
 - Used [Map Markers](https://codepen.io/znak/pen/XXrRvj) to get the path shape for the marker and [Country Centroids](https://bl.ocks.org/curran/55d327542393530662c3) to learn how to calculate the centroids of country paths to position the marker
-
----
-
-### [Ref-6] Marginal Histograms
-**Problems**:
-- Calculate histogram binning
-- Draw continous histograms
-
-**Sources**:
-- Used [Basic Density Graph](https://d3-graph-gallery.com/graph/density_basic.html) and [Density Graph From Integers](https://stackoverflow.com/questions/57751840/density-plot-using-a-list-of-integers) to understand how to draw a smoothed curve from a list of integers
-- Used [Histogram](https://datacadamia.com/viz/d3/histogram) to understand the d3.histogram() function and how to use it to bin the data
-
 ---
 
 ### [Ref-7] Data Sources and Libraries
