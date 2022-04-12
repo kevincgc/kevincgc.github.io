@@ -244,7 +244,7 @@ class GeoMap {
                 d3.select("#tooltip").style("display", "none");
             })
             .on('click', function (event, d) {
-                if (validCountries.includes(d.id) && d.id != myCountry) {
+                if (validCountries.includes(d.id)) {
                     updateSelection(d.id);
                 }
             });
