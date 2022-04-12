@@ -5,7 +5,7 @@ class RadarPlot {
             parentElement: _config.parentElement,
             containerWidth: _config.containerWidth || 550,
             containerHeight: _config.containerHeight || 400,
-            margin: _config.margin || { top: 50, right: 100, bottom: 0, left: 100 },
+            margin: _config.margin || {top: 50, right: 100, bottom: 0, left: 100},
             tooltipPadding: _config.tooltipPadding || 3,
             colors: _config.colors
         }
@@ -32,50 +32,42 @@ class RadarPlot {
 
         vis.circleTicks = [25, 50, 75, 100]; // percentages
 
-        vis.axes = [
-            {
-                percentValue: 'Happiness Score pecentile',
-                dataValue: 'Happiness Score',
-                tooltipLabel: 'Happiness Score',
-                radarLabel: 'Happiness Score'
-            },
-            {
-                percentValue: 'Log GDP per capita pecentile',
-                dataValue: 'Log GDP per capita',
-                tooltipLabel: 'Log GDP Per Capita',
-                radarLabel: 'GDP per capita'
-            },
-            {
-                percentValue: 'Social support pecentile',
-                dataValue: 'Social support',
-                tooltipLabel: 'Social Support',
-                radarLabel: 'Social Support'
-            },
-            {
-                percentValue: 'Healthy life expectancy at birth pecentile',
-                dataValue: 'Healthy life expectancy at birth',
-                tooltipLabel: 'Healthy Life Expectancy',
-                radarLabel: 'Life Expectancy'
-            },
-            {
-                percentValue: 'Freedom to make life choices pecentile',
-                dataValue: 'Freedom to make life choices',
-                tooltipLabel: 'Freedom To Make Life Choices',
-                radarLabel: 'Freedom'
-            },
-            {
-                percentValue: 'Generosity pecentile',
-                dataValue: 'Generosity',
-                tooltipLabel: 'Generosity',
-                radarLabel: 'Generosity'
-            },
-            {
-                percentValue: 'Perceptions of corruption pecentile',
-                dataValue: 'Perceptions of corruption',
-                tooltipLabel: 'Perceptions Of Corruption',
-                radarLabel: 'Corruption'
-            }
-        ];
+        vis.axes = [{
+            percentValue: 'Happiness Score pecentile',
+            dataValue: 'Happiness Score',
+            tooltipLabel: 'Happiness Score',
+            radarLabel: 'Happiness Score'
+        }, {
+            percentValue: 'Log GDP per capita pecentile',
+            dataValue: 'Log GDP per capita',
+            tooltipLabel: 'Log GDP Per Capita',
+            radarLabel: 'GDP per capita'
+        }, {
+            percentValue: 'Social support pecentile',
+            dataValue: 'Social support',
+            tooltipLabel: 'Social Support',
+            radarLabel: 'Social Support'
+        }, {
+            percentValue: 'Healthy life expectancy at birth pecentile',
+            dataValue: 'Healthy life expectancy at birth',
+            tooltipLabel: 'Healthy Life Expectancy',
+            radarLabel: 'Life Expectancy'
+        }, {
+            percentValue: 'Freedom to make life choices pecentile',
+            dataValue: 'Freedom to make life choices',
+            tooltipLabel: 'Freedom To Make Life Choices',
+            radarLabel: 'Freedom'
+        }, {
+            percentValue: 'Generosity pecentile',
+            dataValue: 'Generosity',
+            tooltipLabel: 'Generosity',
+            radarLabel: 'Generosity'
+        }, {
+            percentValue: 'Perceptions of corruption pecentile',
+            dataValue: 'Perceptions of corruption',
+            tooltipLabel: 'Perceptions Of Corruption',
+            radarLabel: 'Corruption'
+        }];
 
         // Define size of SVG drawing area
         vis.svg = d3.select(vis.config.parentElement)
@@ -136,27 +128,25 @@ class RadarPlot {
         const circles = vis.chart.selectAll('.radial')
             .data(vis.circleTicks);
 
-        circles.join(
-            enter => enter.append('circle')
-                .attr('class', 'radial')
-                .attr('cy', vis.height / 2)
-                .attr('cx', vis.width / 2)
-                .attr('stroke', '#000')
-                .attr('fill', 'none')
-                .attr('r', d => vis.radialScale(d)));
+        circles.join(enter => enter.append('circle')
+            .attr('class', 'radial')
+            .attr('cy', vis.height / 2)
+            .attr('cx', vis.width / 2)
+            .attr('stroke', '#000')
+            .attr('fill', 'none')
+            .attr('r', d => vis.radialScale(d)));
 
         // Add ticks to circles
         const circleTicks = vis.chart.selectAll('.circleTick')
             .data(vis.circleTicks);
 
-        circleTicks.join(
-            enter => enter.append('text')
-                .attr('class', 'circleTick')
-                .attr('x', vis.width / 2)
-                .attr('y', d => vis.radarRadius * 1.25 - vis.radialScale(d))
-                .attr('dy', '-.45em')
-                .attr('dx', '.35em')
-                .text(d => `${d}th`));
+        circleTicks.join(enter => enter.append('text')
+            .attr('class', 'circleTick')
+            .attr('x', vis.width / 2)
+            .attr('y', d => vis.radarRadius * 1.25 - vis.radialScale(d))
+            .attr('dy', '-.45em')
+            .attr('dx', '.35em')
+            .text(d => `${d}th`));
 
         // --------- Axes ---------
 
@@ -173,14 +163,13 @@ class RadarPlot {
         const axes = vis.chart.selectAll('.circle-axis')
             .data(vis.axes);
 
-        axes.join(
-            enter => enter.append('line')
-                .attr('class', 'circle-axis')
-                .attr('x1', vis.width / 2)
-                .attr('y1', vis.height / 2)
-                .attr('x2', (d, i) => xValue(i, axisLength) + (vis.width / 2))
-                .attr('y2', (d, i) => yValue(i, axisLength) + (vis.height / 2))
-                .attr('stroke', '#000'));
+        axes.join(enter => enter.append('line')
+            .attr('class', 'circle-axis')
+            .attr('x1', vis.width / 2)
+            .attr('y1', vis.height / 2)
+            .attr('x2', (d, i) => xValue(i, axisLength) + (vis.width / 2))
+            .attr('y2', (d, i) => yValue(i, axisLength) + (vis.height / 2))
+            .attr('stroke', '#000'));
 
 
         // Add axes labels
@@ -189,24 +178,21 @@ class RadarPlot {
         const axesLabels = vis.chart.selectAll('.circle-axis-labels')
             .data(vis.axes);
 
-        axesLabels.join(
-            enter => enter.append('text')
-                .attr('class', 'circle-axis-labels')
-                .attr('x', (d, i) => xValue(i, (axisLength + axesLabelsOffset)) + (vis.width / 2) - 25)
-                .attr('y', (d, i) => yValue(i, (axisLength + axesLabelsOffset)) + (vis.height / 2))
-                .attr('dx', (d, i) => {
-                    const cosX = Math.cos(calculateLineAngle(i));
-                    if (cosX <= 0) {
-                        // Left
-                        return -40
-                    }
-                    else {
-                        // Right
-                        return 0;
-                    }
-                })
-                .text(d => d.radarLabel));
-
+        axesLabels.join(enter => enter.append('text')
+            .attr('class', 'circle-axis-labels')
+            .attr('x', (d, i) => xValue(i, (axisLength + axesLabelsOffset)) + (vis.width / 2) - 25)
+            .attr('y', (d, i) => yValue(i, (axisLength + axesLabelsOffset)) + (vis.height / 2))
+            .attr('dx', (d, i) => {
+                const cosX = Math.cos(calculateLineAngle(i));
+                if (cosX <= 0) {
+                    // Left
+                    return -40
+                } else {
+                    // Right
+                    return 0;
+                }
+            })
+            .text(d => d.radarLabel));
 
 
         // --------- Points ---------
@@ -218,8 +204,7 @@ class RadarPlot {
                 const value = vis.radialScale(vis.percentValue(d, axis.percentValue));
 
                 const coordinatesOnAxis = {
-                    x: xValue(i, value) + (vis.width / 2),
-                    y: yValue(i, value) + (vis.height / 2)
+                    x: xValue(i, value) + (vis.width / 2), y: yValue(i, value) + (vis.height / 2)
                 };
 
                 pathCoordinates.push(coordinatesOnAxis);
@@ -230,7 +215,6 @@ class RadarPlot {
 
             return pathCoordinates;
         }
-
 
 
         const getColorFromSelectedCountry = (d) => {
@@ -249,45 +233,39 @@ class RadarPlot {
         const radarAreas = vis.chart.selectAll('.area')
             .data(vis.filteredData);
 
-        radarAreas.join(
-            enter => enter.append('path')
-                .attr('class', 'area')
-                .attr('fill', d => getColorFromSelectedCountry(d))
-                .datum(d => createPathForRow(d))
-                .attr('d', d3.line()
-                    .x(d => d.x)
-                    .y(d => d.y))
-                .attr('stroke', '#00ff00')
-                .attr('opacity', 0.35),
-            update => update
-                .attr('fill', d => getColorFromSelectedCountry(d))
-                .datum(d => createPathForRow(d))
-                .attr('d', d3.line()
-                    .x(d => d.x)
-                    .y(d => d.y))
-        );
+        radarAreas.join(enter => enter.append('path')
+            .attr('class', 'area')
+            .attr('fill', d => getColorFromSelectedCountry(d))
+            .datum(d => createPathForRow(d))
+            .attr('d', d3.line()
+                .x(d => d.x)
+                .y(d => d.y))
+            .attr('stroke', '#00ff00')
+            .attr('opacity', 0.35), update => update
+            .attr('fill', d => getColorFromSelectedCountry(d))
+            .datum(d => createPathForRow(d))
+            .attr('d', d3.line()
+                .x(d => d.x)
+                .y(d => d.y)));
 
         const radarAreaOutlines = vis.chart.selectAll('.area-outline')
             .data(vis.filteredData);
 
-        radarAreaOutlines.join(
-            enter => enter.append('path')
-                .attr('class', 'area-outline')
-                .datum(d => createPathForRow(d))
-                .attr('d', d3.line()
-                    .x(d => d.x)
-                    .y(d => d.y))
-                .attr('fill-opacity', '0')
-                .attr('stroke', '#000')
-                .attr('stroke-width', '2')
-                .attr('z-index', -1),
-            update => update
-                .datum(d => createPathForRow(d))
-                .attr('d', d3.line()
-                    .x(d => d.x)
-                    .y(d => d.y))
-                .attr('z-index', -1)
-        );
+        radarAreaOutlines.join(enter => enter.append('path')
+            .attr('class', 'area-outline')
+            .datum(d => createPathForRow(d))
+            .attr('d', d3.line()
+                .x(d => d.x)
+                .y(d => d.y))
+            .attr('fill-opacity', '0')
+            .attr('stroke', '#000')
+            .attr('stroke-width', '2')
+            .attr('z-index', -1), update => update
+            .datum(d => createPathForRow(d))
+            .attr('d', d3.line()
+                .x(d => d.x)
+                .y(d => d.y))
+            .attr('z-index', -1));
 
         // Points
 
@@ -336,8 +314,7 @@ class RadarPlot {
         const radarPoints = vis.chart.selectAll('.point')
             .data(points)
 
-        radarPoints.join(
-            enter => enter.append('circle')
+        radarPoints.join(enter => enter.append('circle')
                 .attr('class', 'point')
                 .attr('r', 5)
                 .attr('cx', (d, i) => xValue(i, d.radarValue) + (vis.width / 2))
@@ -347,7 +324,6 @@ class RadarPlot {
                 .attr('fill', d => d.color)
                 .attr('stroke', d => vis.config.colors[d.index])
                 .attr('z-index', 99999)
-                .style('cursor', 'pointer')
                 .on('click', function (event, d) {
                     d3.select(this)
                         .attr('stroke-width', '3');
@@ -397,8 +373,7 @@ class RadarPlot {
 
             update => update
                 .attr('cx', (d, i) => xValue(i, d.radarValue) + (vis.width / 2))
-                .attr('cy', (d, i) => yValue(i, d.radarValue) + (vis.height / 2))
-        );
+                .attr('cy', (d, i) => yValue(i, d.radarValue) + (vis.height / 2)));
 
     }
 }

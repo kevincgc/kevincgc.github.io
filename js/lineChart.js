@@ -31,7 +31,7 @@ class LineChart {
         vis.height = vis.config.containerHeight - vis.config.margin.top - vis.config.margin.bottom;
 
         vis.parseDate = d3.timeParse("%Y");
-        vis.xScale = d3.scaleTime().range([0, vis.width]).domain([new Date(2010, 8),new Date(2020, 4)]);
+        vis.xScale = d3.scaleTime().range([0, vis.width]).domain([new Date(2010, 8), new Date(2020, 4)]);
 
         vis.yScale = d3.scaleLinear()
             .range([vis.height, 0]);
@@ -75,7 +75,7 @@ class LineChart {
         vis.chart.append('text')
             .attr('class', 'axis-title')
             .attr('y', vis.height + 25)
-            .attr('x', vis.width/2)
+            .attr('x', vis.width / 2)
             .attr('dy', '.71em')
             .style('text-anchor', 'middle')
             .text('Year');
@@ -86,7 +86,7 @@ class LineChart {
             .attr('y', 0)
             .attr('dy', '.71em')
             .attr("text-anchor", "middle")
-            .attr('transform', `translate(-45,${vis.height/2})rotate(-90)`)
+            .attr('transform', `translate(-45,${vis.height / 2})rotate(-90)`)
             .text(scatterplot_attribute);
     }
 
@@ -150,6 +150,7 @@ class LineChart {
             return '';
         }
 
+        // Draw line/points for selected countries
         const countries = [...selectedCountries];
         countries[0] = -1;
         for (let i = 0; i < countries.length; i++) {
@@ -182,7 +183,6 @@ class LineChart {
                     .attr('cy', d => vis.yScale(vis.yValue(d)))
                     .attr('cx', d => vis.xScale(vis.xValue(d)))
                     .attr('fill', colors[i])
-                    .style('cursor', 'pointer')
                     .on('mouseover', function (event, d) {
                         d3.select(this)
                             .attr('stroke-width', '3')
@@ -204,7 +204,7 @@ class LineChart {
 
                                     <div>
                                         <b>${scatterplot_attribute}</b>
-                                        <i>${vis.yValue(d)}</i>
+                                        <i>${vis.yValue(d).toFixed(4)}</i>
                                     </div>
 
                                     ${getOtherCountriesData(d)}
@@ -217,9 +217,8 @@ class LineChart {
                             .attr('r', 4)
                         d3.select('#tooltip').style('display', 'none');
                     });
-                    
-            } 
-            else if (vis.paths[i]) {
+
+            } else if (vis.paths[i]) {
                 vis.paths[i].remove();
                 vis.points[i].remove();
 

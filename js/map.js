@@ -11,7 +11,7 @@ class GeoMap {
             parentElement: _config.parentElement,
             containerWidth: _config.containerWidth || 700,
             containerHeight: _config.containerHeight || 350,
-            margin: _config.margin || { top: 0, right: 0, bottom: 0, left: 0 },
+            margin: _config.margin || {top: 0, right: 0, bottom: 0, left: 0},
             tooltipPadding: 10,
             legendBottom: 15,
             legendLeft: 300,
@@ -30,14 +30,8 @@ class GeoMap {
         let vis = this;
 
         // Calculate inner chart size. Margin specifies the space around the actual chart.
-        vis.width =
-            vis.config.containerWidth -
-            vis.config.margin.left -
-            vis.config.margin.right;
-        vis.height =
-            vis.config.containerHeight -
-            vis.config.margin.top -
-            vis.config.margin.bottom;
+        vis.width = vis.config.containerWidth - vis.config.margin.left - vis.config.margin.right;
+        vis.height = vis.config.containerHeight - vis.config.margin.top - vis.config.margin.bottom;
 
         // Define size of SVG drawing area
         vis.svg = d3
@@ -116,7 +110,7 @@ class GeoMap {
         vis.extent = d3.extent(vis.filteredData, vis.happinessValue);
         vis.colorScale.domain(vis.extent);
         vis.features = topojson.feature(vis.geojson, vis.geojson.objects.countries).features;
-        vis.centroids = vis.features.map(function (feature){
+        vis.centroids = vis.features.map(function (feature) {
             return [feature.id, vis.geoPath.centroid(feature)];
         });
 
@@ -135,8 +129,7 @@ class GeoMap {
         vis.legendTicks = [];
         for (let i = 0; i < Math.ceil(vis.extent[1]); i++) {
             vis.legendTicks.push({
-                color: vis.colorScale(i),
-                value: i
+                color: vis.colorScale(i), value: i
             });
         }
 
@@ -183,7 +176,7 @@ class GeoMap {
             .attr('stroke', '#333')
             .attr('stroke-width', '0.3')
             .attr("fill", d => vis.fillLegendColor(d))
-        
+
         vis.selectedCountriesArea.selectAll(".select-country-text")
             .data(vis.selectedCountriesData)
             .join('text')
@@ -237,7 +230,7 @@ class GeoMap {
         // Defines the scale of the projection so that the geometry fits within the SVG area
         //vis.projection.fitSize([vis.width, vis.height], countries);
         d3.selectAll(".background")
-            .attr("d", vis.pathGenerator({ type: 'Sphere' }));
+            .attr("d", vis.pathGenerator({type: 'Sphere'}));
 
         // Append world map
         vis.countryPath = vis.map
@@ -278,13 +271,13 @@ class GeoMap {
                 let country = vis.filteredData.filter(e => e.id === d.id);
                 let countryData = regions.find(e => e["country-code"] === d.id);
                 if (!countryData) {
-                    countryData = {name:"Somalia"};
+                    countryData = {name: "Somalia"};
                 }
-                    d3
-                        .select("#tooltip")
-                        .style("display", "block")
-                        .style("left", event.pageX + vis.config.tooltipPadding + "px")
-                        .style("top", event.pageY + vis.config.tooltipPadding + "px").html(`
+                d3
+                    .select("#tooltip")
+                    .style("display", "block")
+                    .style("left", event.pageX + vis.config.tooltipPadding + "px")
+                    .style("top", event.pageY + vis.config.tooltipPadding + "px").html(`
 
                 <div style="display: flex">
                 <div class="tooltip-title">${countryData.name}</div>
@@ -295,8 +288,7 @@ class GeoMap {
                 style="background-color: ${vis.fillColor(d) || '#000'}; opacity: ${vis.fillColor(d) === "#000" ? 0.15 : 1};">
             </div>
 
-              <div>Happiness Score: <strong>${country.length > 0 ? country[0]["Happiness Score"]:
-                        (validCountries.includes(d.id) ? "Missing Data for " + selectedYear : "No Data Available" )}</strong></div>
+              <div>Happiness Score: <strong>${country.length > 0 ? country[0]["Happiness Score"] : (validCountries.includes(d.id) ? "Missing Data for " + selectedYear : "No Data Available")}</strong></div>
             `);
             })
             .on("mouseleave", () => {
@@ -322,16 +314,12 @@ class GeoMap {
                 document.getElementById('title').scrollIntoView({
                     behavior: 'smooth'
                 })
-            })
-        //.on('mouseover', function(d){})
-        ;
+            });
 
         vis.zoom = d3.zoom().on('zoom', (e) => {
             vis.map.attr('transform', e.transform);
         });
         vis.svg.call(vis.zoom);
-
-
     }
 
     resetZoom() {

@@ -30,14 +30,8 @@ class CountrySelector {
         let vis = this;
 
         // Calculate inner chart size. Margin specifies the space around the actual chart.
-        vis.width =
-            vis.config.containerWidth -
-            vis.config.margin.left -
-            vis.config.margin.right;
-        vis.height =
-            vis.config.containerHeight -
-            vis.config.margin.top -
-            vis.config.margin.bottom;
+        vis.width = vis.config.containerWidth - vis.config.margin.left - vis.config.margin.right;
+        vis.height = vis.config.containerHeight - vis.config.margin.top - vis.config.margin.bottom;
 
         // Define size of SVG drawing area
         vis.svg = d3
@@ -74,8 +68,9 @@ class CountrySelector {
 
         vis.xAxisG = vis.svg.append('g')
             .attr('class', 'axis x-axis')
-            .attr('transform', `translate(${(vis.width - vis.config.legendRectWidth )},${15})`);
+            .attr('transform', `translate(${(vis.width - vis.config.legendRectWidth)},${15})`);
 
+        // Legend
         vis.legendLabel = vis.svg.append('text')
             .attr('class', 'map-legend-title')
             .style('text-align', 'center')
@@ -91,7 +86,7 @@ class CountrySelector {
 
     updateVis() {
         let vis = this;
-        
+
         vis.projection = d3.geoNaturalEarth1().scale(250);
         vis.geoPath = d3.geoPath().projection(vis.projection);
         vis.pathGenerator = d3.geoPath().projection(vis.projection);
@@ -100,15 +95,14 @@ class CountrySelector {
         vis.extent = [3.36, 7.61];
         vis.colorScale.domain([3.36, 7.61]);
         vis.features = topojson.feature(vis.geojson, vis.geojson.objects.countries).features;
-        vis.centroids = vis.features.map(function (feature){
+        vis.centroids = vis.features.map(function (feature) {
             return [feature.id, vis.geoPath.centroid(feature)];
         });
 
         vis.legendTicks = [];
         for (let i = 0; i < Math.ceil(vis.extent[1]); i++) {
             vis.legendTicks.push({
-                color: vis.colorScale(i),
-                value: i
+                color: vis.colorScale(i), value: i
             });
         }
         vis.xScale.domain(vis.extent)
@@ -153,21 +147,19 @@ class CountrySelector {
             .on("mouseover", (event, d) => {
                 let country = regions.find(e => e["country-code"] === d.id);
                 if (!country) {
-                    country = {name:"Somalia"};
+                    country = {name: "Somalia"};
                 }
-                    d3
-                        .select("#tooltip")
-                        .style("display", "block")
-                        .style("left", event.pageX + vis.config.tooltipPadding + "px")
-                        .style("top", event.pageY + vis.config.tooltipPadding + "px").html(`
+                d3
+                    .select("#tooltip")
+                    .style("display", "block")
+                    .style("left", event.pageX + vis.config.tooltipPadding + "px")
+                    .style("top", event.pageY + vis.config.tooltipPadding + "px").html(`
                         <div style="display: flex">
                         <div class="tooltip-title">${country.name}</div>
                         <div style="margin-left: auto; margin-right: 0">2011 to 2020</div>
                         </div>
                         <hr>
-              <div>Happiness Score Mean: <strong>${
-                        validCountries.includes(d.id) ? vis.filteredData.get(d.id).toFixed(4) : "No Data Available"
-                        }</strong></div>
+              <div>Happiness Score Mean: <strong>${validCountries.includes(d.id) ? vis.filteredData.get(d.id).toFixed(4) : "No Data Available"}</strong></div>
             `);
             })
             .on("mouseleave", () => {
@@ -178,6 +170,8 @@ class CountrySelector {
                     selectMyCountry(d.id);
                 }
             });
+
+        // Draw marker for selected country
         vis.country = myCountry === null ? [] : [myCountry];
         vis.marker = vis.chart.selectAll(".marker")
             .data(vis.country)

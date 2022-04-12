@@ -19,11 +19,7 @@ let chartIdInvisible = "line_chart";
 let binSize = 20;
 
 //Load data from CSV file asynchronously and render chart
-Promise.all([
-    d3.csv('data/happiness_data_with_percentile.csv'),
-    d3.json('data/map.json'),
-    d3.csv('data/regions.csv')
-]).then(_data => {
+Promise.all([d3.csv('data/happiness_data_with_percentile.csv'), d3.json('data/map.json'), d3.csv('data/regions.csv')]).then(_data => {
     data = _data[0];
     geojson = _data[1];
     regions = _data[2];
@@ -35,14 +31,17 @@ Promise.all([
             }
         });
     });
+
+    // Initialize variables
     validCountries = [...new Set(validCountries)];
-
     scatterplot_attribute = 'Log GDP per capita';
+    yearFilteredData = data.filter(d => d.year === selectedYear)
+    const filteredData = data.sort((a, b) => a.year - b.year);
 
+    // Initialize charts
     countrySelector = new CountrySelector({
         parentElement: '#country-selector'
     }, data, geojson)
-
     countrySelector.updateVis();
 
     map = new GeoMap({
@@ -54,46 +53,36 @@ Promise.all([
     radarplot = showRadarPlot(data);
     radarplot.updateVis();
 
-    yearFilteredData = data.filter(d => d.year === selectedYear)
-
     scatterplot = new Scatterplot({
-        parentElement: '#scatterplot',
-        attribute_selected: scatterplot_attribute
+        parentElement: '#scatterplot', attribute_selected: scatterplot_attribute
         // Optional: other configurations
     }, yearFilteredData);
-
     scatterplot.updateVis();
 
     happinessDist = new HappinessDistribution({
-        parentElement: '#happiness-dist',
-        attribute_selected: scatterplot_attribute
+        parentElement: '#happiness-dist', attribute_selected: scatterplot_attribute
         // Optional: other configurations
     }, yearFilteredData, colors);
-
     happinessDist.updateVis();
 
-    const filteredData = data.sort((a, b) => a.year - b.year);
-
     linePlot = new LineChart({
-        parentElement: '#line_chart',
-        attribute: 'Log GDP per capita'
+        parentElement: '#line_chart', attribute: 'Log GDP per capita'
         // Optional: other configurations
     }, filteredData);
-
     linePlot.updateVis();
 
     attributeDist = new AttributeDistribution({
-        parentElement: '#attribute-dist',
-        attribute_selected: scatterplot_attribute
+        parentElement: '#attribute-dist', attribute_selected: scatterplot_attribute
         // Optional: other configurations
     }, yearFilteredData, colors);
-
     attributeDist.updateVis();
+
     handleChartVisiblity();
     document.getElementById(chartIdInvisible).style.display = "none";
     document.getElementById(chartIdVisible).style.display = "inline-block";
 });
 
+// Handle selecting the attribute on the scatterplot
 d3.selectAll('#scatter-plot-selector').on('change', e => {
     scatterplot_attribute = e.target.value;
 
@@ -104,9 +93,14 @@ d3.selectAll('#scatter-plot-selector').on('change', e => {
     linePlot.updateVis();
 })
 
+// Handle displaying the scatterplot or the line chart
 selectChart = (selectedId, unselectedId) => {
-    document.querySelectorAll("." + unselectedId).forEach(d => {d.style.display = "none"});
-    document.querySelectorAll("." + selectedId).forEach(d => {d.style.display = "inline-block"});
+    document.querySelectorAll("." + unselectedId).forEach(d => {
+        d.style.display = "none"
+    });
+    document.querySelectorAll("." + selectedId).forEach(d => {
+        d.style.display = "inline-block"
+    });
 
     chartIdVisible = selectedId;
     chartIdInvisible = unselectedId;
@@ -137,16 +131,13 @@ function showRadarPlot(data) {
     const parentElement = '#radarplot'
 
     const config = {
-        parentElement,
-        containerWidth,
-        containerHeight,
-        colors
+        parentElement, containerWidth, containerHeight, colors
     };
 
     return new RadarPlot(config, data, onRadarPlotPointClicked);
 }
 
-// Dont show the rest of the charts till my country is selected
+// Hide the rest of the charts till my country is selected
 handleChartVisiblity = () => {
     if (myCountry) {
         document.getElementById("charts").style.display = "inline";
@@ -177,7 +168,7 @@ onRadarPlotPointClicked = (event, d, metric) => {
     // TODO update other graphs based on d (data)
 }
 
-// Event slider for input slider
+// Handle update of the year selector slider
 d3.select('#year-slider').on('input', function () {
     // Update visualization
     selectedYear = parseInt(this.value);
@@ -211,7 +202,7 @@ d3.select('#ci-slider').on('input', function () {
     scatterplot.updateVis();
 });
 
-// Update Confidence Level on Scatterplot
+// Update bin count of the distributions
 d3.select('#bin-slider').on('input', function () {
     binSize = parseInt(this.value);
     d3.select('#bin-value').text(this.value < 10 ? "0" + this.value : this.value);
@@ -219,6 +210,7 @@ d3.select('#bin-slider').on('input', function () {
     attributeDist.updateVis();
 });
 
+// Handle selecting primary country
 selectMyCountry = (d) => {
     if (myCountry === d) {
         selectedCountries[3] = 0;
@@ -241,6 +233,7 @@ selectMyCountry = (d) => {
     updateRadarPlot(selectedCountries, selectedYear);
 }
 
+// Handling adding countries to selected bucket
 function updateSelection(d) {
     // Update filter with value
     if (d !== 0) {
@@ -296,7 +289,7 @@ function updateRegionData() {
         const generosityAverage = d3.rollup(regionData, v => d3.mean(v, d => d["Generosity"]), d => d.year);
         const corruptionAverage = d3.rollup(regionData, v => d3.mean(v, d => d["Perceptions of corruption"]), d => d.year);
 
-        
+
         let selectedRegionTitle = 'Selected Countries (Mean Of Selection)';
         const uniqueCountries = new Set(filteredData.map(d => d['Country name']));
         if (uniqueCountries.size == 1) {
@@ -362,6 +355,7 @@ function selectRegion(region, column) {
     map.updateVis();
 }
 
+// Handle removing selected region button background
 function clearButtonStyle() {
     if (selectedRegion) {
         document.getElementById(selectedRegion).setAttribute("class", "btn");

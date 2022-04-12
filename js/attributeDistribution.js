@@ -32,7 +32,7 @@ class AttributeDistribution {
             .range([0, vis.width]);
 
         vis.yScale = d3.scaleLinear()
-            .range([vis.height,0]);
+            .range([vis.height, 0]);
 
         // Define size of SVG drawing area
         vis.svg = d3.select(vis.config.parentElement)
@@ -45,6 +45,7 @@ class AttributeDistribution {
         vis.chart = vis.svg.append('g')
             .attr('transform', `translate(10,0)`);
 
+        // Append distributions
         vis.overall = vis.chart.append("path")
             .attr("class", "happiness-overall")
             .attr("fill", "#777")
@@ -71,17 +72,19 @@ class AttributeDistribution {
         vis.xValue = d => d['Happiness Score']
         vis.yValue = d => d[scatterplot_attribute]
 
+        // Prepare data
         vis.yearFilteredData = data.filter(d => (d.year === selectedYear && vis.yValue(d) !== 0));
-
         vis.filtered_regions = vis.yearFilteredData.filter(d => filteredRegionIds.includes(d.id))
 
-        // set the parameters for the histogram
+        // Set the parameters for the histogram
         vis.histogram = d3.histogram()
-            .value(function(d) {return vis.yValue(d);})
-            .domain([d3.min(vis.yearFilteredData, vis.yValue) - Math.abs(d3.max(vis.yearFilteredData, vis.yValue) * 0.1),
-                d3.max(vis.yearFilteredData, vis.yValue) + d3.max(vis.yearFilteredData, vis.yValue) * 0.1])
-            .thresholds(binSize); // then the numbers of bins
-        // And apply this function to data to get the bins
+            .value(function (d) {
+                return vis.yValue(d);
+            })
+            .domain([d3.min(vis.yearFilteredData, vis.yValue) - Math.abs(d3.max(vis.yearFilteredData, vis.yValue) * 0.1), d3.max(vis.yearFilteredData, vis.yValue) + d3.max(vis.yearFilteredData, vis.yValue) * 0.1])
+            .thresholds(binSize);
+
+        // Apply this function to data to get the bins
         vis.bins = vis.histogram(vis.yearFilteredData);
         vis.binsCount = [];
         for (let i = 0; i < vis.bins.length; i++) {
@@ -105,17 +108,23 @@ class AttributeDistribution {
         let vis = this;
 
         vis.overall.datum(vis.binsCount)
-            .attr("d",  d3.line()
+            .attr("d", d3.line()
                 .curve(d3.curveBasis)
-                .x(function(d) { return vis.xScale(d[1]); })
-                .y(function(d) { return vis.yScale(d[0]); })
-            );
+                .x(function (d) {
+                    return vis.xScale(d[1]);
+                })
+                .y(function (d) {
+                    return vis.yScale(d[0]);
+                }));
 
         vis.selected.datum(vis.selectedBinsCount)
-            .attr("d",  d3.line()
+            .attr("d", d3.line()
                 .curve(d3.curveBasis)
-                .x(function(d) { return vis.xScale(d[1]); })
-                .y(function(d) { return vis.yScale(d[0]); })
-            );
+                .x(function (d) {
+                    return vis.xScale(d[1]);
+                })
+                .y(function (d) {
+                    return vis.yScale(d[0]);
+                }));
     }
 }

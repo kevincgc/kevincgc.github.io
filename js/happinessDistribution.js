@@ -46,6 +46,7 @@ class HappinessDistribution {
         vis.chart = vis.svg.append('g')
             .attr('transform', `translate(60,0)`);
 
+        // Append distributions
         vis.overall = vis.chart.append("path")
             .attr("class", "happiness-overall")
             .attr("fill", "#777")
@@ -72,17 +73,19 @@ class HappinessDistribution {
         vis.xValue = d => d['Happiness Score']
         vis.yValue = d => d[scatterplot_attribute]
 
+        // Prepare values
         vis.yearFilteredData = data.filter(d => (d.year === selectedYear && vis.yValue(d) !== 0));
-
         vis.filtered_regions = vis.yearFilteredData.filter(d => filteredRegionIds.includes(d.id))
 
-        // set the parameters for the histogram
+        // Set the parameters for the histogram
         vis.histogram = d3.histogram()
-            .value(function(d) {
-                return d['Happiness Score']; })   // I need to give the vector of value
+            .value(function (d) {
+                return d['Happiness Score'];
+            })   // I need to give the vector of value
             .domain([d3.min(vis.data, vis.xValue) - 0.6, d3.max(vis.data, vis.xValue) + 0.6])
-            .thresholds(binSize); // then the numbers of bins
-        // And apply this function to data to get the bins
+            .thresholds(binSize);
+
+        // Apply this function to data to get the bins
         vis.bins = vis.histogram(vis.yearFilteredData);
         vis.binsCount = [];
         for (let i = 0; i < vis.bins.length; i++) {
@@ -94,8 +97,8 @@ class HappinessDistribution {
             vis.selectedBinsCount.push([i, vis.selectedBins[i].length]);
         }
 
-        vis.xScale.domain([0,vis.bins.length]);
-        vis.yScale.domain([0,d3.max(vis.binsCount, d => d[1])]);
+        vis.xScale.domain([0, vis.bins.length]);
+        vis.yScale.domain([0, d3.max(vis.binsCount, d => d[1])]);
         vis.renderVis();
     }
 
@@ -106,17 +109,23 @@ class HappinessDistribution {
         let vis = this;
 
         vis.overall.datum(vis.binsCount)
-            .attr("d",  d3.line()
+            .attr("d", d3.line()
                 .curve(d3.curveBasis)
-                .x(function(d) { return vis.xScale(d[0]); })
-                .y(function(d) { return vis.yScale(d[1]); })
-            );
+                .x(function (d) {
+                    return vis.xScale(d[0]);
+                })
+                .y(function (d) {
+                    return vis.yScale(d[1]);
+                }));
 
         vis.selected.datum(vis.selectedBinsCount)
-            .attr("d",  d3.line()
+            .attr("d", d3.line()
                 .curve(d3.curveBasis)
-                .x(function(d) { return vis.xScale(d[0]); })
-                .y(function(d) { return vis.yScale(d[1]); })
-            );
+                .x(function (d) {
+                    return vis.xScale(d[0]);
+                })
+                .y(function (d) {
+                    return vis.yScale(d[1]);
+                }));
     }
 }
