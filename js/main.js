@@ -49,7 +49,6 @@ Promise.all([d3.csv('data/happiness_data_with_percentile.csv'), d3.json('data/ma
     }, data, geojson);
     map.updateVis();
 
-    // Radar plot
     radarplot = showRadarPlot(data);
     radarplot.updateVis();
 
@@ -77,6 +76,7 @@ Promise.all([d3.csv('data/happiness_data_with_percentile.csv'), d3.json('data/ma
     }, yearFilteredData, colors);
     attributeDist.updateVis();
 
+    // Set visibility
     handleChartVisiblity();
     document.getElementById(chartIdInvisible).style.display = "none";
     document.getElementById(chartIdVisible).style.display = "inline-block";
@@ -162,10 +162,6 @@ updateRadarPlot = (countriesSelected, yearSelected) => {
 // metric: string (the axis of data clicked e.g. Freedom)
 onRadarPlotPointClicked = (event, d, metric) => {
     event.stopPropagation();
-
-    console.log("Radar Plot point clicked:\n", metric, d);
-
-    // TODO update other graphs based on d (data)
 }
 
 // Handle update of the year selector slider
@@ -179,19 +175,15 @@ d3.select('#year-slider').on('input', function () {
 
     yearFilteredData = data.filter(d => d.year === selectedYear);
 
+    // Update plots
     updateRegionData();
-
     happinessDist.data = yearFilteredData;
     happinessDist.updateVis();
-
     scatterplot.data = yearFilteredData;
     scatterplot.updateVis();
-
     attributeDist.data = yearFilteredData;
     attributeDist.updateVis();
-
     updateRadarPlot(selectedCountries, selectedYear);
-
     map.updateVis();
 });
 
@@ -226,6 +218,7 @@ selectMyCountry = (d) => {
 
     handleChartVisiblity();
 
+    // Update plots
     countrySelector.updateVis();
     map.updateVis();
     scatterplot.updateVis();
@@ -243,20 +236,18 @@ function updateSelection(d) {
             filteredRegionIds.push(d);
         }
     }
-    updateRegionData();
 
+    updateRegionData();
     clearButtonStyle();
 
+    // Update plots
     updateRadarPlot(selectedCountries, selectedYear);
     scatterplot.selectedCountries = selectedCountries;
     scatterplot.updateVis();
     happinessDist.updateVis();
     attributeDist.updateVis();
-
     linePlot.updateVis()
-
     updateRadarPlot(selectedCountries, selectedYear);
-
     map.updateVis();
     radarplot.updateVis();
 
@@ -272,6 +263,7 @@ function updateRegionData() {
     if (filteredRegionIds.length > 0) {
         const filteredData = yearFilteredData.filter(d => filteredRegionIds.includes(d.id))
 
+        // Calculate means
         const meanHappiness = d3.mean(filteredData, d => d["Happiness Score"]);
         const meanGpd = d3.mean(filteredData, d => d["Log GDP per capita"]);
         const meanSocialSupport = d3.mean(filteredData, d => d["Social support"]);
@@ -279,7 +271,6 @@ function updateRegionData() {
         const meanFreedom = d3.mean(filteredData, d => d["Freedom to make life choices"]);
         const meanGenerosity = d3.mean(filteredData, d => d["Generosity"]);
         const meanCorruption = d3.mean(filteredData, d => d["Perceptions of corruption"]);
-
         const regionData = data.filter(d => filteredRegionIds.includes(d.id))
         const happinessAverage = d3.rollup(regionData, v => d3.mean(v, d => d["Happiness Score"]), d => d.year);
         const gdpAverage = d3.rollup(regionData, v => d3.mean(v, d => d["Log GDP per capita"]), d => d.year);
@@ -289,7 +280,7 @@ function updateRegionData() {
         const generosityAverage = d3.rollup(regionData, v => d3.mean(v, d => d["Generosity"]), d => d.year);
         const corruptionAverage = d3.rollup(regionData, v => d3.mean(v, d => d["Perceptions of corruption"]), d => d.year);
 
-
+        // Set label text
         let selectedRegionTitle = 'Selected Countries (Mean Of Selection)';
         const uniqueCountries = new Set(filteredData.map(d => d['Country name']));
         if (uniqueCountries.size == 1) {
@@ -298,7 +289,7 @@ function updateRegionData() {
             map.selectedRegionPercentiles = {'Country name': selectedRegionTitle};
         }
 
-
+        // Create objects
         selectedRegionAverage = [];
         for (let i = 2011; i <= 2020; i++) {
             selectedRegionAverage.push({
@@ -314,6 +305,7 @@ function updateRegionData() {
             })
         }
 
+        // Determine percentiles
         selectedRegionPercentiles = {};
         selectedRegionPercentiles['Country name'] = selectedRegionTitle;
         selectedRegionPercentiles['Happiness Score pecentile'] = data.filter(d => d["Happiness Score"] <= meanHappiness).length / data.length * 100
@@ -332,7 +324,7 @@ function updateRegionData() {
 
 }
 
-// Select a pre-determined region group
+// Handle selecting a pre-determined region group
 function selectRegion(region, column) {
     clearButtonStyle();
     selectedRegion = region;
@@ -341,12 +333,11 @@ function selectRegion(region, column) {
         document.getElementById(selectedRegion).setAttribute("class", "btn-clicked");
     }
 
-
     let filteredRegions = regions.filter(d => d[regionColumn] === selectedRegion && validCountries.includes(d['country-code']));
     filteredRegionIds = filteredRegions.map(d => d['country-code']);
 
+    // Update Plots
     updateRegionData();
-
     radarplot.updateVis();
     happinessDist.updateVis();
     scatterplot.updateVis();

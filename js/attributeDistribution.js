@@ -107,6 +107,7 @@ class AttributeDistribution {
     renderVis() {
         let vis = this;
 
+        // Draw overall distribution
         vis.overall.datum(vis.binsCount)
             .attr("d", d3.line()
                 .curve(d3.curveBasis)
@@ -117,6 +118,7 @@ class AttributeDistribution {
                     return vis.yScale(d[0]);
                 }));
 
+        // Draw selected distribution
         vis.selected.datum(vis.selectedBinsCount)
             .attr("d", d3.line()
                 .curve(d3.curveBasis)

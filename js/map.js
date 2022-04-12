@@ -75,6 +75,7 @@ class GeoMap {
             .attr('class', 'axis x-axis')
             .attr('transform', `translate(${(vis.width / 2) - (vis.config.legendRectWidth / 2)},${vis.config.legendBottom})`);
 
+        // Legend
         vis.legendLabel = vis.svg.append('text')
             .attr('class', 'map-legend-title')
             .style('text-align', 'center')
@@ -96,24 +97,27 @@ class GeoMap {
 
         let myCountryObj = regions.find(e => e["country-code"] === myCountry);
         vis.selectedCountriesData = [{'Country name': myCountryObj ? myCountryObj.name : "", 'id': myCountry}];
-
+        // vis.selectedRegionPercentiles passed in by Main
         if (vis.selectedRegionPercentiles != {} && vis.selectedRegionPercentiles != undefined && vis.selectedRegionPercentiles != null) {
             vis.selectedCountriesData.push(vis.selectedRegionPercentiles);
         }
 
+        // Map projection and path
         vis.projection = d3.geoNaturalEarth1().scale(110);
-
         vis.geoPath = d3.geoPath().projection(vis.projection);
         vis.pathGenerator = d3.geoPath().projection(vis.projection);
+
+        // Data processing
         vis.filteredData = vis.data.filter(d => d.year === selectedYear);
         vis.happinessValue = d => d["Happiness Score"];
-        vis.extent = d3.extent(vis.filteredData, vis.happinessValue);
-        vis.colorScale.domain(vis.extent);
+
+        // Calculate path centroids
         vis.features = topojson.feature(vis.geojson, vis.geojson.objects.countries).features;
         vis.centroids = vis.features.map(function (feature) {
             return [feature.id, vis.geoPath.centroid(feature)];
         });
 
+        // Set fill color
         vis.fillColor = d => {
             if (selectedCountries.includes(d.id)) {
                 return colors[selectedCountries.indexOf(d.id)];
@@ -126,6 +130,12 @@ class GeoMap {
             }
         }
 
+        // Set domains
+        vis.extent = d3.extent(vis.filteredData, vis.happinessValue);
+        vis.colorScale.domain(vis.extent);
+        vis.xScale.domain(vis.extent)
+
+        // Calculate legend ticks
         vis.legendTicks = [];
         for (let i = 0; i < Math.ceil(vis.extent[1]); i++) {
             vis.legendTicks.push({
@@ -133,69 +143,7 @@ class GeoMap {
             });
         }
 
-        vis.xScale.domain(vis.extent)
-
         vis.renderVis();
-    }
-
-    renderLegend() {
-        let vis = this;
-
-        // Draw selected countries
-        const evenLegendX = 25;
-        const oddLegendX = 200;
-        const legendYMultiplier = 10;
-        const legendTextXOffset = 15;
-        const legendTextYOffset = 4;
-
-        vis.fillLegendColor = d => {
-            if (selectedCountries.includes(d.id)) {
-                return colors[selectedCountries.indexOf(d.id)];
-            } else if (filteredRegionIds.includes(d.id)) {
-                return regionColor;
-            } else if (myCountry === d.id) {
-                return myCountryColor;
-            } else {
-                return regionColor;
-            }
-        }
-
-        vis.selectedCountriesArea.selectAll('.selected-country')
-            .data(vis.selectedCountriesData)
-            .join("circle")
-            .attr('class', 'selected-country')
-            .attr("cx", (_, i) => {
-                // Even legend items
-                if (i % 2 == 0) return evenLegendX;
-                // Odd legend items
-                else return oddLegendX;
-            })
-            .attr("cy", 75)
-            .attr("r", 6)
-            .attr('fill-opacity', '1')
-            .attr('stroke', '#333')
-            .attr('stroke-width', '0.3')
-            .attr("fill", d => vis.fillLegendColor(d))
-
-        vis.selectedCountriesArea.selectAll(".select-country-text")
-            .data(vis.selectedCountriesData)
-            .join('text')
-            .attr('text-anchor', 'left')
-            .attr('class', 'select-country-text')
-            .attr('dx', (_, i) => {
-                // Even legend items
-                if (i % 2 == 0) return evenLegendX + legendTextXOffset;
-                // Odd legend items
-                else return oddLegendX + legendTextXOffset;
-            })
-            // .attr("dy", (_, i) => {
-            //     // Even legend items
-            //     if (i % 2 == 0) return ((i + 1) * legendYMultiplier) + legendTextYOffset;
-            //     // Odd legend items
-            //     else return (i * legendYMultiplier) + legendTextYOffset;
-            // })
-            .attr("dy", 80)
-            .text(d => d['Country name'])
     }
 
     renderVis() {
@@ -300,6 +248,7 @@ class GeoMap {
                 }
             });
 
+        // Append marker
         vis.country = myCountry === null ? [] : [myCountry];
         vis.marker = vis.map.selectAll(".marker")
             .data(vis.country)
@@ -316,17 +265,74 @@ class GeoMap {
                 })
             });
 
+        // Enable zoom + pan interaction
         vis.zoom = d3.zoom().on('zoom', (e) => {
             vis.map.attr('transform', e.transform);
         });
         vis.svg.call(vis.zoom);
     }
 
+    // Reset zoom to initial state
     resetZoom() {
         let vis = this;
 
         vis.svg.transition()
             .duration(750)
             .call(vis.zoom.transform, d3.zoomIdentity);
+    }
+
+    // Render bottom legend with country labels
+    renderLegend() {
+        let vis = this;
+
+        // Draw selected countries
+        const evenLegendX = 25;
+        const oddLegendX = 200;
+        const legendYMultiplier = 10;
+        const legendTextXOffset = 15;
+        const legendTextYOffset = 4;
+
+        vis.fillLegendColor = d => {
+            if (selectedCountries.includes(d.id)) {
+                return colors[selectedCountries.indexOf(d.id)];
+            } else if (filteredRegionIds.includes(d.id)) {
+                return regionColor;
+            } else if (myCountry === d.id) {
+                return myCountryColor;
+            } else {
+                return regionColor;
+            }
+        }
+
+        vis.selectedCountriesArea.selectAll('.selected-country')
+            .data(vis.selectedCountriesData)
+            .join("circle")
+            .attr('class', 'selected-country')
+            .attr("cx", (_, i) => {
+                // Even legend items
+                if (i % 2 == 0) return evenLegendX;
+                // Odd legend items
+                else return oddLegendX;
+            })
+            .attr("cy", 75)
+            .attr("r", 6)
+            .attr('fill-opacity', '1')
+            .attr('stroke', '#333')
+            .attr('stroke-width', '0.3')
+            .attr("fill", d => vis.fillLegendColor(d));
+
+        vis.selectedCountriesArea.selectAll(".select-country-text")
+            .data(vis.selectedCountriesData)
+            .join('text')
+            .attr('text-anchor', 'left')
+            .attr('class', 'select-country-text')
+            .attr('dx', (_, i) => {
+                // Even legend items
+                if (i % 2 == 0) return evenLegendX + legendTextXOffset;
+                // Odd legend items
+                else return oddLegendX + legendTextXOffset;
+            })
+            .attr("dy", 80)
+            .text(d => d['Country name']);
     }
 }

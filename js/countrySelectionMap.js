@@ -62,6 +62,7 @@ class CountrySelector {
         vis.xScale = d3.scaleLinear()
             .range([0, vis.config.legendRectWidth])
 
+        // Axis
         vis.xAxis = d3.axisBottom(vis.xScale)
             .tickSize(vis.config.legendRectHeight)
             .ticks(5);
@@ -87,25 +88,33 @@ class CountrySelector {
     updateVis() {
         let vis = this;
 
+        // Set projection and path
         vis.projection = d3.geoNaturalEarth1().scale(250);
         vis.geoPath = d3.geoPath().projection(vis.projection);
         vis.pathGenerator = d3.geoPath().projection(vis.projection);
+
+        // Data
         vis.filteredData = d3.rollup(vis.data, v => d3.mean(v, d => d["Happiness Score"]), d => d.id);
         vis.happinessValue = d => d["Happiness Score"];
-        vis.extent = [3.36, 7.61];
-        vis.colorScale.domain([3.36, 7.61]);
+
+        // Calculate country path centroids
         vis.features = topojson.feature(vis.geojson, vis.geojson.objects.countries).features;
         vis.centroids = vis.features.map(function (feature) {
             return [feature.id, vis.geoPath.centroid(feature)];
         });
 
+        // Set scales
+        vis.extent = [3.36, 7.61];
+        vis.colorScale.domain([3.36, 7.61]);
+        vis.xScale.domain(vis.extent)
+
+        // Calculate legend ticks
         vis.legendTicks = [];
         for (let i = 0; i < Math.ceil(vis.extent[1]); i++) {
             vis.legendTicks.push({
                 color: vis.colorScale(i), value: i
             });
         }
-        vis.xScale.domain(vis.extent)
 
         vis.renderVis();
     }

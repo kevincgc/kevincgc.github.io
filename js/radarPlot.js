@@ -268,7 +268,6 @@ class RadarPlot {
             .attr('z-index', -1));
 
         // Points
-
         const points = [];
         for (let i = 0; i < vis.filteredData.length; i++) {
             const d = vis.filteredData[i];
@@ -307,7 +306,7 @@ class RadarPlot {
             return '';
         }
 
-
+        // Update points on radar plot
         vis.chart.selectAll('.point')
             .remove();
 
