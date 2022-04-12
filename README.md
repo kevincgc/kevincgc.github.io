@@ -50,10 +50,13 @@ const yValue = (i, value) => Math.sin(calculateLineAngle(i)) * value;
 - Implement d3.brush to select multiple points by dragging
 - Use ss.linearRegressionLine to find the line of best fit
 - Find the confidence interval using linear regression and inverse transformation with a customizable value
+- Use curveBasis on histogram to show distributions 
 
 **Sources**:
 - [Scatterplot](https://github.com/UBC-InfoVis/436V-materials/tree/22Jan/d3-examples/d3-interactive-scatter-plot)
+- [Histogram in d3](https://d3-graph-gallery.com/graph/histogram_basic.html)
 - [d3 brush](https://github.com/d3/d3-brush)
 - [Linear Regression Line](https://observablehq.com/@bbruneau/simple-linear-regression-scatterplot-with-d3)
 - [Confidence interval](https://www.statisticshowto.com/probability-and-statistics/confidence-interval/)
+- [Currve basis](https://www.geeksforgeeks.org/d3-js-curvebasis-method/)
 ---
