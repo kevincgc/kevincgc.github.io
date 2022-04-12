@@ -97,6 +97,7 @@ class GeoMap {
 
         let myCountryObj = regions.find(e => e["country-code"] === myCountry);
         vis.selectedCountriesData = [{'Country name': myCountryObj ? myCountryObj.name : "", 'id': myCountry}];
+
         // vis.selectedRegionPercentiles passed in by Main
         if (vis.selectedRegionPercentiles != {} && vis.selectedRegionPercentiles != undefined && vis.selectedRegionPercentiles != null) {
             vis.selectedCountriesData.push(vis.selectedRegionPercentiles);

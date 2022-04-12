@@ -76,7 +76,7 @@ class RadarPlot {
             .attr('height', vis.config.containerHeight)
         // .on('click', this.onbackgroundClickedEventListener);
 
-        // Append group element that will contain our actual chart 
+        // Append group element that will contain our actual chart
         // and position it according to the given margin config
         vis.chart = vis.svg.append('g')
             .attr('transform', `translate(${vis.config.margin.left},${vis.config.margin.top})`)
@@ -268,6 +268,7 @@ class RadarPlot {
             .attr('z-index', -1));
 
         // Points
+
         const points = [];
         for (let i = 0; i < vis.filteredData.length; i++) {
             const d = vis.filteredData[i];
@@ -306,7 +307,7 @@ class RadarPlot {
             return '';
         }
 
-        // Update points on radar plot
+        // Draw radar plot
         vis.chart.selectAll('.point')
             .remove();
 
@@ -333,8 +334,6 @@ class RadarPlot {
                         .attr('stroke-width', '3')
                         .attr('r', 7)
 
-                    console.log(event.pageY);
-                    console.log(event.pageX);
                     d3.select('#tooltip')
                         .style('display', 'block')
                         .style('left', (event.pageX/0.8 + vis.config.tooltipPadding) + 'px')
