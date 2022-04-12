@@ -33,37 +33,37 @@ class RadarPlot {
         vis.circleTicks = [25, 50, 75, 100]; // percentages
 
         vis.axes = [{
-            percentValue: 'Happiness Score pecentile',
+            percentValue: 'Happiness Score percentile',
             dataValue: 'Happiness Score',
             tooltipLabel: 'Happiness Score',
             radarLabel: 'Happiness Score'
         }, {
-            percentValue: 'Log GDP per capita pecentile',
+            percentValue: 'Log GDP per capita percentile',
             dataValue: 'Log GDP per capita',
             tooltipLabel: 'Log GDP Per Capita',
             radarLabel: 'GDP per capita'
         }, {
-            percentValue: 'Social support pecentile',
+            percentValue: 'Social support percentile',
             dataValue: 'Social support',
             tooltipLabel: 'Social Support',
             radarLabel: 'Social Support'
         }, {
-            percentValue: 'Healthy life expectancy at birth pecentile',
+            percentValue: 'Healthy life expectancy at birth percentile',
             dataValue: 'Healthy life expectancy at birth',
             tooltipLabel: 'Healthy Life Expectancy',
             radarLabel: 'Life Expectancy'
         }, {
-            percentValue: 'Freedom to make life choices pecentile',
+            percentValue: 'Freedom to make life choices percentile',
             dataValue: 'Freedom to make life choices',
             tooltipLabel: 'Freedom To Make Life Choices',
             radarLabel: 'Freedom'
         }, {
-            percentValue: 'Generosity pecentile',
+            percentValue: 'Generosity percentile',
             dataValue: 'Generosity',
             tooltipLabel: 'Generosity',
             radarLabel: 'Generosity'
         }, {
-            percentValue: 'Perceptions of corruption pecentile',
+            percentValue: 'Perceptions of corruption percentile',
             dataValue: 'Perceptions of corruption',
             tooltipLabel: 'Perceptions Of Corruption',
             radarLabel: 'Corruption'
@@ -268,7 +268,6 @@ class RadarPlot {
             .attr('z-index', -1));
 
         // Points
-
         const points = [];
         for (let i = 0; i < vis.filteredData.length; i++) {
             const d = vis.filteredData[i];
@@ -307,7 +306,7 @@ class RadarPlot {
             return '';
         }
 
-
+        // Update points on radar plot
         vis.chart.selectAll('.point')
             .remove();
 

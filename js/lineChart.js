@@ -167,6 +167,7 @@ class LineChart {
                     data_selected = vis.yearFilteredData.filter(d => d.id === countries[i]);
                 }
 
+                // Append lines
                 vis.paths[i] = vis.chart.selectAll(`.chart-line-${i}`)
                     .data([data_selected])
                     .join('path')
@@ -175,6 +176,7 @@ class LineChart {
                     .attr('class', `.chart-line-${i}`)
                     .attr('d', vis.line)
 
+                // Append points
                 vis.points[i] = vis.chart.selectAll(`.point-${i}`)
                     .data(data_selected)
                     .join('circle')
