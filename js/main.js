@@ -85,12 +85,6 @@ Promise.all([
 
     linePlot.updateVis();
 
-    scatterplot = new Scatterplot({
-        parentElement: '#scatterplot',
-        attribute_selected: scatterplot_attribute
-        // Optional: other configurations
-    }, yearFilteredData, regions);
-
     attributeDist = new AttributeDistribution({
         parentElement: '#attribute-dist',
         attribute_selected: scatterplot_attribute
@@ -101,10 +95,6 @@ Promise.all([
     handleChartVisiblity();
     document.getElementById(chartIdInvisible).style.display = "none";
     document.getElementById(chartIdVisible).style.display = "inline-block";
-
-    // document.getElementById(chartIdVisible).style.visibility = "visible";
-    // document.getElementById(chartIdInvisible).style.visibility = "hidden";
-
 });
 
 d3.selectAll('#scatter-plot-selector').on('change', e => {
