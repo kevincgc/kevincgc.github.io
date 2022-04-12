@@ -214,6 +214,7 @@ class GeoMap {
         // Draw legend
         const legend = vis.legendDefs.append('linearGradient').attr('id', 'legendGradient');
 
+        // [Ref-1] Gradient Legend - bl.ocks.org
         legend.selectAll('stop')
             .data(vis.legendTicks)
             .enter().append('stop')

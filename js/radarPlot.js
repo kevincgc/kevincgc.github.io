@@ -162,6 +162,7 @@ class RadarPlot {
 
         // Get last circle tick value, use it for axis length
         // This makes the axis lines go exactly to the outermost circle
+        // [Ref-2] Radar Chart d3 - github.com
         const axisLength = vis.radialScale(vis.circleTicks[vis.circleTicks.length - 1]);
         const calculateLineAngle = (i) => (Math.PI * 2 * (i + 1) / vis.axes.length) + (Math.PI / 2);
         const xValue = (i, value) => Math.cos(calculateLineAngle(i)) * value;
