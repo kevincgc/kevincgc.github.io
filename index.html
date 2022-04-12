@@ -18,7 +18,7 @@
                 <p>
 
                     <label for="year-slider">Select year <span id="year-value">2019</span></label>
-                    <input type="range" min="2011" value="2019" max="2020" id="year-slider">
+                    <input class="clickable" type="range" min="2011" value="2019" max="2020" id="year-slider">
                     <button class='btn' onclick="map.resetZoom()">Reset Zoom</button>
                     <button id='none' class='btn' onclick="selectRegion('', '')">Unselect All</button>
 
@@ -51,7 +51,7 @@
                 <div id="plots">
                     <p>
                         Filter Attribute:
-                        <select id="scatter-plot-selector">
+                        <select class="clickable" id="scatter-plot-selector">
                             <option value="Log GDP per capita">Log GDP per capita</option>
                             <option value="Social support">Social support</option>
                             <option value="Healthy life expectancy at birth">Healthy life expectancy at birth</option>
@@ -61,12 +61,12 @@
                             <option hidden value="Happiness Score" id="happiness-score">Happiness Score</option>
                         </select>
 
-                        <input type="radio" id="happiness-distribution" name="distribution" value="Over Happiness"
+                        <input class="clickable" type="radio" id="happiness-distribution" name="distribution" value="Over Happiness"
                                onclick="selectChart('scatterplot', 'line_chart')" checked>
-                        <label for="happiness-distribution">Plot Versus Happiness (<span id="year-value-dup">2019</span> Data)</label>
-                        <input type="radio" id="time-distribution" name="distribution" value="Over Time"
+                        <label class="clickable" for="happiness-distribution">Plot Versus Happiness (<span id="year-value-dup">2019</span> Data)</label>
+                        <input class="clickable" type="radio" id="time-distribution" name="distribution" value="Over Time"
                                onclick="selectChart('line_chart', 'scatterplot')">
-                        <label for="time-distribution">Plot Versus Time</label>
+                        <label class="clickable" for="time-distribution">Plot Versus Time</label>
 
                         <div id="scatterplot-control">
                             <label for="ci-slider">Select Confidence Level: <span id="ci-value">95.0</span>%</label>

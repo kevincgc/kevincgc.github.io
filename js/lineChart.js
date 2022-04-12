@@ -109,7 +109,7 @@ class LineChart {
             } else if (myCountry === d.id) {
                 return myCountryColor;
             } else {
-                return '#000';
+                return regionColor;
             }
         }
 

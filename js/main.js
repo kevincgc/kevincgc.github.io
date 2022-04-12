@@ -257,8 +257,6 @@ function updateSelection(d) {
     }
     updateRegionData();
 
-    map.selectedRegionPercentiles = {'Country name': 'Selected Countries (Mean Of Selection)'};
-
     clearButtonStyle();
 
     updateRadarPlot(selectedCountries, selectedYear);
@@ -302,9 +300,20 @@ function updateRegionData() {
         const generosityAverage = d3.rollup(regionData, v => d3.mean(v, d => d["Generosity"]), d => d.year);
         const corruptionAverage = d3.rollup(regionData, v => d3.mean(v, d => d["Perceptions of corruption"]), d => d.year);
 
+        
+        let selectedRegionTitle = 'Selected Countries (Mean Of Selection)';
+        const uniqueCountries = new Set(filteredData.map(d => d['Country name']));
+        if (uniqueCountries.size == 1) {
+            // Show name of country if the selected countries for comparison is 1
+            selectedRegionTitle = uniqueCountries.values().next().value;
+            map.selectedRegionPercentiles = {'Country name': selectedRegionTitle};
+        }
+
+
         selectedRegionAverage = [];
         for (let i = 2011; i <= 2020; i++) {
             selectedRegionAverage.push({
+                'Country name': selectedRegionTitle,
                 'year': i,
                 'Happiness Score': happinessAverage.get(i),
                 'Log GDP per capita': gdpAverage.get(i),
@@ -317,7 +326,7 @@ function updateRegionData() {
         }
 
         selectedRegionPercentiles = {};
-        selectedRegionPercentiles['Country name'] = selectedRegion + ' (Regional Mean)';
+        selectedRegionPercentiles['Country name'] = selectedRegionTitle;
         selectedRegionPercentiles['Happiness Score pecentile'] = data.filter(d => d["Happiness Score"] <= meanHappiness).length / data.length * 100
         selectedRegionPercentiles['Log GDP per capita pecentile'] = data.filter(d => d["Log GDP per capita"] <= meanGpd).length / data.length * 100
         selectedRegionPercentiles['Social support pecentile'] = data.filter(d => d["Social support"] <= meanSocialSupport).length / data.length * 100
