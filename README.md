@@ -26,3 +26,34 @@ const yValue = (i, value) => Math.sin(calculateLineAngle(i)) * value;
 **Source**: [github.com: alangrafu/radar-chart-d3: Simple radar chart in D3.js](https://github.com/alangrafu/radar-chart-d3)
 
 ---
+
+### [Ref-3] LineChart d3 
+**Problem**: Creating a plot for average over all selected countries
+**Modification**: Rollup data based on year, find the mean and add it to the chart
+
+**Sources**: 
+- [Interactive line charts](https://github.com/UBC-InfoVis/436V-materials/tree/22Jan/d3-examples/d3-interactive-line-chart)
+- [Overvable d3 rollups](https://observablehq.com/@d3/d3-group)
+- [Geeks for Geeks](https://www.geeksforgeeks.org/d3-js-rollup-method/)
+---
+
+### [Ref-4] Scatterplot d3
+**Problem**: 
+- Drag to select regions 
+- Show distribution of regions 
+- Plot the line of best fit 
+- Plot the confidence interval 
+- Make the confidence interval adjustable 
+- Make the distribution adjustable 
+- 
+**Modification**: 
+- Implement d3.brush to select multiple points by dragging
+- Use ss.linearRegressionLine to find the line of best fit
+- Find the confidence interval using linear regression and inverse transformation with a customizable value
+
+**Sources**:
+- [Scatterplot](https://github.com/UBC-InfoVis/436V-materials/tree/22Jan/d3-examples/d3-interactive-scatter-plot)
+- [d3 brush](https://github.com/d3/d3-brush)
+- [Linear Regression Line](https://observablehq.com/@bbruneau/simple-linear-regression-scatterplot-with-d3)
+- [Confidence interval](https://www.statisticshowto.com/probability-and-statistics/confidence-interval/)
+---
