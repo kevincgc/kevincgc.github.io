@@ -152,8 +152,8 @@ class CountrySelector {
                 d3
                     .select("#tooltip")
                     .style("display", "block")
-                    .style("left", event.pageX + vis.config.tooltipPadding + "px")
-                    .style("top", event.pageY + vis.config.tooltipPadding + "px").html(`
+                    .style("left", event.pageX/0.8 + vis.config.tooltipPadding + "px")
+                    .style("top", event.pageY/0.8 + vis.config.tooltipPadding + "px").html(`
                         <div style="display: flex">
                         <div class="tooltip-title">${country.name}</div>
                         <div style="margin-left: auto; margin-right: 0">2011 to 2020</div>

@@ -189,8 +189,8 @@ class LineChart {
                             .attr('r', 7)
                         d3.select('#tooltip')
                             .style('display', 'block')
-                            .style('left', (event.pageX + vis.config.tooltipPadding) + 'px')
-                            .style('top', (event.pageY + vis.config.tooltipPadding) + 'px')
+                            .style('left', (event.pageX/0.8 + vis.config.tooltipPadding) + 'px')
+                            .style('top', (event.pageY/0.8 + vis.config.tooltipPadding) + 'px')
                             .html(`
                                 <div>
                                     <div style="display: flex">

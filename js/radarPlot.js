@@ -334,11 +334,12 @@ class RadarPlot {
                         .attr('stroke-width', '3')
                         .attr('r', 7)
 
-
+                    console.log(event.pageY);
+                    console.log(event.pageX);
                     d3.select('#tooltip')
                         .style('display', 'block')
-                        .style('left', (event.pageX + vis.config.tooltipPadding) + 'px')
-                        .style('top', (event.pageY + vis.config.tooltipPadding) + 'px')
+                        .style('left', (event.pageX/0.8 + vis.config.tooltipPadding) + 'px')
+                        .style('top', (event.pageY/0.8 + vis.config.tooltipPadding) + 'px')
                         .html(`
                             <div>
                                 <div style="display: flex">
