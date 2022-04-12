@@ -118,7 +118,5 @@ class HappinessDistribution {
                 .x(function(d) { return vis.xScale(d[0]); })
                 .y(function(d) { return vis.yScale(d[1]); })
             );
-
-        // Plot the area
     }
 }

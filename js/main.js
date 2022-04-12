@@ -13,13 +13,10 @@ let myCountryColor = "#8533af";
 let confidenceLevel = 0.05;
 let validCountries = [];
 const regionColor = "#0057e7";
-//const myCountryColor = "#01c5a9";
-const colors = ['#ff0048', '#a217dc', '#fdd100', myCountryColor];
+const colors = [regionColor, '#a217dc', '#fdd100', myCountryColor];
 let chartIdVisible = "scatterplot";
 let chartIdInvisible = "line_chart";
 let binSize = 20;
-
-// const colors = ['#a217dc', '#01c5a9', '#1437FF', myCountryColor];
 
 //Load data from CSV file asynchronously and render chart
 Promise.all([
@@ -108,9 +105,6 @@ d3.selectAll('#scatter-plot-selector').on('change', e => {
 })
 
 selectChart = (selectedId, unselectedId) => {
-    // document.getElementById(selectedId).style.visibility = "visible";
-    // document.getElementById(unselectedId).style.visibility = "hidden";
-
     document.querySelectorAll("." + unselectedId).forEach(d => {d.style.display = "none"});
     document.querySelectorAll("." + selectedId).forEach(d => {d.style.display = "inline-block"});
 
@@ -152,6 +146,7 @@ function showRadarPlot(data) {
     return new RadarPlot(config, data, onRadarPlotPointClicked);
 }
 
+// Dont show the rest of the charts till my country is selected
 handleChartVisiblity = () => {
     if (myCountry) {
         document.getElementById("charts").style.display = "inline";
@@ -279,6 +274,7 @@ function updateSelection(d) {
 
 }
 
+// Find means for the selected region for the radar chart and the line chart
 function updateRegionData() {
     if (filteredRegionIds.length > 0) {
         const filteredData = yearFilteredData.filter(d => filteredRegionIds.includes(d.id))
@@ -343,6 +339,7 @@ function updateRegionData() {
 
 }
 
+// Select a pre-determined region group
 function selectRegion(region, column) {
     clearButtonStyle();
     selectedRegion = region;

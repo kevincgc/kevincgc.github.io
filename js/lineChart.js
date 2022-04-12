@@ -151,11 +151,7 @@ class LineChart {
         }
 
         const countries = [...selectedCountries];
-        const chartColors = [...colors];
-
         countries[0] = -1;
-        chartColors[0] = regionColor;
-
         for (let i = 0; i < countries.length; i++) {
             if (countries[i]) {
                 // Paths
@@ -174,7 +170,7 @@ class LineChart {
                     .data([data_selected])
                     .join('path')
                     .attr("fill", "none")
-                    .attr("stroke", chartColors[i])
+                    .attr("stroke", colors[i])
                     .attr('class', `.chart-line-${i}`)
                     .attr('d', vis.line)
 
@@ -185,7 +181,7 @@ class LineChart {
                     .attr('r', 4)
                     .attr('cy', d => vis.yScale(vis.yValue(d)))
                     .attr('cx', d => vis.xScale(vis.xValue(d)))
-                    .attr('fill', chartColors[i])
+                    .attr('fill', colors[i])
                     .style('cursor', 'pointer')
                     .on('mouseover', function (event, d) {
                         d3.select(this)
