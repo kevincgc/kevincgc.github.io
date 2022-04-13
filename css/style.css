@@ -15,11 +15,19 @@ body {
     font-size: 48px;
     color: #050e6e;
     text-align: center;
+    margin: 10px;
 }
 
 h2 {
     font-family: 'Ubuntu';
     text-align: center;
+}
+
+h3 {
+    font-family: 'Ubuntu';
+    text-align: center;
+    font-size: 17px;
+    margin: 5px;
 }
 
 h4 {
