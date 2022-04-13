@@ -22,6 +22,12 @@ h2 {
     text-align: center;
 }
 
+h4 {
+    font-family: 'Ubuntu';
+    text-align: center;
+    margin: 5px;
+}
+
 .line:hover {
     opacity: 1;
 }
